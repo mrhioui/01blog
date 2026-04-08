@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sosabaknos
+      POSTGRES_DB: 01Blog_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Springboot.Dockerfile
+    container_name: backend-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/01Blog_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: sosabaknos
+    depends_on:
+      - postgres-db
+    ports:
+      - "8080:8080"
+    restart: always
+
+volumes:
+  pgdata:

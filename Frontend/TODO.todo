@@ -1,0 +1,27 @@
+# 01Blog Frontend TODO
+
+[ ] PHASE 1 - Setup
+    [ ] Create Angular project
+    [ ] Install Angular Material
+    [ ] Setup folder structure
+
+[ ] PHASE 2 - Core
+    [ ] Create API service
+    [ ] Create Auth service
+    [ ] Create Auth guard
+
+[ ] PHASE 3 - Auth
+    [ ] Login page
+    [ ] Register page
+    [ ] Connect to backend
+
+[ ] PHASE 4 - Posts
+    [ ] Create post
+    [ ] Post list
+    [ ] Like system
+    [ ] Comment system
+
+[ ] PHASE 5 - Admin
+    [ ] Dashboard
+    [ ] Manage users
+    [ ] Handle reports

@@ -1,0 +1,95 @@
+# 01Blog Backend TODO
+
+[x] PHASE 1 - Project Setup
+    [x] Initialize Spring Boot project
+    [x] Add dependencies (Web, JPA, PostgreSQL, Security, Lombok)
+    [x] Configure application.properties
+    [x] Connect to PostgreSQL (Docker)
+    [x] Run backend successfully
+
+[ ] PHASE 2 - Database Design
+    [ ] Create User entity
+    [ ] Create Post entity
+    [ ] Create Comment entity
+    [ ] Create Like entity
+    [ ] Create Subscription entity
+    [ ] Create Report entity
+    [ ] Add relationships (OneToMany, ManyToOne, etc.)
+    [ ] Verify tables in database
+
+[ ] PHASE 3 - Repository Layer
+    [ ] Create UserRepository
+    [ ] Create PostRepository
+    [ ] Create CommentRepository
+    [ ] Create LikeRepository
+    [ ] Create SubscriptionRepository
+    [ ] Create ReportRepository
+
+[ ] PHASE 4 - Service Layer
+    [ ] Create UserService
+    [ ] Create PostService
+    [ ] Create CommentService
+    [ ] Create LikeService
+    [ ] Create SubscriptionService
+    [ ] Implement business logic
+
+[ ] PHASE 5 - Controllers (API)
+    [ ] Create AuthController
+    [ ] Create UserController
+    [ ] Create PostController
+    [ ] Create CommentController
+    [ ] Implement endpoints:
+        [ ] POST /auth/register
+        [ ] POST /auth/login
+        [ ] GET /users
+        [ ] GET /users/{id}
+        [ ] POST /posts
+        [ ] GET /posts
+        [ ] DELETE /posts/{id}
+        [ ] POST /comments
+
+[ ] PHASE 6 - Authentication & Security
+    [ ] Configure Spring Security
+    [ ] Implement JWT authentication
+    [ ] Create login system
+    [ ] Add password hashing
+    [ ] Protect routes
+    [ ] Add roles (USER / ADMIN)
+
+[ ] PHASE 7 - Social Features
+    [ ] Implement follow system
+    [ ] Implement like system
+    [ ] Implement comment system
+    [ ] Add notifications logic
+
+[ ] PHASE 8 - Media Upload
+    [ ] Implement file upload (image/video)
+    [ ] Store files locally
+    [ ] Create endpoint to serve media
+
+[ ] PHASE 9 - Reports & Admin
+    [ ] Implement report system
+    [ ] Store report reason + timestamp
+    [ ] Create admin endpoints:
+        [ ] View users
+        [ ] Delete posts
+        [ ] Ban users
+
+[ ] PHASE 10 - Testing
+    [ ] Unit tests (services)
+    [ ] Integration tests (API)
+
+[ ] PHASE 11 - Docker & Deployment
+    [ ] Create Dockerfile
+    [ ] Configure docker-compose (backend + postgres)
+    [ ] Run full system
+    [ ] Fix environment variables
+
+[ ] FIRST MILESTONE
+    [ ] Create User entity
+    [ ] Create UserRepository
+    [ ] Create UserService
+    [ ] Create UserController
+    [ ] Implement:
+        [ ] POST /users
+        [ ] GET /users
