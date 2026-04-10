@@ -17,7 +17,7 @@ services:
   backend:
     build:
       context: ./Backend
-      dockerfile: Springboot.Dockerfile
+      dockerfile: Dockerfile
     container_name: backend-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/01Blog_db
@@ -28,6 +28,14 @@ services:
     ports:
       - "8080:8080"
     restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: blog_frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
