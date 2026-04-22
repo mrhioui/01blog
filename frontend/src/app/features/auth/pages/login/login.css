@@ -1,0 +1,52 @@
+.auth-panel {
+  overflow: hidden;
+  border-radius: 1.75rem;
+  background: rgba(229, 218, 218, 0.92);
+}
+
+.auth-copy {
+  background: linear-gradient(160deg, var(--deep-space-blue), var(--dark-amaranth));
+  color: var(--dust-grey);
+}
+
+.auth-eyebrow {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--golden-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.info-tile {
+  background: rgba(229, 218, 218, 0.08);
+  border: 1px solid rgba(229, 218, 218, 0.12);
+}
+
+.custom-input {
+  border-radius: 1rem;
+  border-color: rgba(0, 38, 66, 0.15);
+}
+
+.custom-input:focus {
+  border-color: var(--golden-orange);
+  box-shadow: 0 0 0 0.25rem rgba(229, 149, 0, 0.18);
+}
+
+.app-btn-primary {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--dark-amaranth), var(--golden-orange));
+  color: var(--dust-grey);
+  font-weight: 700;
+}
+
+.app-btn-primary:hover {
+  color: var(--dust-grey);
+}
+
+.auth-link {
+  color: var(--golden-orange);
+  text-decoration: none;
+}

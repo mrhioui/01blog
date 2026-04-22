@@ -1,1 +1,56 @@
-<p>login works!</p>
+<section class="py-2 py-lg-4">
+  <div class="row justify-content-center g-4">
+    <div class="col-12 col-xl-10">
+      <div class="card border-0 shadow-lg auth-panel">
+        <div class="card-body p-0">
+          <div class="row g-0">
+            <div class="col-12 col-lg-6">
+              <div class="auth-copy h-100 p-4 p-md-5">
+                <span class="auth-eyebrow">Login</span>
+                <h1 class="display-6 fw-bold mb-3">Welcome back to the student blogging community.</h1>
+                <p class="mb-4 text-secondary">
+                  Sign in to publish your progress, follow other learners, and stay connected to
+                  the posts that matter to your journey.
+                </p>
+
+                <div class="info-tile p-3 rounded-4">
+                  <div class="small text-uppercase fw-semibold mb-2">Why 01Blog</div>
+                  <ul class="mb-0 ps-3">
+                    <li>Document projects, discoveries, and milestones</li>
+                    <li>Follow other students and engage with their work</li>
+                    <li>Build a public record of your learning journey</li>
+                  </ul>
+                </div>
+
+                <a routerLink="/register" class="btn btn-link px-0 mt-4 auth-link">
+                  Need a fresh account?
+                </a>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <form class="p-4 p-md-5 h-100 d-flex flex-column justify-content-center" [formGroup]="form" (ngSubmit)="submit()">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Username</label>
+                  <input class="form-control form-control-lg custom-input" type="text" formControlName="username" placeholder="john_doe" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Password</label>
+                  <input class="form-control form-control-lg custom-input" type="password" formControlName="password" placeholder="••••••••" />
+                </div>
+
+                <div *ngIf="errorMessage" class="alert alert-danger border-0 rounded-4">{{ errorMessage }}</div>
+                <div *ngIf="successMessage" class="alert alert-success border-0 rounded-4">{{ successMessage }}</div>
+
+                <button class="btn btn-lg app-btn-primary w-100 mt-2" type="submit" [disabled]="submitting">
+                  {{ submitting ? 'Signing in...' : 'Sign In' }}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

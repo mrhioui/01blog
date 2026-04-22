@@ -2,8 +2,8 @@ import { User } from './user.model';
 import { Post } from './post.model';
 
 export const MOCK_USERS: User[] = [
-  { id: 1, username: 'john_doe', email: 'john@example.com', role: 'ROLE_USER' },
-  { id: 2, username: 'admin', email: 'admin@example.com', role: 'ROLE_ADMIN' }
+  { id: 1, username: 'john_doe', email: 'john@example.com', role: 'ROLE_USER', profilePublic: true },
+  { id: 2, username: 'admin', email: 'admin@example.com', role: 'ROLE_ADMIN', profilePublic: true }
 ];
 
 export const MOCK_POSTS: Post[] = [

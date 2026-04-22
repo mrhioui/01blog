@@ -1,0 +1,88 @@
+.hero-card {
+  border-radius: 1.75rem;
+  background: linear-gradient(135deg, var(--deep-space-blue), var(--dark-amaranth));
+  color: var(--dust-grey);
+}
+
+.hero-side-card {
+  border-radius: 1.25rem;
+  background: rgba(229, 218, 218, 0.08);
+  color: var(--dust-grey);
+}
+
+.hero-side-kicker {
+  color: var(--golden-orange);
+  letter-spacing: 0.14em;
+}
+
+.dashboard-eyebrow,
+.section-kicker {
+  color: var(--golden-orange);
+  letter-spacing: 0.16em;
+}
+
+.dashboard-card {
+  border-radius: 1.5rem;
+  background: rgba(229, 218, 218, 0.92);
+}
+
+.app-btn-light {
+  border-radius: 999px;
+  background: var(--golden-orange);
+  border-color: var(--golden-orange);
+  color: var(--ink-black);
+  font-weight: 700;
+}
+
+.app-btn-outline {
+  border-radius: 999px;
+  border: 1px solid rgba(229, 218, 218, 0.35);
+  color: var(--dust-grey);
+  font-weight: 700;
+}
+
+.app-btn-outline:hover {
+  background: rgba(229, 218, 218, 0.12);
+  color: var(--dust-grey);
+}
+
+.count-badge {
+  background: rgba(132, 0, 50, 0.1);
+  color: var(--dark-amaranth);
+  border: 1px solid rgba(132, 0, 50, 0.16);
+}
+
+.app-alert {
+  background: rgba(0, 38, 66, 0.06);
+  border: 1px solid rgba(0, 38, 66, 0.1);
+  color: var(--deep-space-blue);
+  border-radius: 1rem;
+}
+
+.user-chip {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(0, 38, 66, 0.08);
+}
+
+.user-role {
+  color: var(--dark-amaranth);
+  font-weight: 700;
+}
+
+.session-preview {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.88rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(2, 4, 15, 0.04);
+}
+
+.profile-summary {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(0, 38, 66, 0.08);
+}

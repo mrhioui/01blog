@@ -1,0 +1,31 @@
+.admin-page {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.page-kicker {
+  color: var(--dark-amaranth);
+  letter-spacing: 0.08em;
+}
+
+.admin-stat {
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 38, 66, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(229, 218, 218, 0.7));
+}
+
+.stat-label {
+  margin-bottom: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink-strong);
+}

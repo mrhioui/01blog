@@ -1,0 +1,40 @@
+<section class="card border-0 shadow-sm admin-page">
+  <div class="card-body p-4 p-lg-5">
+    <div class="small text-uppercase fw-semibold page-kicker mb-2">Admin Dashboard</div>
+    <h1 class="h2 mb-3">Administration</h1>
+
+    <ng-container *ngIf="isAdmin(); else restrictedState">
+      <p class="mb-4 text-secondary">
+        You are signed in as an administrator. This page is ready for moderation, reporting, and user-management tools.
+      </p>
+
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="admin-stat">
+            <div class="stat-label">Access</div>
+            <div class="stat-value">Administrator</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="admin-stat">
+            <div class="stat-label">Signed in as</div>
+            <div class="stat-value">{{ currentUser()?.username }}</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="admin-stat">
+            <div class="stat-label">Contact</div>
+            <div class="stat-value">{{ currentUser()?.email }}</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #restrictedState>
+      <p class="mb-0 text-secondary">
+        This page is intended for admin accounts.
+        <a routerLink="/">Back to feed</a>
+      </p>
+    </ng-template>
+  </div>
+</section>

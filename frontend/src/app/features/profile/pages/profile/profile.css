@@ -1,0 +1,99 @@
+.profile-page {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.page-kicker {
+  color: var(--dark-amaranth);
+  letter-spacing: 0.08em;
+}
+
+.profile-card {
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0, 38, 66, 0.08);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.profile-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink-strong);
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink-strong);
+}
+
+.info-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.label {
+  margin-bottom: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink-strong);
+}
+
+.visibility-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(229, 149, 0, 0.15);
+  color: #8a5400;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.visibility-badge.is-private {
+  background: rgba(132, 0, 50, 0.12);
+  color: var(--dark-amaranth);
+}
+
+.privacy-toggle {
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(0, 38, 66, 0.08);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.privacy-help,
+.feed-copy {
+  color: var(--ink-soft);
+}
+
+.feed-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(0, 38, 66, 0.08);
+  color: var(--ink-strong);
+  font-weight: 700;
+}
+
+.empty-feed {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: rgba(229, 218, 218, 0.5);
+  color: var(--ink-soft);
+}
+
+.custom-input {
+  border-radius: 0.9rem;
+}

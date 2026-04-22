@@ -1,1 +1,62 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --font-body: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --font-display: "Trebuchet MS", "Segoe UI", sans-serif;
+  --deep-space-blue: #002642ff;
+  --dark-amaranth: #840032ff;
+  --golden-orange: #e59500ff;
+  --dust-grey: #e5dadaff;
+  --ink-black: #02040fff;
+  --ink-strong: #02040fff;
+  --ink-soft: #4f5565;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink-strong);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at top left, rgba(229, 149, 0, 0.16), transparent 18%),
+    radial-gradient(circle at bottom right, rgba(132, 0, 50, 0.12), transparent 20%),
+    linear-gradient(180deg, rgba(229, 218, 218, 0.92), rgba(229, 218, 218, 0.98));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  color: var(--ink-strong);
+}
+
+p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.card {
+  backdrop-filter: blur(10px);
+}

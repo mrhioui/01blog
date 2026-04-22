@@ -1,1 +1,154 @@
-<p>feed works!</p>
+<section class="row g-4">
+  <div class="col-12">
+    <div class="card border-0 shadow-lg hero-card">
+      <div class="card-body p-4 p-lg-5">
+        <div class="row g-4 align-items-center">
+          <div class="col-12 col-lg-7">
+            <span class="dashboard-eyebrow">Home Feed</span>
+            <h1 class="display-5 fw-bold mb-3">Follow progress, publish updates, and learn in public.</h1>
+            <p class="lead mb-0 text-light-emphasis">
+              01Blog helps students share discoveries, track milestones, and stay connected to the
+              people they follow across the platform.
+            </p>
+          </div>
+          <div class="col-12 col-lg-5">
+            <div class="card hero-side-card border-0">
+              <div class="card-body p-4">
+                <div class="small text-uppercase fw-semibold mb-2 hero-side-kicker">
+                  {{ currentUser ? 'Your profile' : 'Join the community' }}
+                </div>
+                <h2 class="h4 mb-2">
+                  {{ currentUser ? ('Welcome, ' + currentUser.username) : 'Start your 01Blog story' }}
+                </h2>
+                <p class="mb-3">
+                  {{
+                    currentUser
+                      ? 'Share a new milestone, manage your block, and keep following other learners.'
+                      : 'Create an account to publish posts, subscribe to classmates, and build your learning timeline.'
+                  }}
+                </p>
+
+                <div class="d-grid gap-2 d-sm-flex flex-wrap">
+                  <a *ngIf="!currentUser" class="btn app-btn-light" routerLink="/register">Create account</a>
+                  <a *ngIf="!currentUser" class="btn app-btn-outline" routerLink="/login">Sign in</a>
+                  <button *ngIf="currentUser" class="btn app-btn-light" type="button" (click)="loadPosts()">
+                    Refresh feed
+                  </button>
+                  <button *ngIf="currentUser" class="btn app-btn-outline" type="button" (click)="loadUsers()">
+                    Refresh community
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="card h-100 border-0 shadow-sm dashboard-card">
+      <div class="card-body">
+        <div class="small text-uppercase fw-semibold section-kicker mb-2">Community</div>
+        <h2 class="h4 mb-3" [class.text-success]="backendConnected" [class.text-danger]="!backendConnected">
+          {{ backendConnected ? 'Students are active' : 'Community updating' }}
+        </h2>
+        <p *ngIf="userErrorMessage; else usersSummary" class="mb-0 text-secondary">{{ userErrorMessage }}</p>
+        <ng-template #usersSummary>
+          <p class="mb-0 text-secondary">
+            {{ loadingUsers ? 'Loading community members...' : (users.length + ' students are currently visible on the platform.') }}
+          </p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="card h-100 border-0 shadow-sm dashboard-card">
+      <div class="card-body">
+        <div class="small text-uppercase fw-semibold section-kicker mb-2">Your space</div>
+        <h2 class="h4 mb-3">{{ currentUser ? 'Profile ready' : 'Guest mode' }}</h2>
+        <p class="mb-0 text-secondary">
+          {{
+            currentUser
+              ? 'Your session is active. Next steps are creating posts, curating your block, and engaging with the community.'
+              : 'Sign in to create posts, manage your block, and interact with other students.'
+          }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-12 col-xl-4">
+    <div class="card h-100 border-0 shadow-sm dashboard-card">
+      <div class="card-body">
+        <div class="small text-uppercase fw-semibold section-kicker mb-2">Publishing</div>
+        <h2 class="h4 mb-3">{{ postErrorMessage ? 'Preview mode' : 'Fresh updates' }}</h2>
+        <p class="mb-0 text-secondary">
+          {{ postErrorMessage || 'New stories and learning notes are available in the feed.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-8">
+    <div class="card border-0 shadow-sm dashboard-card">
+      <div class="card-body p-4">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
+          <div>
+            <div class="small text-uppercase fw-semibold section-kicker mb-1">Feed</div>
+            <h2 class="h3 mb-0">Latest learning posts</h2>
+          </div>
+          <span class="badge rounded-pill count-badge">{{ posts.length }} items</span>
+        </div>
+
+        <div *ngIf="loadingPosts" class="alert app-alert mb-0">Loading posts...</div>
+
+        <div *ngIf="!loadingPosts && posts.length" class="d-grid gap-3">
+          <app-post-card *ngFor="let post of posts" [post]="post"></app-post-card>
+        </div>
+
+        <div *ngIf="!loadingPosts && !posts.length" class="alert app-alert mb-0">
+          No posts are available yet. Once members start publishing, their updates will appear here.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="col-12 col-xl-4">
+    <div class="d-grid gap-4">
+      <div class="card border-0 shadow-sm dashboard-card">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <div class="small text-uppercase fw-semibold section-kicker mb-1">Members</div>
+              <h2 class="h4 mb-0">Student community</h2>
+            </div>
+            <span class="badge rounded-pill count-badge">{{ users.length }}</span>
+          </div>
+
+          <div *ngIf="loadingUsers" class="alert app-alert mb-0">Loading students...</div>
+
+          <div *ngIf="!loadingUsers && users.length" class="d-grid gap-3">
+            <article class="user-chip" *ngFor="let user of users">
+              <div class="fw-semibold">{{ user.username }}</div>
+              <div class="small text-secondary">{{ user.email }}</div>
+              <div class="small user-role mt-2">{{ user.role }}</div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm dashboard-card" *ngIf="currentUser">
+        <div class="card-body p-4">
+          <div class="small text-uppercase fw-semibold section-kicker mb-1">Profile summary</div>
+          <h2 class="h4 mb-3">{{ currentUser.username }}</h2>
+          <div class="profile-summary">
+            <p class="mb-2"><strong>Email:</strong> {{ currentUser.email }}</p>
+            <p class="mb-0"><strong>Role:</strong> {{ currentUser.role }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</section>

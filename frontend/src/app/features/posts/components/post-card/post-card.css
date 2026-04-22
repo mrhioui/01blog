@@ -1,0 +1,13 @@
+.post-card {
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 14px 32px rgba(2, 4, 15, 0.08);
+}
+
+.post-time {
+  color: var(--dark-amaranth);
+}
+
+.post-content {
+  color: var(--ink-black);
+}

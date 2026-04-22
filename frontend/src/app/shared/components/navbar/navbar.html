@@ -1,1 +1,87 @@
-<p>navbar works!</p>
+<nav class="navbar navbar-expand-lg app-navbar px-3 px-lg-4 py-3">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-3 me-0" routerLink="/">
+      <span class="brand__mark">01</span>
+      <span class="d-flex flex-column">
+        <strong class="brand__title">01Blog</strong>
+      </span>
+    </a>
+
+    <button
+      class="navbar-toggler app-navbar-toggler"
+      type="button"
+      aria-controls="mainNavbarMenu"
+      [attr.aria-expanded]="!isMenuCollapsed"
+      aria-label="Toggle navigation"
+      (click)="isMenuCollapsed = !isMenuCollapsed"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse mt-3 mt-lg-0" id="mainNavbarMenu" [ngbCollapse]="isMenuCollapsed">
+      <div class="navbar-nav ms-lg-auto align-items-lg-center gap-2">
+        <a
+          class="btn app-nav-btn"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="isMenuCollapsed = true"
+        >
+          Feed
+        </a>
+
+        <a
+          *ngIf="!isLoggedIn()"
+          class="btn app-nav-btn"
+          routerLink="/login"
+          routerLinkActive="active"
+          (click)="isMenuCollapsed = true"
+        >
+          Login
+        </a>
+
+        <a
+          *ngIf="!isLoggedIn()"
+          class="btn app-nav-btn"
+          routerLink="/register"
+          routerLinkActive="active"
+          (click)="isMenuCollapsed = true"
+        >
+          Register
+        </a>
+
+        <div *ngIf="isLoggedIn()" ngbDropdown class="nav-item dropdown profile-dropdown ms-lg-2">
+          <button
+            class="btn app-nav-btn profile-toggle dropdown-toggle"
+            type="button"
+            id="profileMenu"
+            ngbDropdownToggle
+          >
+            <span class="profile-name">{{ currentUser()?.username }}</span>
+          </button>
+
+          <div ngbDropdownMenu aria-labelledby="profileMenu" class="dropdown-menu dropdown-menu-end profile-menu">
+            <a
+              *ngIf="isAdmin()"
+              ngbDropdownItem
+              routerLink="/admin/dashboard"
+              (click)="isMenuCollapsed = true"
+            >
+              <i class="bi bi-speedometer2 me-2"></i>
+              Admin dashboard
+            </a>
+            <a ngbDropdownItem routerLink="/profile" (click)="isMenuCollapsed = true">
+              <i class="bi bi-person-circle me-2"></i>
+              Profile
+            </a>
+            <div class="dropdown-divider"></div>
+            <button ngbDropdownItem type="button" class="logout-item" (click)="logout()">
+              <i class="bi bi-box-arrow-right me-2"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

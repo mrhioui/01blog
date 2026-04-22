@@ -51,26 +51,26 @@ Implement backend repositories and frontend service layer for API calls.
 
 ## ✅ Backend Tasks
 - [x] Create UserRepository
-- [ ] Create PostRepository
-- [ ] Create CommentRepository
-- [ ] Create LikeRepository
-- [ ] Create SubscriptionRepository
-- [ ] Create ReportRepository
+- [x] Create PostRepository
+- [x] Create CommentRepository
+- [x] Create LikeRepository
+- [x] Create SubscriptionRepository
+- [x] Create ReportRepository
 
 ## ✅ Frontend Tasks
 - [x] Create API service for User (auth)
-- [ ] Create API service for Post
-- [ ] Create API service for Comment
-- [ ] Create API service for Like
-- [ ] Create API service for Subscription
-- [ ] Create API service for Report
-- [ ] Test fetching data from backend
+- [x] Create API service for Post
+- [x] Create API service for Comment
+- [x] Create API service for Like
+- [x] Create API service for Subscription
+- [x] Create API service for Report
+- [x] Test fetching data from backend
 
 ## 🎯 Goal
 Repositories and frontend services are connected and functional.
 
 Phase 4 - Service Layer + Frontend State/Store #5
-## 📌 Description
+## 📌 Description   
 Implement business logic in backend services and manage frontend state.
 
 ## ✅ Backend Tasks
