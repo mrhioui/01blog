@@ -12,5 +12,10 @@ import lombok.NoArgsConstructor;
 public class UpdateProfileDTO {
     private String username;
     private String email;
+    private String profileImageUrl;
+    private String bannerImageUrl;
+    private String headline;
+    private String location;
+    private String about;
     private Boolean profilePublic;
 }

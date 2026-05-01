@@ -10,6 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -33,12 +36,19 @@ public class UserController {
         return ResponseEntity.ok(userService.getCurrentUser(authentication.getName()));
     }
 
-    @PutMapping("/me")
+    @PutMapping(value = "/me")
     public ResponseEntity<UserDTO> updateCurrentUser(
             Authentication authentication,
-            @RequestBody UpdateProfileDTO updateProfileDTO
+            @ModelAttribute UpdateProfileDTO updateDTO,
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestParam(value = "bannerImage", required = false) MultipartFile bannerImage
     ) {
-        return ResponseEntity.ok(userService.updateCurrentUser(authentication.getName(), updateProfileDTO));
+        return ResponseEntity.ok(userService.updateCurrentUser(
+                authentication.getName(),
+                updateDTO,
+                profileImage,
+                bannerImage
+        ));
     }
 
     @GetMapping("/me/posts")

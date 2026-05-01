@@ -35,8 +35,29 @@ export class Auth {
     return this.api.get<User>(`/users/${id}`);
   }
 
+  getUserProfile(id: number): Observable<User> {
+    return this.api.get<User>(`/users/${id}/profile`);
+  }
+
   updateCurrentUser(payload: UpdateProfilePayload): Observable<User> {
-    return this.api.put<User, UpdateProfilePayload>('/users/me', payload);
+    const formData = new FormData();
+    formData.append('username', payload.username);
+    formData.append('email', payload.email);
+    formData.append('profilePublic', String(payload.profilePublic));
+    
+    formData.append('headline', payload.headline ?? '');
+    formData.append('location', payload.location ?? '');
+    formData.append('about', payload.about ?? '');
+
+    if (payload.profileImageFile) {
+      formData.append('profileImage', payload.profileImageFile);
+    }
+
+    if (payload.bannerImageFile) {
+      formData.append('bannerImage', payload.bannerImageFile);
+    }
+
+    return this.api.put<User, FormData>('/users/me', formData);
   }
 
   saveCurrentUser(user: User): void {
@@ -83,12 +104,18 @@ export interface RegisterPayload {
   username: string;
   email: string;
   password: string;
+  profileImageUrl?: string;
 }
 
 export interface UpdateProfilePayload {
   username: string;
   email: string;
   profilePublic: boolean;
+  headline?: string | null;
+  location?: string | null;
+  about?: string | null;
+  profileImageFile?: File | null;
+  bannerImageFile?: File | null;
 }
 
 export interface AuthResponse {

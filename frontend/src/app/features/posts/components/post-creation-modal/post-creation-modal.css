@@ -1,0 +1,57 @@
+.text-deep-space {
+  color: var(--deep-space-blue);
+}
+
+.btn-dark-amaranth {
+  background-color: var(--dark-amaranth);
+  color: white;
+  border: none;
+}
+
+.btn-dark-amaranth:hover {
+  background-color: #6a0028;
+  color: white;
+}
+
+.custom-input {
+  background-color: #f8f9fa;
+  border: 1px solid var(--dust-grey);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.custom-input:focus {
+  background-color: white;
+  border-color: var(--golden-orange);
+  box-shadow: 0 0 0 0.25rem rgba(229, 149, 0, 0.15);
+}
+
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.upload-placeholder {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-width: 2px !important;
+}
+
+.upload-placeholder:hover {
+  background-color: #f1f3f5 !important;
+  border-color: var(--dark-amaranth) !important;
+}
+
+.upload-placeholder i {
+  transition: transform 0.2s ease-in-out;
+}
+
+.upload-placeholder:hover i {
+  transform: scale(1.1);
+  color: var(--dark-amaranth) !important;
+}
+
+.border-dashed {
+  border-style: dashed !important;
+}

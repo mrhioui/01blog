@@ -1,110 +1,244 @@
-<section class="card border-0 shadow-sm profile-page">
-  <div class="card-body p-4 p-lg-5">
-    <div class="small text-uppercase fw-semibold page-kicker mb-2">Profile</div>
-    <h1 class="h2 mb-4">Your account</h1>
+<div class="profile-page-wrapper container-fluid px-0">
+  <!-- Check if we have a user to show or if we are still loading -->
+  <ng-container *ngIf="profileUser() || loadingProfile(); else errorOrGuestState">
+    
+    <!-- Top Alert for Success -->
+    <div *ngIf="successMessage()" class="alert alert-success border-0 shadow-sm rounded-0 text-center sticky-top" style="z-index: 1050;">
+      <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage() }}
+    </div>
 
-    <ng-container *ngIf="!loadingProfile && currentUser; else guestState">
-      <div class="row g-4">
-        <div class="col-12 col-xl-5">
-          <div class="profile-card h-100">
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
-              <div>
-                <div class="label">Signed in as</div>
-                <div class="profile-name">{{ currentUser.username }}</div>
-              </div>
-              <span class="visibility-badge" [class.is-private]="!currentUser.profilePublic">
-                {{ currentUser.profilePublic ? 'Public profile' : 'Private profile' }}
-              </span>
-            </div>
-
-            <div class="info-grid">
-              <div>
-                <div class="label">Email</div>
-                <div class="value">{{ currentUser.email }}</div>
-              </div>
-              <div>
-                <div class="label">Role</div>
-                <div class="value">{{ currentUser.role }}</div>
-              </div>
-            </div>
+    <!-- Header Section (Banner + Avatar) -->
+    <div class="profile-header position-relative mb-5">
+      <!-- Banner Image -->
+      <div class="banner-container position-relative" [class.cursor-pointer]="isOwnProfile()" (click)="isOwnProfile() && bannerInput.click()">
+        <img *ngIf="bannerImageSrc() as bannerSrc" [src]="bannerSrc" class="banner-img" (error)="onBannerImageError()" alt="Profile Banner">
+        <div *ngIf="!bannerImageSrc()" class="banner-placeholder"></div>
+        
+        <div *ngIf="isOwnProfile()" class="banner-overlay d-flex align-items-center justify-content-center">
+          <div class="text-white text-center">
+            <i class="bi bi-camera fs-1"></i>
+            <p class="fw-bold">Change Banner</p>
           </div>
         </div>
 
-        <div class="col-12 col-xl-7">
-          <div class="profile-card h-100">
-            <div class="section-title mb-3">Edit profile</div>
-
-            <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
-              <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold">Username</label>
-                <input class="form-control custom-input" type="text" formControlName="username" />
-              </div>
-
-              <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold">Email</label>
-                <input class="form-control custom-input" type="email" formControlName="email" />
-              </div>
-
-              <div class="col-12">
-                <div class="form-check privacy-toggle">
-                  <input class="form-check-input" id="profilePublic" type="checkbox" formControlName="profilePublic" />
-                  <label class="form-check-label" for="profilePublic">
-                    Make my profile public
-                  </label>
-                </div>
-                <p class="privacy-help mt-2 mb-0">
-                  When disabled, only you and admins can access your profile details and personal post list.
-                </p>
-              </div>
-
-              <div *ngIf="profileErrorMessage" class="col-12">
-                <div class="alert alert-danger border-0 rounded-4 mb-0">{{ profileErrorMessage }}</div>
-              </div>
-
-              <div *ngIf="successMessage" class="col-12">
-                <div class="alert alert-success border-0 rounded-4 mb-0">{{ successMessage }}</div>
-              </div>
-
-              <div class="col-12">
-                <button class="btn app-btn-primary" type="submit" [disabled]="savingProfile">
-                  {{ savingProfile ? 'Saving...' : 'Save changes' }}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="profile-card">
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
-              <div>
-                <div class="section-title">Your feed</div>
-                <p class="feed-copy mb-0">Posts published by your account.</p>
-              </div>
-              <span class="feed-count">{{ posts.length }} posts</span>
-            </div>
-
-            <div *ngIf="loadingPosts" class="alert app-alert mb-0">Loading your posts...</div>
-            <div *ngIf="!loadingPosts && postErrorMessage" class="alert alert-danger border-0 rounded-4 mb-0">
-              {{ postErrorMessage }}
-            </div>
-            <div *ngIf="!loadingPosts && !postErrorMessage && posts.length" class="d-grid gap-3">
-              <app-post-card *ngFor="let post of posts" [post]="post"></app-post-card>
-            </div>
-            <div *ngIf="!loadingPosts && !postErrorMessage && !posts.length" class="empty-feed">
-              You have not published any posts yet.
+        <!-- Banner Confirmation -->
+        <div *ngIf="confirmingBannerImage()" class="image-confirm-overlay" (click)="$event.stopPropagation()">
+          <div class="confirm-box p-3 bg-white rounded shadow text-center">
+            <p class="mb-3 fw-bold">Update banner image?</p>
+            <div class="d-flex gap-2 justify-content-center">
+              <button class="btn btn-sm btn-success px-3" (click)="confirmBannerImageUpdate()" [disabled]="savingImage()">
+                <span *ngIf="savingImage()" class="spinner-border spinner-border-sm me-1"></span>Confirm
+              </button>
+              <button class="btn btn-sm btn-light px-3" (click)="cancelBannerImageUpdate()" [disabled]="savingImage()">Cancel</button>
             </div>
           </div>
         </div>
       </div>
-    </ng-container>
+      
+      <input #bannerInput type="file" hidden accept="image/*" (change)="onBannerImageSelected($event)">
+      
+      <!-- Avatar Section -->
+      <div class="avatar-container px-4">
+        <div class="avatar-wrapper shadow position-relative" [class.cursor-pointer]="isOwnProfile()" (click)="isOwnProfile() && avatarInput.click()">
+          <img *ngIf="profileImageSrc() as avatarSrc" [src]="avatarSrc" class="avatar-img" (error)="onProfileImageError()" alt="Profile Avatar">
+          <div *ngIf="!profileImageSrc()" class="avatar-initial">{{ profileInitial() }}</div>
+          
+          <div *ngIf="isOwnProfile()" class="avatar-overlay d-flex align-items-center justify-content-center rounded-circle">
+            <i class="bi bi-camera text-white fs-3"></i>
+          </div>
 
-    <ng-template #guestState>
-      <div *ngIf="loadingProfile" class="alert app-alert mb-0">Loading profile...</div>
-      <p *ngIf="!loadingProfile" class="mb-0 text-secondary">
-        You need to sign in before viewing a profile page.
-        <a routerLink="/login">Go to login</a>
-      </p>
-    </ng-template>
-  </div>
-</section>
+          <!-- Avatar Confirmation -->
+          <div *ngIf="confirmingProfileImage()" class="avatar-confirm-overlay" (click)="$event.stopPropagation()">
+            <div class="confirm-box p-2 bg-white rounded shadow text-center">
+              <div class="d-flex gap-1">
+                <button class="btn btn-xs btn-success p-1" (click)="confirmProfileImageUpdate()" [disabled]="savingImage()" title="Confirm">
+                  <i class="bi bi-check-lg" *ngIf="!savingImage()"></i>
+                  <span *ngIf="savingImage()" class="spinner-border spinner-border-sm"></span>
+                </button>
+                <button class="btn btn-xs btn-danger p-1" (click)="cancelProfileImageUpdate()" [disabled]="savingImage()" title="Cancel">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input #avatarInput type="file" hidden accept="image/*" (change)="onProfileImageSelected($event)">
+      </div>
+    </div>
+
+    <div class="container-fluid px-4">
+      <!-- Loading State -->
+      <div *ngIf="loadingProfile() && !profileUser()" class="text-center py-5">
+        <div class="spinner-border text-golden-orange" role="status"></div>
+        <p class="mt-2 text-muted">Loading profile...</p>
+      </div>
+
+      <!-- Main Content -->
+      <div class="row g-4" *ngIf="profileUser() as user">
+        <!-- Left Column: User Info & Edit Form -->
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h1 class="h2 fw-bold mb-0 text-deep-space">{{ user.username }}</h1>
+                  <p class="fs-5 text-ink-soft mb-2" *ngIf="user.headline">{{ user.headline }}</p>
+                  <div class="d-flex gap-3 text-muted small">
+                    <span *ngIf="user.location"><i class="bi bi-geo-alt me-1"></i>{{ user.location }}</span>
+                    <span><i class="bi bi-envelope me-1"></i>{{ user.email }}</span>
+                  </div>
+                </div>
+                <button *ngIf="isOwnProfile()" class="btn btn-golden-orange rounded-pill px-4" (click)="toggleEditForm()">
+                  <i class="bi" [class.bi-pencil]="!showEditForm()" [class.bi-x-lg]="showEditForm()"></i>
+                  <span class="ms-2">{{ showEditForm() ? 'Cancel' : 'Edit Profile' }}</span>
+                </button>
+              </div>
+
+              <!-- Edit Form -->
+              <div *ngIf="showEditForm() && isOwnProfile()" class="mt-4 border-top pt-4">
+                <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-deep-space small text-uppercase">Username</label>
+                    <input class="form-control custom-input" type="text" formControlName="username" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-deep-space small text-uppercase">Email</label>
+                    <input class="form-control custom-input" type="email" formControlName="email" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-bold text-deep-space small text-uppercase">Headline</label>
+                    <input class="form-control custom-input" type="text" formControlName="headline" placeholder="Professional headline" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-deep-space small text-uppercase">Location</label>
+                    <input class="form-control custom-input" type="text" formControlName="location" placeholder="City, Country" />
+                  </div>
+                  <div class="col-md-6 d-flex align-items-end">
+                    <div class="form-check form-switch mb-2">
+                      <input class="form-check-input" type="checkbox" id="profilePublic" formControlName="profilePublic">
+                      <label class="form-check-label fw-bold small text-uppercase text-deep-space" for="profilePublic">Public Profile</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-bold text-deep-space small text-uppercase">About</label>
+                    <textarea class="form-control custom-input" rows="5" formControlName="about" placeholder="Tell us about yourself..."></textarea>
+                  </div>
+                  
+                  <!-- Saving Error Message -->
+                  <div *ngIf="savingErrorMessage()" class="col-12">
+                    <div class="alert alert-danger border-0 rounded-3 mb-0 small">
+                      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ savingErrorMessage() }}
+                    </div>
+                  </div>
+
+                  <div class="col-12 text-end">
+                    <button class="btn btn-dark-amaranth rounded-pill px-5" type="submit" [disabled]="savingProfile()">
+                      <span *ngIf="savingProfile()" class="spinner-border spinner-border-sm me-2"></span>
+                      Save All Changes
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- View mode About -->
+              <div *ngIf="!showEditForm() && user.about" class="mt-4 border-top pt-4">
+                <h2 class="h5 fw-bold mb-3 text-deep-space">About</h2>
+                <p class="text-ink-soft preserve-whitespace">{{ user.about }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Section -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+              <h2 class="h5 fw-bold mb-0 text-deep-space">Recent Activity</h2>
+              <span class="badge bg-light text-deep-space border">{{ user.postCount || 0 }} Posts</span>
+            </div>
+            <div class="card-body p-4">
+              <div *ngIf="loadingPosts()" class="text-center py-5">
+                <div class="spinner-border text-golden-orange" role="status"></div>
+              </div>
+              
+              <div *ngIf="!loadingPosts() && posts().length" class="d-grid gap-4">
+                <app-post-card *ngFor="let post of posts()" [post]="post"></app-post-card>
+              </div>
+
+              <div *ngIf="!loadingPosts() && !posts().length" class="text-center py-5 bg-light rounded-3">
+                <i class="bi bi-journal-text fs-1 text-dust-grey"></i>
+                <p class="text-muted mt-2">No posts yet.</p>
+                <a *ngIf="isOwnProfile()" routerLink="/feed" class="btn btn-outline-deep-space rounded-pill mt-2">Go to Feed</a>
+              </div>
+              <div *ngIf="postErrorMessage()" class="alert alert-danger small mt-3">
+                {{ postErrorMessage() }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Stats & Side info -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm mb-4 bg-deep-space text-white">
+            <div class="card-body p-4">
+              <h2 class="h5 fw-bold mb-4">Insights</h2>
+              <div class="d-flex justify-content-between mb-3 pb-3 border-bottom border-secondary">
+                <span>Followers</span>
+                <span class="fw-bold text-golden-orange">{{ user.followerCount || 0 }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3 pb-3 border-bottom border-secondary">
+                <span>Total Likes</span>
+                <span class="fw-bold text-golden-orange">{{ user.likeCount || 0 }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Total Comments</span>
+                <span class="fw-bold text-golden-orange">{{ user.commentCount || 0 }}</span>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <!-- Loading Error Message when profileUser is still null -->
+      <div *ngIf="!loadingProfile() && !profileUser() && loadingErrorMessage()" class="container py-5 text-center">
+        <div class="alert alert-danger shadow-sm border-0">
+          <i class="bi bi-exclamation-octagon-fill fs-1 d-block mb-3"></i>
+          <h4 class="fw-bold">Oops!</h4>
+          <p>{{ loadingErrorMessage() }}</p>
+          <button class="btn btn-outline-danger rounded-pill px-4 mt-2" (click)="ngOnInit()">Try Again</button>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-template #errorOrGuestState>
+    <!-- If not loading and no user, show guest or absolute error -->
+    <div class="container py-5 text-center" *ngIf="!loadingProfile()">
+      <div class="card border-0 shadow p-5">
+        <div *ngIf="loadingErrorMessage(); else guestInfo">
+          <i class="bi bi-exclamation-octagon-fill fs-1 text-danger mb-4"></i>
+          <h2 class="fw-bold">Error</h2>
+          <p class="text-muted mb-4">{{ loadingErrorMessage() }}</p>
+          <button class="btn btn-deep-space px-5 rounded-pill" (click)="ngOnInit()">Try Again</button>
+        </div>
+        
+        <ng-template #guestInfo>
+          <i class="bi bi-shield-lock fs-1 text-dark-amaranth mb-4"></i>
+          <h2 class="fw-bold">Private Area</h2>
+          <p class="text-muted mb-4">Please log in to access profiles.</p>
+          <div class="d-flex gap-3 justify-content-center">
+            <a routerLink="/login" class="btn btn-deep-space px-5 rounded-pill">Login</a>
+            <a routerLink="/register" class="btn btn-outline-deep-space px-5 rounded-pill">Sign Up</a>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    
+    <!-- If still loading and no user yet -->
+    <div class="container py-5 text-center" *ngIf="loadingProfile()">
+      <div class="spinner-border text-golden-orange" role="status"></div>
+      <p class="mt-2 text-muted">Loading profile...</p>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,61 @@
+<div class="modal-header border-0 pb-0">
+  <h5 class="modal-title fw-bold text-deep-space">Create a new post</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()" [disabled]="loading()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label for="postContent" class="form-label small text-uppercase fw-bold text-muted">What's on your mind?</label>
+      <textarea
+        id="postContent"
+        class="form-control custom-input"
+        rows="4"
+        formControlName="content"
+        placeholder="Share your learning progress or updates..."
+        [class.is-invalid]="form.get('content')?.touched && form.get('content')?.invalid"
+      ></textarea>
+      <div class="invalid-feedback">Content is required.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label small text-uppercase fw-bold text-muted">Post Image (optional)</label>
+      
+      <div *ngIf="previewUrl()" class="position-relative mb-2">
+        <img [src]="previewUrl()" class="img-fluid rounded-3 border" alt="Preview">
+        <button 
+          type="button" 
+          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow-sm"
+          (click)="removeImage()"
+          [disabled]="loading()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div *ngIf="!previewUrl()" class="upload-placeholder d-flex flex-column align-items-center justify-content-center border border-dashed rounded-3 p-4 bg-light" (click)="fileInput.click()">
+        <i class="bi bi-image text-muted fs-2"></i>
+        <span class="text-muted small mt-2">Click to upload an image</span>
+      </div>
+
+      <input
+        #fileInput
+        type="file"
+        class="d-none"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+      />
+    </div>
+
+    <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-3 py-2 small">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage() }}
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button type="button" class="btn btn-light rounded-pill px-4" (click)="dismiss()" [disabled]="loading()">Cancel</button>
+      <button type="submit" class="btn btn-dark-amaranth rounded-pill px-4" [disabled]="loading()">
+        <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Publish Post
+      </button>
+    </div>
+  </form>
+</div>

@@ -11,6 +11,7 @@ export const routes: Routes = [
   { path: 'admin/dashboard', component: AdminDashboardPage, canActivate: [adminGuard] },
   { path: 'login', component: Login },
   { path: 'profile', component: ProfilePage, canActivate: [authGuard] },
+  { path: 'profile/:id', component: ProfilePage, canActivate: [authGuard] },
   { path: 'register', component: Register },
   { path: '**', redirectTo: '' },
 ];

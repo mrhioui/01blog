@@ -40,11 +40,11 @@
                   <input class="form-control form-control-lg custom-input" type="password" formControlName="password" placeholder="••••••••" />
                 </div>
 
-                <div *ngIf="errorMessage" class="alert alert-danger border-0 rounded-4">{{ errorMessage }}</div>
-                <div *ngIf="successMessage" class="alert alert-success border-0 rounded-4">{{ successMessage }}</div>
+                <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-4">{{ errorMessage() }}</div>
+                <div *ngIf="successMessage()" class="alert alert-success border-0 rounded-4">{{ successMessage() }}</div>
 
-                <button class="btn btn-lg app-btn-primary w-100 mt-2" type="submit" [disabled]="submitting">
-                  {{ submitting ? 'Signing in...' : 'Sign In' }}
+                <button class="btn btn-lg app-btn-primary w-100 mt-2" type="submit" [disabled]="submitting()">
+                  {{ submitting() ? 'Signing in...' : 'Sign In' }}
                 </button>
               </form>
             </div>

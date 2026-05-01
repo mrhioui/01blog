@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { Auth } from '../../services/auth';
 import { User } from '../../../../core/models/user.model';
 
@@ -24,10 +25,10 @@ export class Register implements OnInit {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  submitting = false;
-  errorMessage = '';
-  successMessage = '';
-  createdUser: User | null = null;
+  submitting = signal(false);
+  errorMessage = signal('');
+  successMessage = signal('');
+  createdUser = signal<User | null>(null);
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
@@ -36,25 +37,34 @@ export class Register implements OnInit {
   }
 
   submit(): void {
-    if (this.form.invalid || this.submitting) {
+    if (this.form.invalid || this.submitting()) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.submitting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    const credentials = this.form.getRawValue();
+    this.submitting.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
-    this.authService.register(this.form.getRawValue()).subscribe({
-      next: (user) => {
-        this.createdUser = user;
-        this.successMessage = `User ${user.username} created successfully.`;
-        this.submitting = false;
-        void this.router.navigateByUrl('/login');
+    this.authService.register(credentials).pipe(
+      switchMap((user) => {
+        this.createdUser.set(user);
+        return this.authService.login({
+          username: credentials.username,
+          password: credentials.password,
+        });
+      }),
+    ).subscribe({
+      next: (response) => {
+        this.successMessage.set(`Account created. Signed in as ${response.user.username}.`);
+        this.authService.saveSession(response);
+        this.submitting.set(false);
+        void this.router.navigateByUrl('/');
       },
       error: (error: HttpErrorResponse) => {
-        this.errorMessage = error.error?.message ?? 'Registration failed. Check backend logs and payload.';
-        this.submitting = false;
+        this.errorMessage.set(error.error?.message ?? 'Registration failed. Check backend logs and payload.');
+        this.submitting.set(false);
       },
     });
   }

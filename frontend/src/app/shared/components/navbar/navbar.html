@@ -11,21 +11,21 @@
       class="navbar-toggler app-navbar-toggler"
       type="button"
       aria-controls="mainNavbarMenu"
-      [attr.aria-expanded]="!isMenuCollapsed"
+      [attr.aria-expanded]="!isMenuCollapsed()"
       aria-label="Toggle navigation"
-      (click)="isMenuCollapsed = !isMenuCollapsed"
+      (click)="isMenuCollapsed.set(!isMenuCollapsed())"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse mt-3 mt-lg-0" id="mainNavbarMenu" [ngbCollapse]="isMenuCollapsed">
+    <div class="collapse navbar-collapse mt-3 mt-lg-0" id="mainNavbarMenu" [ngbCollapse]="isMenuCollapsed()">
       <div class="navbar-nav ms-lg-auto align-items-lg-center gap-2">
         <a
           class="btn app-nav-btn"
           routerLink="/"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
-          (click)="isMenuCollapsed = true"
+          (click)="isMenuCollapsed.set(true)"
         >
           Feed
         </a>
@@ -35,7 +35,7 @@
           class="btn app-nav-btn"
           routerLink="/login"
           routerLinkActive="active"
-          (click)="isMenuCollapsed = true"
+          (click)="isMenuCollapsed.set(true)"
         >
           Login
         </a>
@@ -45,9 +45,18 @@
           class="btn app-nav-btn"
           routerLink="/register"
           routerLinkActive="active"
-          (click)="isMenuCollapsed = true"
+          (click)="isMenuCollapsed.set(true)"
         >
           Register
+        </a>
+
+        <a
+          *ngIf="isLoggedIn()"
+          class="btn app-nav-btn mx-2 px-5"
+          (click)="openCreatePostModal()"
+        >
+          <i class="bi bi-plus-lg me-2"></i>
+          Create Post
         </a>
 
         <div *ngIf="isLoggedIn()" ngbDropdown class="nav-item dropdown profile-dropdown ms-lg-2">
@@ -65,12 +74,12 @@
               *ngIf="isAdmin()"
               ngbDropdownItem
               routerLink="/admin/dashboard"
-              (click)="isMenuCollapsed = true"
+              (click)="isMenuCollapsed.set(true)"
             >
               <i class="bi bi-speedometer2 me-2"></i>
               Admin dashboard
             </a>
-            <a ngbDropdownItem routerLink="/profile" (click)="isMenuCollapsed = true">
+            <a ngbDropdownItem routerLink="/profile" (click)="isMenuCollapsed.set(true)">
               <i class="bi bi-person-circle me-2"></i>
               Profile
             </a>

@@ -13,6 +13,10 @@ export class Posts {
     return this.api.get<Post[]>('/posts');
   }
 
+  getPaginated(page: number, size: number): Observable<PaginatedResponse<Post>> {
+    return this.api.get<PaginatedResponse<Post>>(`/posts/paginated?page=${page}&size=${size}`);
+  }
+
   getById(id: number): Observable<Post> {
     return this.api.get<Post>(`/posts/${id}`);
   }
@@ -21,8 +25,20 @@ export class Posts {
     return this.api.get<Post[]>('/users/me/posts');
   }
 
-  create(payload: CreatePostPayload): Observable<Post> {
-    return this.api.post<Post, CreatePostPayload>('/posts', payload);
+  getByUserId(userId: number): Observable<Post[]> {
+    return this.api.get<Post[]>(`/users/${userId}/posts`);
+  }
+
+  create(payload: CreatePostPayload, image?: File): Observable<Post> {
+    const formData = new FormData();
+    formData.append('content', payload.content);
+    if (payload.mediaUrl) {
+      formData.append('mediaUrl', payload.mediaUrl);
+    }
+    if (image) {
+      formData.append('image', image);
+    }
+    return this.api.post<Post, FormData>('/posts', formData);
   }
 
   delete(id: number): Observable<void> {
@@ -33,4 +49,16 @@ export class Posts {
 export interface CreatePostPayload {
   content: string;
   mediaUrl?: string;
+}
+
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
 }

@@ -1,20 +1,20 @@
 <article class="card post-card border-0">
   <div class="card-body">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2 mb-3">
-      <div>
-        <h2 class="h5 mb-1">{{ post.author.username }}</h2>
-        <p class="text-secondary mb-0">{{ post.author.email }}</p>
+      <div class="cursor-pointer" [routerLink]="['/profile', post().author.id]">
+        <h2 class="h5 mb-1 text-deep-space hover-underline">{{ post().author.username }}</h2>
+        <p class="text-secondary mb-0 small">{{ post().author.email }}</p>
       </div>
-      <time class="small post-time">{{ post.timestamp | date: 'medium' }}</time>
+      <time class="small post-time text-muted">{{ post().timestamp | date: 'medium' }}</time>
     </div>
 
-    <p class="mb-0 post-content">{{ post.content }}</p>
+    <p class="mb-0 post-content">{{ post().content }}</p>
 
     <img
-      *ngIf="post.mediaUrl"
+      *ngIf="resolveImageUrl(post().mediaUrl) as mediaSrc"
       class="img-fluid rounded-4 mt-3"
-      [src]="post.mediaUrl"
-      [alt]="post.author.username + ' post media'"
+      [src]="mediaSrc"
+      [alt]="post().author.username + ' post media'"
     />
   </div>
 </article>

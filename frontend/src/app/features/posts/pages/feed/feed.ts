@@ -1,6 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { Posts } from '../../services/posts';
 import { Post } from '../../../../core/models/post.model';
 import { MOCK_POSTS } from '../../../../core/models/mock-data';
@@ -11,7 +10,7 @@ import { User } from '../../../../core/models/user.model';
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, RouterLink, PostCard],
+  imports: [CommonModule, PostCard],
   templateUrl: './feed.html',
   styleUrl: './feed.css',
 })
@@ -19,75 +18,93 @@ export class Feed implements OnInit {
   private readonly postsService = inject(Posts);
   private readonly authService = inject(Auth);
 
-  posts: Post[] = [];
-  users: User[] = [];
-  loadingPosts = true;
-  loadingUsers = true;
-  postErrorMessage = '';
-  userErrorMessage = '';
-  backendConnected = false;
-  readonly savedToken = localStorage.getItem('blog_token');
-  readonly savedUser = localStorage.getItem('blog_user');
-  readonly currentUser = this.parseCurrentUser();
+  posts = signal<Post[]>([]);
+  users = signal<User[]>([]);
+  loadingPosts = signal(true);
+  loadingMore = signal(false);
+  loadingUsers = signal(true);
+  postErrorMessage = signal('');
+  userErrorMessage = signal('');
+  backendConnected = signal(false);
+
+  readonly currentUser = computed(() => this.authService.currentUser());
+
+  currentPage = 0;
+  pageSize = 10;
+  isLastPage = signal(false);
 
   ngOnInit(): void {
-    this.loadPosts();
+    this.loadInitialPosts();
     this.loadUsers();
   }
 
-  private parseCurrentUser(): User | null {
-    if (!this.savedUser) {
-      return null;
-    }
+  loadInitialPosts(): void {
+    this.loadingPosts.set(true);
+    this.postErrorMessage.set('');
+    this.currentPage = 0;
 
-    try {
-      return JSON.parse(this.savedUser) as User;
-    } catch {
-      return null;
-    }
+    this.postsService.getPaginated(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.posts.set(response.content);
+        this.isLastPage.set(response.last);
+        this.loadingPosts.set(false);
+        this.backendConnected.set(true);
+      },
+      error: (err) => {
+        console.error('Error fetching posts:', err);
+        // Fallback to mock data if backend fails
+        this.posts.set(MOCK_POSTS.slice(0, 10));
+        this.isLastPage.set(true);
+        this.loadingPosts.set(false);
+        this.postErrorMessage.set('The public feed is still being prepared, so sample posts are shown for now.');
+      },
+    });
   }
 
-  loadPosts(): void {
-    this.loadingPosts = true;
-    this.postErrorMessage = '';
+  loadMorePosts(): void {
+    if (this.isLastPage() || this.loadingMore()) return;
 
-    this.postsService.getAll().subscribe({
-      next: (posts) => {
-        this.posts = posts;
-        this.loadingPosts = false;
+    this.loadingMore.set(true);
+    this.currentPage++;
+
+    this.postsService.getPaginated(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.posts.update(p => [...p, ...response.content]);
+        this.isLastPage.set(response.last);
+        this.loadingMore.set(false);
       },
       error: () => {
-        this.posts = MOCK_POSTS;
-        this.loadingPosts = false;
-        this.postErrorMessage = 'The public feed is still being prepared, so sample posts are shown for now.';
+        this.loadingMore.set(false);
+        this.postErrorMessage.set('Failed to load more posts.');
       },
     });
   }
 
   loadUsers(): void {
-    if (!this.currentUser || this.currentUser.role !== 'ROLE_ADMIN') {
-      this.users = [];
-      this.backendConnected = !!this.currentUser;
-      this.loadingUsers = false;
-      this.userErrorMessage = this.currentUser
+    const user = this.currentUser();
+    if (!user || user.role !== 'ROLE_ADMIN') {
+      this.users.set([]);
+      this.backendConnected.set(!!user);
+      this.loadingUsers.set(false);
+      this.userErrorMessage.set(user
         ? 'The community directory is available to admin accounts only.'
-        : 'Sign in as an admin to access the community directory.';
+        : 'Sign in as an admin to access the community directory.');
       return;
     }
 
-    this.loadingUsers = true;
-    this.userErrorMessage = '';
+    this.loadingUsers.set(true);
+    this.userErrorMessage.set('');
 
     this.authService.getUsers().subscribe({
       next: (users) => {
-        this.users = users;
-        this.backendConnected = true;
-        this.loadingUsers = false;
+        this.users.set(users);
+        this.backendConnected.set(true);
+        this.loadingUsers.set(false);
       },
       error: () => {
-        this.backendConnected = false;
-        this.loadingUsers = false;
-        this.userErrorMessage = 'The community directory is temporarily unavailable.';
+        this.backendConnected.set(false);
+        this.loadingUsers.set(false);
+        this.userErrorMessage.set('The community directory is temporarily unavailable.');
       },
     });
   }

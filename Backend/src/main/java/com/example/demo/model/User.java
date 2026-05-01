@@ -25,6 +25,19 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(length = 2048)
+    private String profileImageUrl;
+
+    @Column(length = 2048)
+    private String bannerImageUrl;
+
+    private String headline;
+    
+    private String location;
+
+    @Column(columnDefinition = "TEXT")
+    private String about;
+
     @Builder.Default
     private Boolean profilePublic = true;
 }

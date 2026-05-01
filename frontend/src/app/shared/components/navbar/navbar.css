@@ -52,12 +52,17 @@
 
 .app-nav-btn {
   min-width: 100px;
-  padding: 0.7rem 1rem;
+  padding: 0.7rem 1.25rem;
   border-radius: 999px;
   border: 1px solid rgba(229, 218, 218, 0.18);
   color: var(--dust-grey);
   font-weight: 700;
   background: rgba(229, 218, 218, 0.04);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .app-nav-btn:hover,

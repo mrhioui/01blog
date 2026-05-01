@@ -15,5 +15,15 @@ public class UserDTO {
     private String username;
     private String email;
     private Role role;
+    private String profileImageUrl;
+    private String bannerImageUrl;
+    private String headline;
+    private String location;
+    private String about;
     private Boolean profilePublic;
+    
+    private Long postCount;
+    private Long likeCount;
+    private Long commentCount;
+    private Long followerCount;
 }
