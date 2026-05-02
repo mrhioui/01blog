@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/subscriptions")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class SubscriptionController {
 
     private final SubscriptionRepository subscriptionRepository;
@@ -40,13 +39,27 @@ public class SubscriptionController {
             throw new RuntimeException("You cannot subscribe to yourself");
         }
 
-        Subscription subscription = Subscription.builder()
-                .subscriber(subscriber)
-                .target(target)
-                .createdAt(LocalDateTime.now())
-                .build();
+        return subscriptionRepository.findBySubscriberIdAndTargetId(subscriber.getId(), target.getId())
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> {
+                    Subscription subscription = Subscription.builder()
+                            .subscriber(subscriber)
+                            .target(target)
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                    return ResponseEntity.ok(subscriptionRepository.save(subscription));
+                });
+    }
 
-        return ResponseEntity.ok(subscriptionRepository.save(subscription));
+    @DeleteMapping("/{targetId}")
+    public ResponseEntity<Void> deleteSubscription(@PathVariable Long targetId, Authentication authentication) {
+        User subscriber = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        subscriptionRepository.findBySubscriberIdAndTargetId(subscriber.getId(), targetId)
+                .ifPresent(subscriptionRepository::delete);
+                
+        return ResponseEntity.noContent().build();
     }
 
     @Data

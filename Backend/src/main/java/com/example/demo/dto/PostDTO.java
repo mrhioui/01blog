@@ -17,4 +17,7 @@ public class PostDTO {
     private String mediaUrl;
     private LocalDateTime timestamp;
     private UserDTO author;
+    private Long likeCount;
+    private Long commentCount;
+    private Boolean likedByCurrentUser;
 }

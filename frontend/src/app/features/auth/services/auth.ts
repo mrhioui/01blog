@@ -27,6 +27,10 @@ export class Auth {
     return this.api.get<User[]>('/users');
   }
 
+  searchUsers(query: string): Observable<User[]> {
+    return this.api.get<User[]>(`/users/search?q=${encodeURIComponent(query)}`);
+  }
+
   getCurrentUser(): Observable<User> {
     return this.api.get<User>('/users/me');
   }

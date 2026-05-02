@@ -26,4 +26,6 @@ public class UserDTO {
     private Long likeCount;
     private Long commentCount;
     private Long followerCount;
+    private Long followingCount;
+    private Boolean isSubscribed;
 }

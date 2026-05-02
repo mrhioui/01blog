@@ -5,16 +5,148 @@
         <h2 class="h5 mb-1 text-deep-space hover-underline">{{ post().author.username }}</h2>
         <p class="text-secondary mb-0 small">{{ post().author.email }}</p>
       </div>
-      <time class="small post-time text-muted">{{ post().timestamp | date: 'medium' }}</time>
+      <div class="d-flex align-items-center gap-2 ms-md-auto">
+        <time class="small post-time text-muted">{{ post().timestamp | date: 'medium' }}</time>
+        <div *ngIf="isOwnPost()" class="post-actions">
+          <button
+            type="button"
+            class="btn btn-sm btn-light post-action-button"
+            (click)="startEdit()"
+            [disabled]="editing() || deleting()"
+            title="Edit post"
+          >
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-light post-action-button text-danger"
+            (click)="deletePost()"
+            [disabled]="deleting() || saving()"
+            title="Delete post"
+          >
+            <span *ngIf="deleting()" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!deleting()" class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <p class="mb-0 post-content">{{ post().content }}</p>
+    <ng-container *ngIf="editing(); else postContent">
+      <textarea
+        class="form-control post-edit-input"
+        rows="4"
+        [ngModel]="editContent()"
+        (ngModelChange)="editContent.set($event)"
+      ></textarea>
+      <div class="post-edit-image mt-3">
+        <ng-container *ngIf="editImagePreviewUrl() || resolveImageUrl(post().mediaUrl) as mediaSrc">
+          <video
+            *ngIf="isEditPreviewVideo(); else editImagePreview"
+            class="img-fluid rounded-3"
+            [src]="editImagePreviewUrl() || mediaSrc"
+            controls
+          ></video>
+          <ng-template #editImagePreview>
+            <img
+              class="img-fluid rounded-3"
+              [src]="editImagePreviewUrl() || mediaSrc"
+              [alt]="post().author.username + ' post media preview'"
+            />
+          </ng-template>
+        </ng-container>
+        <label class="btn btn-sm btn-light post-image-button mt-2">
+          <i class="bi bi-images me-1"></i>
+          {{ post().mediaUrl || editImagePreviewUrl() ? 'Change media' : 'Add media' }}
+          <input type="file" hidden accept="image/*,video/*" (change)="onEditImageSelected($event)" />
+        </label>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="button" class="btn btn-sm btn-light" (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="saveEdit()"
+          [disabled]="saving() || !editContent().trim()"
+        >
+          <span *ngIf="saving()" class="spinner-border spinner-border-sm me-1"></span>
+          Save
+        </button>
+      </div>
+    </ng-container>
 
-    <img
-      *ngIf="resolveImageUrl(post().mediaUrl) as mediaSrc"
-      class="img-fluid rounded-4 mt-3"
-      [src]="mediaSrc"
-      [alt]="post().author.username + ' post media'"
-    />
+    <ng-template #postContent>
+      <p class="mb-0 post-content">{{ post().content }}</p>
+    </ng-template>
+
+    <ng-container *ngIf="!editing() && resolveImageUrl(post().mediaUrl) as mediaSrc">
+      <video *ngIf="isVideoUrl(post().mediaUrl); else postImage" class="img-fluid rounded-4 mt-3" [src]="mediaSrc" controls></video>
+      <ng-template #postImage>
+        <img
+          class="img-fluid rounded-4 mt-3"
+          [src]="mediaSrc"
+          [alt]="post().author.username + ' post media'"
+        />
+      </ng-template>
+    </ng-container>
+
+    <div class="post-engagement d-flex align-items-center gap-2 mt-3 pt-3 border-top">
+      <button
+        type="button"
+        class="btn btn-sm post-engagement-button"
+        [class.active]="likedByCurrentUser()"
+        (click)="toggleLike()"
+        [disabled]="!currentUser() || liking()"
+      >
+        <span *ngIf="liking()" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!liking()" class="bi" [class.bi-heart-fill]="likedByCurrentUser()" [class.bi-heart]="!likedByCurrentUser()"></i>
+        <span>{{ likeCount() }}</span>
+      </button>
+      <button type="button" class="btn btn-sm post-engagement-button" (click)="toggleComments()">
+        <i class="bi bi-chat"></i>
+        <span>{{ commentCount() }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="commentsOpen()" class="post-comments mt-3">
+      <div *ngIf="commentsLoading()" class="small text-muted py-2">Loading comments...</div>
+
+      <div *ngIf="!commentsLoading() && comments().length" class="d-grid gap-2 mb-3">
+        <div *ngFor="let comment of comments()" class="post-comment">
+          <div class="d-flex justify-content-between gap-2">
+            <strong class="small text-deep-space">{{ comment.author.username }}</strong>
+            <time class="small text-muted">{{ comment.timestamp | date: 'short' }}</time>
+          </div>
+          <p class="mb-0 small">{{ comment.content }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="!commentsLoading() && !comments().length" class="small text-muted mb-3">
+        No comments yet.
+      </div>
+
+      <div *ngIf="currentUser()" class="d-flex gap-2">
+        <input
+          class="form-control form-control-sm"
+          type="text"
+          placeholder="Write a comment..."
+          [ngModel]="commentContent()"
+          (ngModelChange)="commentContent.set($event)"
+          (keyup.enter)="submitComment()"
+        />
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="submitComment()"
+          [disabled]="commenting() || !commentContent().trim()"
+        >
+          <span *ngIf="commenting()" class="spinner-border spinner-border-sm"></span>
+          <span *ngIf="!commenting()">Post</span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage()" class="alert alert-danger small mt-3 mb-0">
+      {{ errorMessage() }}
+    </div>
   </div>
 </article>

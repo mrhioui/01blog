@@ -13,4 +13,6 @@ export interface User {
   likeCount?: number;
   commentCount?: number;
   followerCount?: number;
+  followingCount?: number;
+  isSubscribed?: boolean;
 }

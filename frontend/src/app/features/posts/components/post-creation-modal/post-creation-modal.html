@@ -18,14 +18,15 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label small text-uppercase fw-bold text-muted">Post Image (optional)</label>
+      <label class="form-label small text-uppercase fw-bold text-muted">Post Media (optional)</label>
       
       <div *ngIf="previewUrl()" class="position-relative mb-2">
-        <img [src]="previewUrl()" class="img-fluid rounded-3 border" alt="Preview">
+        <img *ngIf="previewType() === 'image'" [src]="previewUrl()" class="img-fluid rounded-3 border" alt="Preview">
+        <video *ngIf="previewType() === 'video'" [src]="previewUrl()" class="img-fluid rounded-3 border" controls></video>
         <button 
           type="button" 
           class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow-sm"
-          (click)="removeImage()"
+          (click)="removeMedia()"
           [disabled]="loading()"
         >
           <i class="bi bi-x-lg"></i>
@@ -33,15 +34,15 @@
       </div>
 
       <div *ngIf="!previewUrl()" class="upload-placeholder d-flex flex-column align-items-center justify-content-center border border-dashed rounded-3 p-4 bg-light" (click)="fileInput.click()">
-        <i class="bi bi-image text-muted fs-2"></i>
-        <span class="text-muted small mt-2">Click to upload an image</span>
+        <i class="bi bi-images text-muted fs-2"></i>
+        <span class="text-muted small mt-2">Click to upload an image or video</span>
       </div>
 
       <input
         #fileInput
         type="file"
         class="d-none"
-        accept="image/*"
+        accept="image/*,video/*"
         (change)="onFileSelected($event)"
       />
     </div>

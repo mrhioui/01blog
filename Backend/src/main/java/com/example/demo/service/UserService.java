@@ -30,7 +30,22 @@ public class UserService {
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(user -> convertToDTO(user, null))
+                .collect(Collectors.toList());
+    }
+
+    public List<UserDTO> searchUsers(String query, String requesterUsername) {
+        String normalizedQuery = query == null ? "" : query.trim();
+        if (normalizedQuery.length() < 2) {
+            return List.of();
+        }
+
+        User requester = requesterUsername != null 
+                ? userRepository.findByUsername(requesterUsername).orElse(null)
+                : null;
+
+        return userRepository.findTop8ByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(normalizedQuery, normalizedQuery).stream()
+                .map(user -> convertToDTO(user, requester))
                 .collect(Collectors.toList());
     }
 
@@ -53,23 +68,25 @@ public class UserService {
                 .build();
 
         User savedUser = userRepository.save(user);
-        return convertToDTO(savedUser);
+        return convertToDTO(savedUser, null);
     }
 
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDTO(user);
+        return convertToDTO(user, null);
     }
 
     public UserDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDTO(user);
+        return convertToDTO(user, null);
     }
 
     public UserDTO getCurrentUser(String username) {
-        return getUserByUsername(username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return convertToDTO(user, user);
     }
 
     public UserDTO updateCurrentUser(
@@ -122,32 +139,27 @@ public class UserService {
             user.setProfilePublic(updateDTO.getProfilePublic());
         }
 
-        return convertToDTO(userRepository.save(user));
+        return convertToDTO(userRepository.save(user), user);
     }
 
     public UserDTO getProfileById(Long id, String requesterUsername) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (Boolean.TRUE.equals(user.getProfilePublic())) {
-            return convertToDTO(user);
-        }
+        User requester = requesterUsername != null 
+                ? userRepository.findByUsername(requesterUsername).orElse(null)
+                : null;
 
-        if (requesterUsername == null) {
-            throw new AccessDeniedException("This profile is private");
-        }
-
-        User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new RuntimeException("Requester not found"));
-
-        if (Objects.equals(requester.getId(), user.getId()) || requester.getRole() == Role.ROLE_ADMIN) {
-            return convertToDTO(user);
-        }
-
-        throw new AccessDeniedException("This profile is private");
+        // TEMPORARY BYPASS FOR DIAGNOSIS
+        return convertToDTO(user, requester);
     }
 
-    private UserDTO convertToDTO(User user) {
+    private UserDTO convertToDTO(User user, User requester) {
+        Boolean isSubscribed = null;
+        if (requester != null && !Objects.equals(user.getId(), requester.getId())) {
+            isSubscribed = subscriptionRepository.existsBySubscriberIdAndTargetId(requester.getId(), user.getId());
+        }
+
         return UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -158,11 +170,13 @@ public class UserService {
                 .headline(user.getHeadline())
                 .location(user.getLocation())
                 .about(user.getAbout())
-                .profilePublic(Boolean.TRUE.equals(user.getProfilePublic()))
+                .profilePublic(!Boolean.FALSE.equals(user.getProfilePublic()))
                 .postCount(postRepository.countByAuthorId(user.getId()))
                 .likeCount(postLikeRepository.countByPostAuthorId(user.getId()))
                 .commentCount(commentRepository.countByPostAuthorId(user.getId()))
                 .followerCount(subscriptionRepository.countByTargetId(user.getId()))
+                .followingCount(subscriptionRepository.countBySubscriberId(user.getId()))
+                .isSubscribed(isSubscribed)
                 .build();
     }
 

@@ -6,4 +6,7 @@ export interface Post {
   mediaUrl?: string;
   timestamp: string;
   author: User;
+  likeCount?: number;
+  commentCount?: number;
+  likedByCurrentUser?: boolean;
 }

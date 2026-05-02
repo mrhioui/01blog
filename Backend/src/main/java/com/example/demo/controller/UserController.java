@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;
@@ -29,6 +28,15 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDTO>> searchUsers(
+            @RequestParam("q") String query,
+            Authentication authentication
+    ) {
+        final String requesterUsername = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(userService.searchUsers(query, requesterUsername));
     }
 
     @GetMapping("/me")

@@ -13,6 +13,10 @@ export class Comments {
     return this.api.get<Comment[]>('/comments');
   }
 
+  getByPostId(postId: number): Observable<Comment[]> {
+    return this.api.get<Comment[]>(`/comments/post/${postId}`);
+  }
+
   create(payload: CreateCommentPayload): Observable<Comment> {
     return this.api.post<Comment, CreateCommentPayload>('/comments', payload);
   }

@@ -16,27 +16,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class PostController {
 
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostDTO>> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
+    public ResponseEntity<List<PostDTO>> getAllPosts(Authentication authentication) {
+        return ResponseEntity.ok(postService.getAllPosts(username(authentication)));
     }
 
     @GetMapping("/paginated")
     public ResponseEntity<Page<PostDTO>> getPaginatedPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
     ) {
-        return ResponseEntity.ok(postService.getPaginatedPosts(page, size));
+        return ResponseEntity.ok(postService.getPaginatedPosts(page, size, username(authentication)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDTO> getPostById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(postService.getPostById(id));
+    public ResponseEntity<PostDTO> getPostById(@PathVariable("id") Long id, Authentication authentication) {
+        return ResponseEntity.ok(postService.getPostById(id, username(authentication)));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data"})
@@ -50,9 +50,37 @@ public class PostController {
         return ResponseEntity.ok(postService.createPost(authentication.getName(), createPostDTO, image));
     }
 
+    @PutMapping(value = "/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data"})
+    public ResponseEntity<PostDTO> updatePost(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "content") String content,
+            @RequestParam(value = "mediaUrl", required = false) String mediaUrl,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            Authentication authentication
+    ) {
+        CreatePostDTO updatePostDTO = new CreatePostDTO(content, mediaUrl);
+        return ResponseEntity.ok(postService.updatePost(id, authentication.getName(), updatePostDTO, image));
+    }
+
+    @PostMapping(value = "/{id}/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data"})
+    public ResponseEntity<PostDTO> updatePostWithForm(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "content") String content,
+            @RequestParam(value = "mediaUrl", required = false) String mediaUrl,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            Authentication authentication
+    ) {
+        CreatePostDTO updatePostDTO = new CreatePostDTO(content, mediaUrl);
+        return ResponseEntity.ok(postService.updatePost(id, authentication.getName(), updatePostDTO, image));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable("id") Long id, Authentication authentication) {
         postService.deletePost(id, authentication.getName());
         return ResponseEntity.noContent().build();
+    }
+
+    private String username(Authentication authentication) {
+        return authentication == null ? null : authentication.getName();
     }
 }

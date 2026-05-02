@@ -108,4 +108,12 @@ export class Feed implements OnInit {
       },
     });
   }
+
+  onPostUpdated(updatedPost: Post): void {
+    this.posts.update(posts => posts.map(post => post.id === updatedPost.id ? updatedPost : post));
+  }
+
+  onPostDeleted(postId: number): void {
+    this.posts.update(posts => posts.filter(post => post.id !== postId));
+  }
 }

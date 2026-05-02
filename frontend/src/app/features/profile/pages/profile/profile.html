@@ -63,6 +63,21 @@
           </div>
         </div>
         <input #avatarInput type="file" hidden accept="image/*" (change)="onProfileImageSelected($event)">
+
+        <div *ngIf="profileUser() as user" class="profile-header-stats shadow-sm">
+          <div class="profile-header-stat">
+            <span class="profile-header-stat-value">{{ user.postCount || 0 }}</span>
+            <span class="profile-header-stat-label">Posts</span>
+          </div>
+          <div class="profile-header-stat">
+            <span class="profile-header-stat-value">{{ user.followerCount || 0 }}</span>
+            <span class="profile-header-stat-label">Followers</span>
+          </div>
+          <div class="profile-header-stat">
+            <span class="profile-header-stat-value">{{ user.followingCount || 0 }}</span>
+            <span class="profile-header-stat-label">Following</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -75,8 +90,8 @@
 
       <!-- Main Content -->
       <div class="row g-4" *ngIf="profileUser() as user">
-        <!-- Left Column: User Info & Edit Form -->
-        <div class="col-lg-8">
+        <!-- User Info & Edit Form -->
+        <div class="col-12">
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-start mb-3">
@@ -91,6 +106,15 @@
                 <button *ngIf="isOwnProfile()" class="btn btn-golden-orange rounded-pill px-4" (click)="toggleEditForm()">
                   <i class="bi" [class.bi-pencil]="!showEditForm()" [class.bi-x-lg]="showEditForm()"></i>
                   <span class="ms-2">{{ showEditForm() ? 'Cancel' : 'Edit Profile' }}</span>
+                </button>
+
+                <button *ngIf="!isOwnProfile() && currentUser()" 
+                        class="btn rounded-pill px-4" 
+                        [class.btn-golden-orange]="!user.isSubscribed"
+                        [class.btn-outline-golden-orange]="user.isSubscribed"
+                        (click)="toggleSubscription()">
+                  <i class="bi" [class.bi-person-plus]="!user.isSubscribed" [class.bi-person-check-fill]="user.isSubscribed"></i>
+                  <span class="ms-2">{{ user.isSubscribed ? 'Subscribed' : 'Subscribe' }}</span>
                 </button>
               </div>
 
@@ -160,7 +184,12 @@
               </div>
               
               <div *ngIf="!loadingPosts() && posts().length" class="d-grid gap-4">
-                <app-post-card *ngFor="let post of posts()" [post]="post"></app-post-card>
+                <app-post-card
+                  *ngFor="let post of posts()"
+                  [post]="post"
+                  (postUpdated)="onPostUpdated($event)"
+                  (postDeleted)="onPostDeleted($event)"
+                ></app-post-card>
               </div>
 
               <div *ngIf="!loadingPosts() && !posts().length" class="text-center py-5 bg-light rounded-3">
@@ -175,28 +204,6 @@
           </div>
         </div>
 
-        <!-- Right Column: Stats & Side info -->
-        <div class="col-lg-4">
-          <div class="card border-0 shadow-sm mb-4 bg-deep-space text-white">
-            <div class="card-body p-4">
-              <h2 class="h5 fw-bold mb-4">Insights</h2>
-              <div class="d-flex justify-content-between mb-3 pb-3 border-bottom border-secondary">
-                <span>Followers</span>
-                <span class="fw-bold text-golden-orange">{{ user.followerCount || 0 }}</span>
-              </div>
-              <div class="d-flex justify-content-between mb-3 pb-3 border-bottom border-secondary">
-                <span>Total Likes</span>
-                <span class="fw-bold text-golden-orange">{{ user.likeCount || 0 }}</span>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Total Comments</span>
-                <span class="fw-bold text-golden-orange">{{ user.commentCount || 0 }}</span>
-              </div>
-            </div>
-          </div>
-
-
-        </div>
       </div>
 
       <!-- Loading Error Message when profileUser is still null -->

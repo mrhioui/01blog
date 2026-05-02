@@ -41,12 +41,29 @@ export class Posts {
     return this.api.post<Post, FormData>('/posts', formData);
   }
 
+  update(id: number, payload: UpdatePostPayload, image?: File): Observable<Post> {
+    const formData = new FormData();
+    formData.append('content', payload.content);
+    if (payload.mediaUrl) {
+      formData.append('mediaUrl', payload.mediaUrl);
+    }
+    if (image) {
+      formData.append('image', image);
+    }
+    return this.api.post<Post, FormData>(`/posts/${id}/update`, formData);
+  }
+
   delete(id: number): Observable<void> {
     return this.api.delete<void>(`/posts/${id}`);
   }
 }
 
 export interface CreatePostPayload {
+  content: string;
+  mediaUrl?: string;
+}
+
+export interface UpdatePostPayload {
   content: string;
   mediaUrl?: string;
 }

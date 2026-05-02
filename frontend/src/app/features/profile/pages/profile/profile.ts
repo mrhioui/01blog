@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { Auth } from '../../../../features/auth/services/auth';
+import { Subscriptions } from '../../../../core/services/subscriptions';
 import { User } from '../../../../core/models/user.model';
 import { Posts } from '../../../../features/posts/services/posts';
 import { Post } from '../../../../core/models/post.model';
@@ -20,6 +21,7 @@ import { environment } from '../../../../../environments/environment';
 export class ProfilePage implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(Auth);
+  private readonly subscriptionService = inject(Subscriptions);
   private readonly postsService = inject(Posts);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -83,6 +85,39 @@ export class ProfilePage implements OnInit, OnDestroy {
       this.patchForm(user);
     }
     this.savingErrorMessage.set('');
+  }
+
+  toggleSubscription(): void {
+    const user = this.profileUser();
+    if (!user || this.isOwnProfile() || !this.currentUser()) return;
+
+    if (user.isSubscribed) {
+      this.subscriptionService.delete(user.id).subscribe({
+        next: () => {
+          this.profileUser.set({
+            ...user,
+            isSubscribed: false,
+            followerCount: Math.max(0, (user.followerCount || 0) - 1)
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.error?.message ?? 'Failed to unsubscribe.');
+        }
+      });
+    } else {
+      this.subscriptionService.create({ targetId: user.id }).subscribe({
+        next: () => {
+          this.profileUser.set({
+            ...user,
+            isSubscribed: true,
+            followerCount: (user.followerCount || 0) + 1
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          alert(error.error?.message ?? 'Failed to subscribe.');
+        }
+      });
+    }
   }
 
   submit(): void {
@@ -227,6 +262,18 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   onBannerImageError(): void {
     this.bannerImageLoadFailed.set(true);
+  }
+
+  onPostUpdated(updatedPost: Post): void {
+    this.posts.update(posts => posts.map(post => post.id === updatedPost.id ? updatedPost : post));
+  }
+
+  onPostDeleted(postId: number): void {
+    this.posts.update(posts => posts.filter(post => post.id !== postId));
+    const user = this.profileUser();
+    if (user?.postCount) {
+      this.profileUser.set({ ...user, postCount: Math.max(0, user.postCount - 1) });
+    }
   }
 
   onProfileImageSelected(event: Event): void {

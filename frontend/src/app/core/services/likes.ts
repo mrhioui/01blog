@@ -17,6 +17,14 @@ export class Likes {
     return this.api.post<PostLike, CreateLikePayload>('/likes', payload);
   }
 
+  getStatus(postId: number): Observable<LikeStatus> {
+    return this.api.get<LikeStatus>(`/likes/post/${postId}/status`);
+  }
+
+  toggle(postId: number): Observable<LikeStatus> {
+    return this.api.post<LikeStatus, Record<string, never>>(`/likes/post/${postId}/toggle`, {});
+  }
+
   delete(id: number): Observable<void> {
     return this.api.delete<void>(`/likes/${id}`);
   }
@@ -24,4 +32,10 @@ export class Likes {
 
 export interface CreateLikePayload {
   postId: number;
+}
+
+export interface LikeStatus {
+  postId: number;
+  liked: boolean;
+  likeCount: number;
 }

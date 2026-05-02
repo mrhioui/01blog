@@ -11,3 +11,50 @@
 .post-content {
   color: var(--ink-black);
 }
+
+.post-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.post-action-button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(7, 35, 57, 0.08);
+}
+
+.post-edit-input {
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.post-edit-image img,
+.post-edit-image video {
+  max-height: 260px;
+  object-fit: cover;
+}
+
+.post-image-button {
+  border: 1px solid rgba(7, 35, 57, 0.08);
+}
+
+.post-engagement-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(7, 35, 57, 0.08);
+  background: white;
+}
+
+.post-engagement-button.active {
+  color: var(--dark-amaranth);
+}
+
+.post-comment {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 0.65rem 0.75rem;
+}

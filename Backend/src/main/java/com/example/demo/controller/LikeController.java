@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/likes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class LikeController {
 
     private final PostLikeRepository postLikeRepository;
@@ -38,6 +37,11 @@ public class LikeController {
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
+        PostLike existingLike = postLikeRepository.findByPostIdAndUserId(post.getId(), user.getId()).orElse(null);
+        if (existingLike != null) {
+            return ResponseEntity.ok(existingLike);
+        }
+
         PostLike like = PostLike.builder()
                 .user(user)
                 .post(post)
@@ -46,10 +50,57 @@ public class LikeController {
         return ResponseEntity.ok(postLikeRepository.save(like));
     }
 
+    @GetMapping("/post/{postId}/status")
+    public ResponseEntity<LikeStatusResponse> getLikeStatus(
+            @PathVariable("postId") Long postId,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(buildStatus(postId, authentication));
+    }
+
+    @PostMapping("/post/{postId}/toggle")
+    public ResponseEntity<LikeStatusResponse> toggleLike(
+            @PathVariable("postId") Long postId,
+            Authentication authentication
+    ) {
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        postLikeRepository.findByPostIdAndUserId(postId, user.getId()).ifPresentOrElse(
+                postLikeRepository::delete,
+                () -> postLikeRepository.save(PostLike.builder().user(user).post(post).build())
+        );
+
+        return ResponseEntity.ok(buildStatus(postId, authentication));
+    }
+
+    private LikeStatusResponse buildStatus(Long postId, Authentication authentication) {
+        User user = authentication == null
+                ? null
+                : userRepository.findByUsername(authentication.getName()).orElse(null);
+
+        return new LikeStatusResponse(
+                postId,
+                user != null && postLikeRepository.existsByPostIdAndUserId(postId, user.getId()),
+                postLikeRepository.countByPostId(postId)
+        );
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LikeRequest {
         private Long postId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LikeStatusResponse {
+        private Long postId;
+        private Boolean liked;
+        private Long likeCount;
     }
 }

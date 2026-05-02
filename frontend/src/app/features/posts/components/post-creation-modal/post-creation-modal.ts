@@ -25,6 +25,7 @@ export class PostCreationModal {
   protected errorMessage = signal('');
   protected selectedFile = signal<File | null>(null);
   protected previewUrl = signal<string | null>(null);
+  protected previewType = signal<'image' | 'video' | null>(null);
 
   protected dismiss(): void {
     this.activeModal.dismiss();
@@ -34,11 +35,13 @@ export class PostCreationModal {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      if (!file.type.startsWith('image/')) {
-        this.errorMessage.set('Please select an image file.');
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        this.errorMessage.set('Please select an image or video file.');
+        input.value = '';
         return;
       }
       this.selectedFile.set(file);
+      this.previewType.set(file.type.startsWith('video/') ? 'video' : 'image');
       this.errorMessage.set('');
 
       const reader = new FileReader();
@@ -49,9 +52,10 @@ export class PostCreationModal {
     }
   }
 
-  protected removeImage(): void {
+  protected removeMedia(): void {
     this.selectedFile.set(null);
     this.previewUrl.set(null);
+    this.previewType.set(null);
   }
 
   protected submit(): void {

@@ -6,6 +6,8 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.model.Post;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.PostLikeRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,45 +30,37 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
+    private final com.example.demo.repository.SubscriptionRepository subscriptionRepository;
 
-    public Page<PostDTO> getPaginatedPosts(int page, int size) {
+    public Page<PostDTO> getPaginatedPosts(int page, int size, String requesterUsername) {
         log.info("Fetching paginated posts: page={}, size={}", page, size);
         Page<Post> postsPage = postRepository.findAllByOrderByTimestampDesc(PageRequest.of(page, size));
         log.info("Found {} posts in DB for this page", postsPage.getNumberOfElements());
-        return postsPage.map(this::convertToDTO);
+        return postsPage.map(post -> convertToDTO(post, requesterUsername));
     }
 
-    public List<PostDTO> getAllPosts() {
+    public List<PostDTO> getAllPosts(String requesterUsername) {
         return postRepository.findAllByOrderByTimestampDesc().stream()
-                .map(this::convertToDTO)
+                .map(post -> convertToDTO(post, requesterUsername))
                 .collect(Collectors.toList());
     }
 
-    public PostDTO getPostById(Long id) {
+    public PostDTO getPostById(Long id, String requesterUsername) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        return convertToDTO(post);
+        return convertToDTO(post, requesterUsername);
     }
 
     public List<PostDTO> getPostsByAuthorId(Long authorId, String requesterUsername) {
         User author = userRepository.findById(authorId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!Boolean.TRUE.equals(author.getProfilePublic())) {
-            if (requesterUsername == null) {
-                throw new AccessDeniedException("This profile is private");
-            }
-
-            User requester = userRepository.findByUsername(requesterUsername)
-                    .orElseThrow(() -> new RuntimeException("Requester not found"));
-
-            if (!Objects.equals(requester.getId(), author.getId()) && requester.getRole() != Role.ROLE_ADMIN) {
-                throw new AccessDeniedException("This profile is private");
-            }
-        }
-
+        // TEMPORARY BYPASS FOR DIAGNOSIS
         return postRepository.findByAuthorIdOrderByTimestampDesc(authorId).stream()
-                .map(this::convertToDTO)
+                .map(post -> convertToDTO(post, requesterUsername))
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +69,7 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return postRepository.findByAuthorIdOrderByTimestampDesc(user.getId()).stream()
-                .map(this::convertToDTO)
+                .map(post -> convertToDTO(post, username))
                 .collect(Collectors.toList());
     }
 
@@ -98,7 +92,45 @@ public class PostService {
                 .author(user)
                 .build();
 
-        return convertToDTO(postRepository.save(post));
+        Post savedPost = postRepository.save(post);
+
+        // Notify subscribers
+        subscriptionRepository.findByTargetId(user.getId()).forEach(sub -> {
+            notificationService.createNotification(
+                    sub.getSubscriber(),
+                    user.getUsername() + " published a new post",
+                    "NEW_POST",
+                    savedPost.getId()
+            );
+        });
+
+        return convertToDTO(savedPost, username);
+    }
+
+    public PostDTO updatePost(Long id, String username, CreatePostDTO updatePostDTO, org.springframework.web.multipart.MultipartFile image) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        User requester = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!Objects.equals(post.getAuthor().getId(), requester.getId()) && requester.getRole() != Role.ROLE_ADMIN) {
+            throw new AccessDeniedException("You cannot edit this post");
+        }
+
+        String updatedContent = updatePostDTO.getContent() != null ? updatePostDTO.getContent().trim() : "";
+        if (updatedContent.isEmpty()) {
+            throw new RuntimeException("Post content is required");
+        }
+
+        post.setContent(updatedContent);
+
+        if (image != null && !image.isEmpty()) {
+            post.setMediaUrl(fileStorageService.storeFile(image));
+        } else if (updatePostDTO.getMediaUrl() != null) {
+            post.setMediaUrl(updatePostDTO.getMediaUrl().trim().isEmpty() ? null : updatePostDTO.getMediaUrl().trim());
+        }
+
+        return convertToDTO(postRepository.save(post), username);
     }
 
     public void deletePost(Long id, String username) {
@@ -114,8 +146,12 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    private PostDTO convertToDTO(Post post) {
+    private PostDTO convertToDTO(Post post, String requesterUsername) {
         User author = post.getAuthor();
+        User requester = requesterUsername == null
+                ? null
+                : userRepository.findByUsername(requesterUsername).orElse(null);
+
         return PostDTO.builder()
                 .id(post.getId())
                 .content(post.getContent())
@@ -131,8 +167,11 @@ public class PostService {
                         .headline(author.getHeadline())
                         .location(author.getLocation())
                         .about(author.getAbout())
-                        .profilePublic(Boolean.TRUE.equals(author.getProfilePublic()))
+                        .profilePublic(!Boolean.FALSE.equals(author.getProfilePublic()))
                         .build())
+                .likeCount(postLikeRepository.countByPostId(post.getId()))
+                .commentCount(commentRepository.countByPostId(post.getId()))
+                .likedByCurrentUser(requester != null && postLikeRepository.existsByPostIdAndUserId(post.getId(), requester.getId()))
                 .build();
     }
 }

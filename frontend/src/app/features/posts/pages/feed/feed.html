@@ -14,7 +14,12 @@
         <div *ngIf="loadingPosts()" class="alert app-alert mb-0">Loading posts...</div>
 
         <div *ngIf="!loadingPosts() && posts().length" class="d-grid gap-3">
-          <app-post-card *ngFor="let post of posts()" [post]="post"></app-post-card>
+          <app-post-card
+            *ngFor="let post of posts()"
+            [post]="post"
+            (postUpdated)="onPostUpdated($event)"
+            (postDeleted)="onPostDeleted($event)"
+          ></app-post-card>
         </div>
 
         <div *ngIf="!isLastPage() && posts().length" class="mt-4 text-center">

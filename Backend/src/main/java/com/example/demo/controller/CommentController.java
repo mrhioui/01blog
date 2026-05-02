@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CommentDTO;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
@@ -20,7 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class CommentController {
 
     private final CommentRepository commentRepository;
@@ -32,21 +33,55 @@ public class CommentController {
         return ResponseEntity.ok(commentRepository.findAll());
     }
 
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<List<CommentDTO>> getCommentsByPost(@PathVariable("postId") Long postId) {
+        return ResponseEntity.ok(commentRepository.findByPostIdOrderByTimestampAsc(postId).stream()
+                .map(this::convertToDTO)
+                .toList());
+    }
+
     @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody CommentRequest request, Authentication authentication) {
+    public ResponseEntity<CommentDTO> createComment(@RequestBody CommentRequest request, Authentication authentication) {
+        String content = request.getContent() == null ? "" : request.getContent().trim();
+        if (content.isEmpty()) {
+            throw new RuntimeException("Comment is required");
+        }
+
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Comment comment = Comment.builder()
-                .content(request.getContent())
+                .content(content)
                 .timestamp(LocalDateTime.now())
                 .author(user)
                 .post(post)
                 .build();
 
-        return ResponseEntity.ok(commentRepository.save(comment));
+        return ResponseEntity.ok(convertToDTO(commentRepository.save(comment)));
+    }
+
+    private CommentDTO convertToDTO(Comment comment) {
+        User author = comment.getAuthor();
+        return CommentDTO.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .timestamp(comment.getTimestamp())
+                .postId(comment.getPost().getId())
+                .author(UserDTO.builder()
+                        .id(author.getId())
+                        .username(author.getUsername())
+                        .email(author.getEmail())
+                        .role(author.getRole())
+                        .profileImageUrl(author.getProfileImageUrl())
+                        .bannerImageUrl(author.getBannerImageUrl())
+                        .headline(author.getHeadline())
+                        .location(author.getLocation())
+                        .about(author.getAbout())
+                        .profilePublic(!Boolean.FALSE.equals(author.getProfilePublic()))
+                        .build())
+                .build();
     }
 
     @Data

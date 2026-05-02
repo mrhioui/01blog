@@ -17,8 +17,8 @@ export class Subscriptions {
     return this.api.post<Subscription, CreateSubscriptionPayload>('/subscriptions', payload);
   }
 
-  delete(id: number): Observable<void> {
-    return this.api.delete<void>(`/subscriptions/${id}`);
+  delete(targetId: number): Observable<void> {
+    return this.api.delete<void>(`/subscriptions/${targetId}`);
   }
 }
 

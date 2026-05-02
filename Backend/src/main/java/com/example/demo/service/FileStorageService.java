@@ -24,8 +24,8 @@ public class FileStorageService {
         }
 
         String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new RuntimeException("File must be an image");
+        if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
+            throw new RuntimeException("File must be an image or video");
         }
 
         final String originalName = file.getOriginalFilename();
