@@ -40,4 +40,7 @@ public class User {
 
     @Builder.Default
     private Boolean profilePublic = true;
+
+    @Builder.Default
+    private Boolean banned = false;
 }

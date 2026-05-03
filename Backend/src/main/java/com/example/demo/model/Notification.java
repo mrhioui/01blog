@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class Notification {
     
     private Long relatedId; // e.g., postId
     
+    @JsonProperty("isRead")
     private boolean isRead;
 
     private LocalDateTime timestamp;

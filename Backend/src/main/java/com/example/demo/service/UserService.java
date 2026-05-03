@@ -28,6 +28,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
 
+    public long getUserCount() {
+        return userRepository.count();
+    }
+
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(user -> convertToDTO(user, null))
@@ -154,7 +158,28 @@ public class UserService {
         return convertToDTO(user, requester);
     }
 
-    private UserDTO convertToDTO(User user, User requester) {
+    public void banUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setBanned(true);
+        userRepository.save(user);
+    }
+
+    public void unbanUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setBanned(false);
+        userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteById(id);
+    }
+
+    public UserDTO convertToDTO(User user, User requester) {
         Boolean isSubscribed = null;
         if (requester != null && !Objects.equals(user.getId(), requester.getId())) {
             isSubscribed = subscriptionRepository.existsBySubscriberIdAndTargetId(requester.getId(), user.getId());
@@ -177,6 +202,7 @@ public class UserService {
                 .followerCount(subscriptionRepository.countByTargetId(user.getId()))
                 .followingCount(subscriptionRepository.countBySubscriberId(user.getId()))
                 .isSubscribed(isSubscribed)
+                .banned(Boolean.TRUE.equals(user.getBanned()))
                 .build();
     }
 

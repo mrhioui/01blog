@@ -214,18 +214,46 @@
   overflow-y: auto;
 }
 
+.notification-item-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .notification-item {
+  flex: 1;
   width: 100%;
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
+  padding-right: 3rem;
   border: 0;
   border-bottom: 1px solid rgba(0, 38, 66, 0.03);
   background: white;
   text-align: left;
   transition: background 0.2s;
   position: relative;
+}
+
+.mark-read-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-soft);
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 2;
+}
+
+.mark-read-btn:hover {
+  background: rgba(229, 149, 0, 0.12);
+  color: var(--golden-orange);
 }
 
 .notification-item:hover {

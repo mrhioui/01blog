@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Posts } from '../../services/posts';
 import { Post } from '../../../../core/models/post.model';
-import { MOCK_POSTS } from '../../../../core/models/mock-data';
 import { PostCard } from '../../components/post-card/post-card';
 import { Auth } from '../../../auth/services/auth';
 import { User } from '../../../../core/models/user.model';
@@ -53,7 +52,6 @@ export class Feed implements OnInit {
       error: (err) => {
         console.error('Error fetching posts:', err);
         // Fallback to mock data if backend fails
-        this.posts.set(MOCK_POSTS.slice(0, 10));
         this.isLastPage.set(true);
         this.loadingPosts.set(false);
         this.postErrorMessage.set('The public feed is still being prepared, so sample posts are shown for now.');

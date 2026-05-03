@@ -195,7 +195,9 @@
               <div *ngIf="!loadingPosts() && !posts().length" class="text-center py-5 bg-light rounded-3">
                 <i class="bi bi-journal-text fs-1 text-dust-grey"></i>
                 <p class="text-muted mt-2">No posts yet.</p>
-                <a *ngIf="isOwnProfile()" routerLink="/feed" class="btn btn-outline-deep-space rounded-pill mt-2">Go to Feed</a>
+                <button *ngIf="isOwnProfile()" (click)="openCreatePostModal()" class="btn btn-outline-deep-space rounded-pill mt-2">
+                  Create post
+                </button>
               </div>
               <div *ngIf="postErrorMessage()" class="alert alert-danger small mt-3">
                 {{ postErrorMessage() }}

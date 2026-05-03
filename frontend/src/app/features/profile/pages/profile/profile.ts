@@ -3,12 +3,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Auth } from '../../../../features/auth/services/auth';
 import { Subscriptions } from '../../../../core/services/subscriptions';
 import { User } from '../../../../core/models/user.model';
 import { Posts } from '../../../../features/posts/services/posts';
 import { Post } from '../../../../core/models/post.model';
 import { PostCard } from '../../../../features/posts/components/post-card/post-card';
+import { PostCreationModal } from '../../../../features/posts/components/post-creation-modal/post-creation-modal';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -25,6 +27,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   private readonly postsService = inject(Posts);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly modalService = inject(NgbModal);
 
   readonly form = this.formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
@@ -274,6 +277,30 @@ export class ProfilePage implements OnInit, OnDestroy {
     if (user?.postCount) {
       this.profileUser.set({ ...user, postCount: Math.max(0, user.postCount - 1) });
     }
+  }
+
+  openCreatePostModal(): void {
+    const modalRef = this.modalService.open(PostCreationModal, {
+      centered: true,
+      backdrop: 'static',
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result && this.isOwnProfile()) {
+          const user = this.profileUser();
+          if (user) {
+            this.loadPosts(user.id);
+            // Increment post count locally
+            this.profileUser.set({
+              ...user,
+              postCount: (user.postCount || 0) + 1
+            });
+          }
+        }
+      },
+      () => {}
+    );
   }
 
   onProfileImageSelected(event: Event): void {

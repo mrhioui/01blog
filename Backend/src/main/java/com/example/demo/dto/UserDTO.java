@@ -28,4 +28,5 @@ public class UserDTO {
     private Long followerCount;
     private Long followingCount;
     private Boolean isSubscribed;
+    private Boolean banned;
 }

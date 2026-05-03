@@ -114,18 +114,30 @@
             </div>
 
             <div *ngIf="!loadingNotifications() && notifications().length > 0" class="notification-list">
-              <button
+              <div
                 *ngFor="let notification of notifications()"
-                class="notification-item"
-                [class.unread]="!notification.isRead"
-                (click)="onNotificationClick(notification)"
+                class="notification-item-wrapper"
               >
-                <div class="notification-content">
-                  <span class="notification-message">{{ notification.message }}</span>
-                  <small class="notification-time text-muted">{{ notification.timestamp | date:'short' }}</small>
-                </div>
-                <div *ngIf="!notification.isRead" class="unread-dot"></div>
-              </button>
+                <button
+                  class="notification-item"
+                  [class.unread]="!notification.isRead"
+                  (click)="onNotificationClick(notification)"
+                >
+                  <div class="notification-content">
+                    <span class="notification-message">{{ notification.message }}</span>
+                    <small class="notification-time text-muted">{{ notification.timestamp | date:'short' }}</small>
+                  </div>
+                  <div *ngIf="!notification.isRead" class="unread-dot"></div>
+                </button>
+                <button
+                  *ngIf="!notification.isRead"
+                  class="btn btn-link btn-sm mark-read-btn"
+                  (click)="$event.stopPropagation(); markAsRead(notification)"
+                  title="Mark as read"
+                >
+                  <i class="bi bi-check2"></i>
+                </button>
+              </div>
             </div>
 
             <div *ngIf="!loadingNotifications() && !notifications().length" class="notification-empty">

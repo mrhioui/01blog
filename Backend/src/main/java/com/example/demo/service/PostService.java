@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class PostService {
 
     private final PostRepository postRepository;
@@ -34,6 +36,10 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
     private final com.example.demo.repository.SubscriptionRepository subscriptionRepository;
+
+    public long getPostCount() {
+        return postRepository.count();
+    }
 
     public Page<PostDTO> getPaginatedPosts(int page, int size, String requesterUsername) {
         log.info("Fetching paginated posts: page={}, size={}", page, size);
@@ -143,10 +149,13 @@ public class PostService {
             throw new AccessDeniedException("You cannot delete this post");
         }
 
+        // Clean up notifications related to this post
+        notificationService.deleteNotificationsByRelatedId(id, "NEW_POST");
+
         postRepository.delete(post);
     }
 
-    private PostDTO convertToDTO(Post post, String requesterUsername) {
+    public PostDTO convertToDTO(Post post, String requesterUsername) {
         User author = post.getAuthor();
         User requester = requesterUsername == null
                 ? null

@@ -15,4 +15,5 @@ export interface User {
   followerCount?: number;
   followingCount?: number;
   isSubscribed?: boolean;
+  banned?: boolean;
 }

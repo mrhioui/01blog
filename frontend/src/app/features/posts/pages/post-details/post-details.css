@@ -1,0 +1,13 @@
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+}
+
+.breadcrumb-item a {
+  color: var(--deep-space-blue);
+  font-weight: 600;
+}
+
+.breadcrumb-item.active {
+  color: var(--ink-soft);
+}

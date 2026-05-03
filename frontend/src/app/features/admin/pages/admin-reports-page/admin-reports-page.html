@@ -1,0 +1,49 @@
+<section class="card border-0 shadow-sm admin-page">
+  <div class="card-body p-4 p-lg-5">
+    <div class="small text-uppercase fw-semibold page-kicker mb-2">Admin Panel</div>
+    <h1 class="h2 mb-3">Report Handling</h1>
+
+    <ng-container *ngIf="isAdmin(); else restrictedState">
+      <div *ngIf="!reports() || reports().length === 0" class="alert alert-info mb-4">No reports found.</div>
+
+      <div *ngIf="reports() && reports().length > 0" class="table-responsive">
+        <table class="table table-striped table-hover admin-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Reported By</th>
+              <th scope="col">Reported User</th>
+              <th scope="col">Reported Post</th>
+              <th scope="col">Reason</th>
+              <th scope="col">Timestamp</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let report of reports(); let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ report.reporter.username }}</td>
+              <td>{{ report.reportedUser ? report.reportedUser.username : '-' }}</td>
+              <td>{{ report.reportedPost ? (report.reportedPost.content | slice:0:30) + (report.reportedPost.content.length > 30 ? '...' : '') : '-' }}</td>
+              <td>{{ report.reason }}</td>
+              <td>{{ report.timestamp | date: 'medium' }}</td>
+              <td>
+                <button class="btn btn-sm btn-danger me-1" (click)="deleteReport(report.id)">Delete Report</button>
+                <!-- Placeholder buttons for actions on user/post -->
+                <button *ngIf="report.reportedUser" class="btn btn-sm btn-warning me-1" (click)="banUser(report.reportedUser.id)">Ban User</button>
+                <button *ngIf="report.reportedPost" class="btn btn-sm btn-danger" (click)="deletePost(report.reportedPost.id)">Delete Post</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+    <ng-template #restrictedState>
+      <p class="mb-0 text-secondary">
+        You do not have administrator privileges to access this page.
+        <a routerLink="/">Back to feed</a>
+      </p>
+    </ng-template>
+  </div>
+</section>
