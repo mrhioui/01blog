@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ public class CommentController {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<Comment>> getAllComments() {
@@ -59,7 +61,13 @@ public class CommentController {
                 .post(post)
                 .build();
 
-        return ResponseEntity.ok(convertToDTO(commentRepository.save(comment)));
+        Comment savedComment = commentRepository.save(comment);
+        CommentDTO commentDTO = convertToDTO(savedComment);
+        
+        // Broadcast to specific post topic
+        messagingTemplate.convertAndSend("/topic/posts/" + post.getId() + "/comments", commentDTO);
+
+        return ResponseEntity.ok(commentDTO);
     }
 
     private CommentDTO convertToDTO(Comment comment) {

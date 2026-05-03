@@ -4,6 +4,7 @@ import com.example.demo.model.Notification;
 import com.example.demo.model.User;
 import com.example.demo.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public void createNotification(User user, String message, String type, Long relatedId) {
         Notification notification = Notification.builder()
@@ -26,7 +28,10 @@ public class NotificationService {
                 .isRead(false) // Changed from read(false) to isRead(false)
                 .timestamp(LocalDateTime.now())
                 .build();
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        
+        // Broadcast to user-specific topic
+        messagingTemplate.convertAndSend("/topic/users/" + user.getId() + "/notifications", saved);
     }
 
     public List<Notification> getUserNotifications(Long userId) {

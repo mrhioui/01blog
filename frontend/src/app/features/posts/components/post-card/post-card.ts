@@ -3,13 +3,17 @@ import { Component, OnDestroy, computed, effect, inject, input, output, signal }
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Post } from '../../../../core/models/post.model';
 import { Comment as PostComment } from '../../../../core/models/comment.model';
+import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
 import { environment } from '../../../../../environments/environment';
 import { Auth } from '../../../auth/services/auth';
 import { Posts } from '../../services/posts';
 import { Likes } from '../../../../core/services/likes';
 import { Comments } from '../../../../core/services/comments';
+import { WebsocketService } from '../../../../core/services/websocket';
+import { Subscription as RxSubscription } from 'rxjs';
 
 @Component({
   selector: 'app-post-card',
@@ -23,6 +27,8 @@ export class PostCard implements OnDestroy {
   private readonly postsService = inject(Posts);
   private readonly likesService = inject(Likes);
   private readonly commentsService = inject(Comments);
+  private readonly modalService = inject(NgbModal);
+  private readonly wsService = inject(WebsocketService);
 
   post = input.required<Post>();
   postUpdated = output<Post>();
@@ -46,6 +52,8 @@ export class PostCard implements OnDestroy {
   comments = signal<PostComment[]>([]);
   commentContent = signal('');
 
+  private wsSubscriptions: RxSubscription[] = [];
+
   currentUser = computed(() => this.authService.currentUser());
   isOwnPost = computed(() => this.currentUser()?.id === this.post().author.id);
 
@@ -54,10 +62,43 @@ export class PostCard implements OnDestroy {
     this.likeCount.set(post.likeCount ?? 0);
     this.commentCount.set(post.commentCount ?? 0);
     this.likedByCurrentUser.set(Boolean(post.likedByCurrentUser));
+    
+    this.setupWebsocket();
   });
 
   ngOnDestroy(): void {
     this.clearEditImage();
+    this.wsSubscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private setupWebsocket(): void {
+    const post = this.post();
+    
+    // Clear old subscriptions if post id changed
+    this.wsSubscriptions.forEach(sub => sub.unsubscribe());
+    this.wsSubscriptions = [];
+
+    // Subscribe to comments
+    this.wsSubscriptions.push(
+      this.wsService.subscribe<PostComment>(`/topic/posts/${post.id}/comments`).subscribe(comment => {
+        if (!this.comments().some(c => c.id === comment.id)) {
+          this.comments.update(list => [...list, comment]);
+          this.commentCount.update(c => c + 1);
+        }
+      })
+    );
+
+    // Subscribe to likes
+    this.wsSubscriptions.push(
+      this.wsService.subscribe<{ postId: number, liked: boolean, likeCount: number }>(`/topic/posts/${post.id}/likes`).subscribe(status => {
+        this.likeCount.set(status.likeCount);
+        // We only update likedByCurrentUser if the event is for the current user
+        // But the backend broadcasts the status for the user who toggled it.
+        // Actually, the backend broadcast should probably only contain the new count, 
+        // and users should fetch their own status if needed. 
+        // For now, let's just update the count.
+      })
+    );
   }
 
   protected resolveImageUrl(imageUrl: string | null | undefined): string | null {
@@ -208,6 +249,26 @@ export class PostCard implements OnDestroy {
         this.commenting.set(false);
       },
     });
+  }
+
+  openReportModal(): void {
+    if (!this.currentUser()) return;
+
+    const modalRef = this.modalService.open(ReportModal, {
+      centered: true,
+      backdrop: 'static',
+    });
+
+    modalRef.componentInstance.reportedPostId = this.post().id;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          alert('Report submitted successfully. Thank you for helping keep our community safe.');
+        }
+      },
+      () => {}
+    );
   }
 
   private loadComments(): void {

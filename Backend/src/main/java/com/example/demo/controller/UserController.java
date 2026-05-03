@@ -90,22 +90,22 @@ public class UserController {
 
     @PostMapping("/{id}/ban")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> banUser(@PathVariable("id") Long id) {
-        userService.banUser(id);
+    public ResponseEntity<Void> banUser(@PathVariable("id") Long id, Authentication authentication) {
+        userService.banUser(id, authentication.getName());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/unban")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> unbanUser(@PathVariable("id") Long id) {
-        userService.unbanUser(id);
+    public ResponseEntity<Void> unbanUser(@PathVariable("id") Long id, Authentication authentication) {
+        userService.unbanUser(id, authentication.getName());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id, Authentication authentication) {
+        userService.deleteUser(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 }

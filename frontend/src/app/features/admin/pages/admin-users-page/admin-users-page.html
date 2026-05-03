@@ -26,9 +26,14 @@
               <td>{{ user.role }}</td>
               <td>{{ user.banned ? 'Banned' : 'Active' }}</td>
               <td>
-                <button *ngIf="!user.banned" class="btn btn-sm btn-warning me-1" (click)="banUser(user.id)">Ban</button>
-                <button *ngIf="user.banned" class="btn btn-sm btn-success me-1" (click)="unbanUser(user.id)">Unban</button>
-                <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">Delete</button>
+                <div *ngIf="user.id !== currentUser()?.id; else selfActions">
+                  <button *ngIf="!user.banned" class="btn btn-sm btn-warning me-1" (click)="banUser(user.id)">Ban</button>
+                  <button *ngIf="user.banned" class="btn btn-sm btn-success me-1" (click)="unbanUser(user.id)">Unban</button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">Delete</button>
+                </div>
+                <ng-template #selfActions>
+                  <span class="badge bg-info text-dark">You</span>
+                </ng-template>
               </td>
             </tr>
           </tbody>

@@ -11,6 +11,7 @@ import { Posts } from '../../../../features/posts/services/posts';
 import { Post } from '../../../../core/models/post.model';
 import { PostCard } from '../../../../features/posts/components/post-card/post-card';
 import { PostCreationModal } from '../../../../features/posts/components/post-creation-modal/post-creation-modal';
+import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -297,6 +298,28 @@ export class ProfilePage implements OnInit, OnDestroy {
               postCount: (user.postCount || 0) + 1
             });
           }
+        }
+      },
+      () => {}
+    );
+  }
+
+  openReportModal(): void {
+    const user = this.profileUser();
+    if (!user || this.isOwnProfile()) return;
+
+    const modalRef = this.modalService.open(ReportModal, {
+      centered: true,
+      backdrop: 'static',
+    });
+
+    modalRef.componentInstance.reportedUserId = user.id;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.successMessage.set('Report submitted successfully. Thank you for helping keep our community safe.');
+          setTimeout(() => this.successMessage.set(''), 5000);
         }
       },
       () => {}

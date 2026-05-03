@@ -36,20 +36,55 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
     private final com.example.demo.repository.SubscriptionRepository subscriptionRepository;
+    private final com.example.demo.repository.ReportRepository reportRepository;
 
     public long getPostCount() {
         return postRepository.count();
     }
 
     public Page<PostDTO> getPaginatedPosts(int page, int size, String requesterUsername) {
-        log.info("Fetching paginated posts: page={}, size={}", page, size);
-        Page<Post> postsPage = postRepository.findAllByOrderByTimestampDesc(PageRequest.of(page, size));
+        log.info("Fetching paginated posts: page={}, size={}, requester={}", page, size, requesterUsername);
+        
+        User requester = requesterUsername != null 
+                ? userRepository.findByUsername(requesterUsername).orElse(null)
+                : null;
+
+        Page<Post> postsPage;
+        if (requester != null) {
+            List<Long> followedIds = new java.util.ArrayList<>();
+            followedIds.add(requester.getId());
+            
+            subscriptionRepository.findBySubscriberId(requester.getId())
+                    .forEach(sub -> followedIds.add(sub.getTarget().getId()));
+
+            postsPage = postRepository.findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(page, size));
+        } else {
+            postsPage = postRepository.findAllByOrderByTimestampDesc(PageRequest.of(page, size));
+        }
+
         log.info("Found {} posts in DB for this page", postsPage.getNumberOfElements());
         return postsPage.map(post -> convertToDTO(post, requesterUsername));
     }
 
     public List<PostDTO> getAllPosts(String requesterUsername) {
-        return postRepository.findAllByOrderByTimestampDesc().stream()
+        User requester = requesterUsername != null 
+                ? userRepository.findByUsername(requesterUsername).orElse(null)
+                : null;
+
+        List<Post> posts;
+        if (requester != null) {
+            List<Long> followedIds = new java.util.ArrayList<>();
+            followedIds.add(requester.getId());
+            
+            subscriptionRepository.findBySubscriberId(requester.getId())
+                    .forEach(sub -> followedIds.add(sub.getTarget().getId()));
+
+            posts = postRepository.findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(0, Integer.MAX_VALUE)).getContent();
+        } else {
+            posts = postRepository.findAllByOrderByTimestampDesc();
+        }
+
+        return posts.stream()
                 .map(post -> convertToDTO(post, requesterUsername))
                 .collect(Collectors.toList());
     }
@@ -151,6 +186,9 @@ public class PostService {
 
         // Clean up notifications related to this post
         notificationService.deleteNotificationsByRelatedId(id, "NEW_POST");
+
+        // Clean up reports related to this post
+        reportRepository.deleteByReportedPostId(id);
 
         postRepository.delete(post);
     }

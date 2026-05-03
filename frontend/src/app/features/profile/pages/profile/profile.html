@@ -108,14 +108,20 @@
                   <span class="ms-2">{{ showEditForm() ? 'Cancel' : 'Edit Profile' }}</span>
                 </button>
 
-                <button *ngIf="!isOwnProfile() && currentUser()" 
-                        class="btn rounded-pill px-4" 
-                        [class.btn-golden-orange]="!user.isSubscribed"
-                        [class.btn-outline-golden-orange]="user.isSubscribed"
-                        (click)="toggleSubscription()">
-                  <i class="bi" [class.bi-person-plus]="!user.isSubscribed" [class.bi-person-check-fill]="user.isSubscribed"></i>
-                  <span class="ms-2">{{ user.isSubscribed ? 'Subscribed' : 'Subscribe' }}</span>
-                </button>
+                <div *ngIf="!isOwnProfile() && currentUser()" class="d-flex gap-2">
+                  <button 
+                          class="btn rounded-pill px-4" 
+                          [class.btn-golden-orange]="!user.isSubscribed"
+                          [class.btn-outline-golden-orange]="user.isSubscribed"
+                          (click)="toggleSubscription()">
+                    <i class="bi" [class.bi-person-plus]="!user.isSubscribed" [class.bi-person-check-fill]="user.isSubscribed"></i>
+                    <span class="ms-2">{{ user.isSubscribed ? 'Subscribed' : 'Subscribe' }}</span>
+                  </button>
+
+                  <button class="btn btn-outline-danger rounded-pill px-4" (click)="openReportModal()" title="Report Profile">
+                    <i class="bi bi-flag"></i>
+                  </button>
+                </div>
               </div>
 
               <!-- Edit Form -->

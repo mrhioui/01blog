@@ -30,7 +30,7 @@
               <td>
                 <button class="btn btn-sm btn-danger me-1" (click)="deleteReport(report.id)">Delete Report</button>
                 <!-- Placeholder buttons for actions on user/post -->
-                <button *ngIf="report.reportedUser" class="btn btn-sm btn-warning me-1" (click)="banUser(report.reportedUser.id)">Ban User</button>
+                <button *ngIf="report.reportedUser && report.reportedUser.id !== currentUser()?.id" class="btn btn-sm btn-warning me-1" (click)="banUser(report.reportedUser.id)">Ban User</button>
                 <button *ngIf="report.reportedPost" class="btn btn-sm btn-danger" (click)="deletePost(report.reportedPost.id)">Delete Post</button>
               </td>
             </tr>

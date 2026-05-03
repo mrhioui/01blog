@@ -15,13 +15,15 @@ export const authGuard: CanActivateFn = (route, state) => {
   });
 };
 
-export const adminGuard: CanActivateFn = (): boolean | UrlTree => {
+export const adminGuard: CanActivateFn = (route, state): boolean | UrlTree => {
   const authService = inject(Auth);
   const router = inject(Router);
   const currentUser = authService.currentUser();
 
   if (!authService.isLoggedIn()) {
-    return router.createUrlTree(['/login']);
+    return router.createUrlTree(['/login'], {
+      queryParams: { redirectTo: state.url },
+    });
   }
 
   if (currentUser?.role === 'ROLE_ADMIN') {

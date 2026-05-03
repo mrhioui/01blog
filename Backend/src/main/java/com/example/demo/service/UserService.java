@@ -27,6 +27,7 @@ public class UserService {
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
+    private final com.example.demo.repository.ReportRepository reportRepository;
 
     public long getUserCount() {
         return userRepository.count();
@@ -158,24 +159,44 @@ public class UserService {
         return convertToDTO(user, requester);
     }
 
-    public void banUser(Long id) {
+    public void banUser(Long id, String requesterUsername) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new RuntimeException("Requester not found"));
+
+        if (Objects.equals(user.getId(), requester.getId())) {
+            throw new RuntimeException("You cannot ban yourself");
+        }
+
         user.setBanned(true);
         userRepository.save(user);
     }
 
-    public void unbanUser(Long id) {
+    public void unbanUser(Long id, String requesterUsername) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        
         user.setBanned(false);
         userRepository.save(user);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id, String requesterUsername) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found");
         }
+
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new RuntimeException("Requester not found"));
+
+        if (Objects.equals(id, requester.getId())) {
+            throw new RuntimeException("You cannot delete your own account");
+        }
+
+        // Clean up reports related to this user
+        reportRepository.deleteByReportedUserId(id);
+        
         userRepository.deleteById(id);
     }
 

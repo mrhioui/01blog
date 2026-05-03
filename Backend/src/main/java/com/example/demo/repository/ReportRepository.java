@@ -4,4 +4,6 @@ import com.example.demo.model.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
+    void deleteByReportedPostId(Long postId);
+    void deleteByReportedUserId(Long userId);
 }

@@ -105,6 +105,10 @@
         <i class="bi bi-chat"></i>
         <span>{{ commentCount() }}</span>
       </button>
+
+      <button *ngIf="!isOwnPost() && currentUser()" type="button" class="btn btn-sm post-engagement-button text-danger ms-auto" (click)="openReportModal()" title="Report Post">
+        <i class="bi bi-flag"></i>
+      </button>
     </div>
 
     <div *ngIf="commentsOpen()" class="post-comments mt-3">
