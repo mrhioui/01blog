@@ -12,7 +12,6 @@ import { Auth } from '../../../auth/services/auth';
 import { Posts } from '../../services/posts';
 import { Likes } from '../../../../core/services/likes';
 import { Comments } from '../../../../core/services/comments';
-import { WebsocketService } from '../../../../core/services/websocket';
 import { Subscription as RxSubscription } from 'rxjs';
 
 @Component({
@@ -28,7 +27,6 @@ export class PostCard implements OnDestroy {
   private readonly likesService = inject(Likes);
   private readonly commentsService = inject(Comments);
   private readonly modalService = inject(NgbModal);
-  private readonly wsService = inject(WebsocketService);
 
   post = input.required<Post>();
   postUpdated = output<Post>();
@@ -62,8 +60,6 @@ export class PostCard implements OnDestroy {
     this.likeCount.set(post.likeCount ?? 0);
     this.commentCount.set(post.commentCount ?? 0);
     this.likedByCurrentUser.set(Boolean(post.likedByCurrentUser));
-    
-    this.setupWebsocket();
   });
 
   ngOnDestroy(): void {
@@ -71,35 +67,6 @@ export class PostCard implements OnDestroy {
     this.wsSubscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  private setupWebsocket(): void {
-    const post = this.post();
-    
-    // Clear old subscriptions if post id changed
-    this.wsSubscriptions.forEach(sub => sub.unsubscribe());
-    this.wsSubscriptions = [];
-
-    // Subscribe to comments
-    this.wsSubscriptions.push(
-      this.wsService.subscribe<PostComment>(`/topic/posts/${post.id}/comments`).subscribe(comment => {
-        if (!this.comments().some(c => c.id === comment.id)) {
-          this.comments.update(list => [...list, comment]);
-          this.commentCount.update(c => c + 1);
-        }
-      })
-    );
-
-    // Subscribe to likes
-    this.wsSubscriptions.push(
-      this.wsService.subscribe<{ postId: number, liked: boolean, likeCount: number }>(`/topic/posts/${post.id}/likes`).subscribe(status => {
-        this.likeCount.set(status.likeCount);
-        // We only update likedByCurrentUser if the event is for the current user
-        // But the backend broadcasts the status for the user who toggled it.
-        // Actually, the backend broadcast should probably only contain the new count, 
-        // and users should fetch their own status if needed. 
-        // For now, let's just update the count.
-      })
-    );
-  }
 
   protected resolveImageUrl(imageUrl: string | null | undefined): string | null {
     if (!imageUrl) return null;

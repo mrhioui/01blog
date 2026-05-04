@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,6 @@ public class LikeController {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<PostLike>> getAllLikes() {
@@ -77,9 +75,6 @@ public class LikeController {
 
         LikeStatusResponse status = buildStatus(postId, authentication);
         
-        // Broadcast to specific post topic
-        messagingTemplate.convertAndSend("/topic/posts/" + postId + "/likes", status);
-
         return ResponseEntity.ok(status);
     }
 

@@ -13,7 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,6 @@ public class CommentController {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<Comment>> getAllComments() {
@@ -49,9 +47,14 @@ public class CommentController {
             throw new RuntimeException("Comment is required");
         }
 
+        Long postId = request.getPostId();
+        if (postId == null) {
+            throw new RuntimeException("Post ID is required");
+        }
+
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Post post = postRepository.findById(request.getPostId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Comment comment = Comment.builder()
@@ -64,9 +67,6 @@ public class CommentController {
         Comment savedComment = commentRepository.save(comment);
         CommentDTO commentDTO = convertToDTO(savedComment);
         
-        // Broadcast to specific post topic
-        messagingTemplate.convertAndSend("/topic/posts/" + post.getId() + "/comments", commentDTO);
-
         return ResponseEntity.ok(commentDTO);
     }
 

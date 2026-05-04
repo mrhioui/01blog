@@ -5,7 +5,6 @@ import { NgbCollapseModule, NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng
 import { Auth } from '../../../features/auth/services/auth';
 import { Notifications } from '../../../core/services/notifications';
 import { PostCreationModal } from '../../../features/posts/components/post-creation-modal/post-creation-modal';
-import { WebsocketService } from '../../../core/services/websocket';
 import { User } from '../../../core/models/user.model';
 import { Subscription as RxSubscription } from 'rxjs';
 
@@ -21,7 +20,6 @@ export class Navbar implements OnInit, OnDestroy {
   private readonly notificationService = inject(Notifications);
   private readonly router = inject(Router);
   private readonly modalService = inject(NgbModal);
-  private readonly wsService = inject(WebsocketService);
 
   protected isMenuCollapsed = signal(true);
   protected searchQuery = signal('');
@@ -41,7 +39,6 @@ export class Navbar implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.isLoggedIn()) {
       this.fetchNotificationCount();
-      this.setupWebsocket();
     }
   }
 
@@ -49,22 +46,11 @@ export class Navbar implements OnInit, OnDestroy {
     this.wsSubscription?.unsubscribe();
   }
 
-  private setupWebsocket(): void {
-    const user = this.currentUser();
-    if (!user) return;
-
-    this.wsSubscription = this.wsService.subscribe<any>(`/topic/users/${user.id}/notifications`).subscribe(notification => {
-      this.notificationCount.update(c => c + 1);
-      if (this.notifications().length > 0) {
-        this.notifications.update(list => [notification, ...list]);
-      }
-    });
-  }
 
   private fetchNotificationCount(): void {
     this.notificationService.getUnreadCount().subscribe({
       next: (count) => this.notificationCount.set(count),
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -122,7 +108,7 @@ export class Navbar implements OnInit, OnDestroy {
           }
         }
       },
-      () => {}
+      () => { }
     );
   }
 
