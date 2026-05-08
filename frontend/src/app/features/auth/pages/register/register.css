@@ -1,52 +1,67 @@
-.auth-panel {
-  overflow: hidden;
-  border-radius: 1.75rem;
-  background: rgba(229, 218, 218, 0.92);
+.auth-card {
+  min-height: 55px;
+  display: flex;
+  flex-direction: column;
 }
 
-.auth-copy {
-  background: linear-gradient(160deg, var(--dark-amaranth), var(--deep-space-blue));
-  color: var(--dust-grey);
+.auth-card .row {
+  flex-grow: 1;
 }
 
-.auth-eyebrow {
-  display: inline-block;
-  margin-bottom: 1rem;
-  color: var(--golden-orange);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.8rem;
-  font-weight: 700;
+.auth-title {
+  color: var(--deep-space-blue);
+  letter-spacing: -0.02em;
 }
 
-.custom-input {
-  border-radius: 1rem;
-  border-color: rgba(0, 38, 66, 0.15);
+.auth-input {
+  border-radius: 0.75rem;
+  border-color: rgba(0, 38, 66, 0.1);
 }
 
-.custom-input:focus {
+.auth-input:focus {
   border-color: var(--golden-orange);
-  box-shadow: 0 0 0 0.25rem rgba(229, 149, 0, 0.18);
+  box-shadow: 0 0 0 0.25rem rgba(229, 149, 0, 0.15);
 }
 
 .app-btn-primary {
-  border: 0;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--golden-orange), var(--dark-amaranth));
-  color: var(--dust-grey);
-  font-weight: 700;
+  background: var(--deep-space-blue);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  padding: 0.8rem;
+  transition: all 0.3s ease;
 }
 
 .app-btn-primary:hover {
-  color: var(--dust-grey);
+  background: var(--dark-amaranth);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(132, 0, 50, 0.2);
 }
 
-.response-card {
-  background: rgba(229, 218, 218, 0.08);
-  border: 1px solid rgba(229, 218, 218, 0.14);
+.auth-link {
+  color: var(--golden-orange);
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.auth-link,
-.text-secondary-soft {
-  color: rgba(229, 218, 218, 0.82);
+.auth-link:hover {
+  color: var(--dark-amaranth);
+}
+
+.auth-image-container {
+  background-color: var(--dust-grey);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.auth-image-container img {
+  opacity: 0.9;
+  mix-blend-mode: multiply;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }

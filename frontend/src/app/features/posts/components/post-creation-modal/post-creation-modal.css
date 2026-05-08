@@ -2,56 +2,81 @@
   color: var(--deep-space-blue);
 }
 
-.btn-dark-amaranth {
-  background-color: var(--dark-amaranth);
-  color: white;
-  border: none;
+.auth-input {
+  border-radius: 0.75rem;
+  border-color: rgba(0, 38, 66, 0.1);
+  background-color: #fcfcfc;
 }
 
-.btn-dark-amaranth:hover {
-  background-color: #6a0028;
-  color: white;
-}
-
-.custom-input {
-  background-color: #f8f9fa;
-  border: 1px solid var(--dust-grey);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-}
-
-.custom-input:focus {
+.auth-input:focus {
   background-color: white;
   border-color: var(--golden-orange);
   box-shadow: 0 0 0 0.25rem rgba(229, 149, 0, 0.15);
 }
 
-.modal-content {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+.h-150 {
+  height: 150px !important;
 }
 
-.upload-placeholder {
+.upload-area {
+  border: 2px dashed rgba(0, 38, 66, 0.1);
+  background-color: #fcfcfc;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border-width: 2px !important;
+  transition: all 0.2s ease;
+  color: var(--ink-soft);
 }
 
-.upload-placeholder:hover {
-  background-color: #f1f3f5 !important;
-  border-color: var(--dark-amaranth) !important;
+.upload-area:hover {
+  background-color: rgba(229, 149, 0, 0.03);
+  border-color: var(--golden-orange);
+  color: var(--golden-orange);
 }
 
-.upload-placeholder i {
-  transition: transform 0.2s ease-in-out;
+.upload-area i {
+  transition: transform 0.2s ease;
 }
 
-.upload-placeholder:hover i {
-  transform: scale(1.1);
-  color: var(--dark-amaranth) !important;
+.upload-area:hover i {
+  transform: translateY(-3px);
 }
 
-.border-dashed {
-  border-style: dashed !important;
+.preview-container {
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+.preview-container img, 
+.preview-container video {
+  max-height: 400px;
+  width: 100%;
+  object-fit: contain;
+}
+
+.app-btn-primary {
+  background: var(--deep-space-blue);
+  color: white;
+  border: none;
+  font-weight: 700;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.app-btn-primary:hover:not(:disabled) {
+  background: var(--dark-amaranth);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(132, 0, 50, 0.2);
+}
+
+.app-btn-primary:disabled {
+  opacity: 0.6;
+}
+
+.x-small {
+  font-size: 0.75rem;
+}
+
+.ls-1 {
+  letter-spacing: 0.5px;
 }

@@ -1,87 +1,133 @@
-/* Admin Dashboard Specific Styles */
-.admin-page {
-  background-color: var(--bs-body-bg); /* Use theme's default background */
+.admin-dashboard-wrapper {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.admin-page-card {
+  background-color: transparent;
 }
 
 .page-kicker {
-  color: var(--golden-orange);
+  color: var(--dark-amaranth);
+  letter-spacing: 0.1em;
 }
 
-.admin-stat {
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 38, 66, 0.05);
+/* Mini Stat Cards */
+.mini-stat-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.admin-stat .stat-label {
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.admin-stat .stat-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--deep-space-blue);
-}
-
-.admin-card-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.admin-card {
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 2rem 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 38, 66, 0.05);
-  text-align: center;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  height: 100%; /* Ensure cards have equal height within row */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.admin-card:hover {
+.mini-stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: white !important;
+  box-shadow: 0 10px 20px rgba(0, 38, 66, 0.05) !important;
 }
 
-.admin-card i {
-  font-size: 2.5rem;
-  color: var(--golden-orange);
-  margin-bottom: 1rem;
-}
-
-.admin-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  color: var(--deep-space-blue);
-}
-
-.admin-card p {
-  font-size: 0.95rem;
+/* Nav Menu / Tabs */
+.admin-nav-item {
   color: var(--ink-soft);
-  margin-bottom: 0;
+  opacity: 0.7;
+  padding: 1rem 0 !important;
+  border-bottom: 3px solid transparent !important;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.admin-nav-item:hover {
+  opacity: 1;
+  color: var(--deep-space-blue);
+  background-color: rgba(0, 38, 66, 0.02);
+}
+
+.admin-nav-item.active {
+  color: var(--dark-amaranth);
+  opacity: 1;
+  border-bottom-color: var(--dark-amaranth) !important;
+}
+
+.admin-nav-item i {
+  font-size: 1.1rem;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border: 1px solid rgba(229, 218, 218, 0.5) !important;
+}
+
+.admin-table thead th {
+  background-color: #fcfcfc;
+  color: var(--ink-soft);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid rgba(229, 218, 218, 0.3);
+}
+
+.admin-table tbody td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(229, 218, 218, 0.2);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+  background-color: rgba(229, 149, 0, 0.015);
+}
+
+/* Badges and Subtles */
+.bg-primary-subtle { background-color: rgba(0, 38, 66, 0.1); }
+.bg-warning-subtle { background-color: rgba(229, 149, 0, 0.1); }
+.bg-danger-subtle { background-color: rgba(132, 0, 50, 0.1); }
+.bg-success-subtle { background-color: rgba(25, 135, 84, 0.1); }
+.bg-info-subtle { background-color: rgba(13, 202, 240, 0.1); }
+
+.text-success { color: #198754 !important; }
+.text-danger { color: #dc3545 !important; }
+.text-info { color: #0dcaf0 !important; }
+.text-warning { color: #f59e0b !important; }
+
+.x-small { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.02em; }
+.ls-1 { letter-spacing: 0.05em; }
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utilities */
+.hover-shadow:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
 }
 
 @media (max-width: 768px) {
-  .admin-stat {
-    padding: 1rem;
+  .admin-nav-menu {
+    gap: 1.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none; /* Firefox */
   }
-  .admin-card {
-    padding: 1.5rem 1rem;
-  }
-  .admin-card i {
-    font-size: 2rem;
-  }
-  .admin-card h3 {
-    font-size: 1.1rem;
+  .admin-nav-menu::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+  
+  .admin-nav-item {
+    font-size: 0.7rem;
   }
 }

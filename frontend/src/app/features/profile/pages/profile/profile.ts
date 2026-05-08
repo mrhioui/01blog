@@ -14,12 +14,15 @@ import { PostCreationModal } from '../../../../features/posts/components/post-cr
 import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
 import { environment } from '../../../../../environments/environment';
 
+import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-profile-page',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, PostCard],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
+  providers: [ResolveUrlPipe]
 })
 export class ProfilePage implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
@@ -29,6 +32,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly modalService = inject(NgbModal);
+  private readonly resolveUrlPipe = inject(ResolveUrlPipe);
 
   readonly form = this.formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
@@ -242,7 +246,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     if (this.profileImageLoadFailed()) {
       return null;
     }
-    return this.resolveImageUrl(this.profileUser()?.profileImageUrl);
+    return this.resolveUrlPipe.transform(this.profileUser()?.profileImageUrl);
   }
 
   bannerImageSrc(): string | null {
@@ -253,7 +257,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     if (this.bannerImageLoadFailed()) {
       return null;
     }
-    return this.resolveImageUrl(this.profileUser()?.bannerImageUrl);
+    return this.resolveUrlPipe.transform(this.profileUser()?.bannerImageUrl);
   }
 
   profileInitial(): string {
@@ -473,12 +477,5 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.selectedBannerImagePreviewUrl.set(null);
     this.confirmingProfileImage.set(false);
     this.confirmingBannerImage.set(false);
-  }
-
-  private resolveImageUrl(imageUrl: string | null | undefined): string | null {
-    if (!imageUrl) return null;
-    if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
-    const backendBaseUrl = environment.apiUrl.replace(/\/api\/?$/, '');
-    return `${backendBaseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
   }
 }

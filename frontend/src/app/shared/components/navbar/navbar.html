@@ -1,184 +1,181 @@
-<nav class="navbar navbar-expand-lg app-navbar px-3 px-lg-4 py-3">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-3 me-0" routerLink="/">
-      <span class="brand__mark">01</span>
-      <span class="d-flex flex-column">
-        <strong class="brand__title">01Blog</strong>
-      </span>
+<nav class="navbar navbar-expand-lg app-navbar sticky-top border-bottom">
+  <div class="container py-1">
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+      <div class="brand-logo">01</div>
+      <span class="fw-bold brand-text">01Blog</span>
     </a>
 
     <button
-      class="navbar-toggler app-navbar-toggler"
+      class="navbar-toggler"
       type="button"
-      aria-controls="mainNavbarMenu"
       [attr.aria-expanded]="!isMenuCollapsed()"
       aria-label="Toggle navigation"
       (click)="isMenuCollapsed.set(!isMenuCollapsed())"
     >
-      <span class="navbar-toggler-icon"></span>
+      <i class="bi bi-list fs-2 text-white"></i>
     </button>
 
-    <div class="collapse navbar-collapse mt-3 mt-lg-0" id="mainNavbarMenu" [ngbCollapse]="isMenuCollapsed()">
-      <div *ngIf="isLoggedIn()" class="navbar-search mx-lg-3 my-3 my-lg-0">
-        <i class="bi bi-search search-icon"></i>
-        <input
-          class="form-control navbar-search-input"
-          type="search"
-          placeholder="Search users"
-          [value]="searchQuery()"
-          (input)="onSearchInput($any($event.target).value)"
-          (focus)="searchOpen.set(true)"
-          (blur)="closeSearch()"
-        />
-
-        <div *ngIf="searchOpen() && (searchQuery().trim().length >= 2 || searchLoading())" class="search-results shadow">
-          <div *ngIf="searchLoading()" class="search-state">Searching...</div>
-
-          <button
-            *ngFor="let user of searchResults()"
-            type="button"
-            class="search-result"
-            (mousedown)="selectUser(user)"
-          >
-            <span class="search-avatar">{{ user.username.charAt(0).toUpperCase() }}</span>
-            <span class="search-copy">
-              <strong>{{ user.username }}</strong>
-              <small>{{ user.email }}</small>
-            </span>
-          </button>
-
-          <div *ngIf="!searchLoading() && !searchResults().length" class="search-state">No users found</div>
-        </div>
-      </div>
-
-      <div class="navbar-nav ms-lg-auto align-items-lg-center gap-2">
-        <a
-          class="btn app-nav-btn"
-          routerLink="/"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="isMenuCollapsed.set(true)"
-        >
-          Feed
-        </a>
-
-        <a
-          *ngIf="!isLoggedIn()"
-          class="btn app-nav-btn"
-          routerLink="/login"
-          routerLinkActive="active"
-          (click)="isMenuCollapsed.set(true)"
-        >
-          Login
-        </a>
-
-        <a
-          *ngIf="!isLoggedIn()"
-          class="btn app-nav-btn"
-          routerLink="/register"
-          routerLinkActive="active"
-          (click)="isMenuCollapsed.set(true)"
-        >
-          Register
-        </a>
-
-        <a
-          *ngIf="isLoggedIn()"
-          class="btn app-nav-btn mx-2 px-5"
-          (click)="openCreatePostModal()"
-        >
-          <i class="bi bi-plus-lg me-2"></i>
-          Create Post
-        </a>
-
-        <div *ngIf="isLoggedIn()" ngbDropdown class="nav-item dropdown notification-dropdown" (openChange)="$event && loadNotifications()">
-          <button
-            class="btn app-nav-btn icon-nav-btn position-relative"
-            type="button"
-            id="notificationMenu"
-            ngbDropdownToggle
-            aria-label="Notifications"
-          >
-            <i class="bi bi-bell"></i>
-            <span *ngIf="notificationCount()" class="notification-badge">{{ notificationCount() }}</span>
-          </button>
-
-          <div ngbDropdownMenu aria-labelledby="notificationMenu" class="dropdown-menu dropdown-menu-end notification-menu shadow">
-            <div class="notification-header d-flex justify-content-between align-items-center">
-              <strong>Notifications</strong>
-              <button *ngIf="notificationCount() > 0" class="btn btn-link btn-sm p-0" (click)="$event.stopPropagation(); markAllAsRead()">Mark all as read</button>
-            </div>
-            
-            <div *ngIf="loadingNotifications()" class="notification-loading text-center p-3">
-              <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-            </div>
-
-            <div *ngIf="!loadingNotifications() && notifications().length > 0" class="notification-list">
-              <div
-                *ngFor="let notification of notifications()"
-                class="notification-item-wrapper"
-              >
-                <button
-                  class="notification-item"
-                  [class.unread]="!notification.isRead"
-                  (click)="onNotificationClick(notification)"
-                >
-                  <div class="notification-content">
-                    <span class="notification-message">{{ notification.message }}</span>
-                    <small class="notification-time text-muted">{{ notification.timestamp | date:'short' }}</small>
-                  </div>
-                  <div *ngIf="!notification.isRead" class="unread-dot"></div>
-                </button>
-                <button
-                  *ngIf="!notification.isRead"
-                  class="btn btn-link btn-sm mark-read-btn"
-                  (click)="$event.stopPropagation(); markAsRead(notification)"
-                  title="Mark as read"
-                >
-                  <i class="bi bi-check2"></i>
-                </button>
-              </div>
-            </div>
-
-            <div *ngIf="!loadingNotifications() && !notifications().length" class="notification-empty">
-              <i class="bi bi-bell-slash"></i>
-              <span>No notifications yet</span>
-            </div>
-          </div>
+    <div class="collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed()">
+      <!-- Search Bar (Visible when logged in) -->
+      <div *ngIf="isLoggedIn()" class="navbar-nav mx-lg-auto my-3 my-lg-0 search-container w-100 max-width-400">
+        <div class="input-group search-input-group">
+          <span class="input-group-text border-0 bg-transparent ps-3">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input
+            class="form-control border-0 bg-transparent py-2"
+            type="search"
+            placeholder="Search users..."
+            [value]="searchQuery()"
+            (input)="onSearchInput($any($event.target).value)"
+            (focus)="searchOpen.set(true)"
+            (blur)="closeSearch()"
+          />
         </div>
 
-        <div *ngIf="isLoggedIn()" ngbDropdown class="nav-item dropdown profile-dropdown ms-lg-2">
-          <button
-            class="btn app-nav-btn profile-toggle dropdown-toggle"
-            type="button"
-            id="profileMenu"
-            ngbDropdownToggle
-          >
-            <span class="profile-name">{{ currentUser()?.username }}</span>
-          </button>
+        <!-- Search Results Dropdown -->
+        <div *ngIf="searchOpen() && (searchQuery().trim().length >= 2 || searchLoading())" class="search-results-overlay shadow-lg rounded-3">
+          <div *ngIf="searchLoading()" class="p-3 text-center small text-muted">Searching...</div>
 
-          <div ngbDropdownMenu aria-labelledby="profileMenu" class="dropdown-menu dropdown-menu-end profile-menu">
-            <a
-              *ngIf="isAdmin()"
-              ngbDropdownItem
-              routerLink="/admin"
-              (click)="isMenuCollapsed.set(true)"
+          <div class="list-group list-group-flush">
+            <button
+              *ngFor="let user of searchResults()"
+              type="button"
+              class="list-group-item list-group-item-action d-flex align-items-center gap-3 border-0 py-2"
+              (mousedown)="selectUser(user)"
             >
-              <i class="bi bi-speedometer2 me-2"></i>
-              Admin dashboard
-            </a>
-            <a ngbDropdownItem routerLink="/profile" (click)="isMenuCollapsed.set(true)">
-              <i class="bi bi-person-circle me-2"></i>
-              Profile
-            </a>
-            <div class="dropdown-divider"></div>
-            <button ngbDropdownItem type="button" class="logout-item" (click)="logout()">
-              <i class="bi bi-box-arrow-right me-2"></i>
-              Logout
+              <div class="avatar-sm rounded-circle text-center bg-primary text-white small overflow-hidden">
+                <ng-container *ngIf="user.profileImageUrl && user.profileImageUrl !== 'null'; else searchFallback">
+                  <img 
+                    [src]="user.profileImageUrl | resolveUrl" 
+                    class="w-100 h-100 object-fit-cover" 
+                    [alt]="user.username"
+                    #searchImg
+                    (error)="searchImg.style.display = 'none'; searchFallbackElement.style.display = 'block'"
+                  >
+                  <span #searchFallbackElement style="display: none">
+                    {{ user.username.charAt(0).toUpperCase() }}
+                  </span>
+                </ng-container>
+                <ng-template #searchFallback>
+                  <span>{{ user.username.charAt(0).toUpperCase() }}</span>
+                </ng-template>
+              </div>
+              <div class="d-flex flex-column overflow-hidden">
+                <span class="fw-bold text-truncate small">{{ user.username }}</span>
+                <span class="text-muted text-truncate x-small">{{ user.email }}</span>
+              </div>
             </button>
           </div>
+
+          <div *ngIf="!searchLoading() && !searchResults().length" class="p-3 text-center small text-muted">No users found</div>
         </div>
       </div>
+
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+        <li class="nav-item">
+          <a class="nav-link px-3" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Feed</a>
+        </li>
+
+        <ng-container *ngIf="!isLoggedIn()">
+          <li class="nav-item">
+            <a class="nav-link px-3" routerLink="/login" routerLinkActive="active">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn app-btn-accent rounded-pill px-4 ms-lg-2" routerLink="/register">Register</a>
+          </li>
+        </ng-container>
+
+        <ng-container *ngIf="isLoggedIn()">
+          <!-- Create Post Button -->
+          <li class="nav-item me-lg-3">
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center gap-2" (click)="openCreatePostModal()">
+              <i class="bi bi-plus-lg"></i>
+              <span>Post</span>
+            </button>
+          </li>
+
+          <!-- Notifications -->
+          <li class="nav-item dropdown px-lg-2" ngbDropdown (openChange)="$event && loadNotifications()">
+            <button class="nav-link border-0 bg-transparent position-relative" id="notifDropdown" ngbDropdownToggle>
+              <i class="bi bi-bell fs-5"></i>
+              <span *ngIf="notificationCount()" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger x-small">
+                {{ notificationCount() }}
+              </span>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="notifDropdown" class="dropdown-menu dropdown-menu-end shadow-lg notification-dropdown mt-2 border-0 rounded-4 overflow-hidden">
+              <div class="notification-header d-flex justify-content-between align-items-center py-3 px-4">
+                <span class="fw-bold text-deep-space">Notifications</span>
+                <button *ngIf="notificationCount() > 0" class="btn btn-link btn-sm text-decoration-none p-0 x-small fw-bold" style="color: var(--dark-amaranth)" (click)="$event.stopPropagation(); markAllAsRead()">Mark all read</button>
+              </div>
+              <div class="notification-scroll-area">
+                <div *ngIf="loadingNotifications()" class="text-center p-3">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                </div>
+                <div *ngIf="!loadingNotifications() && notifications().length > 0">
+                  <div *ngFor="let notification of notifications()" class="notification-item-box border-bottom" [class.unread]="!notification.isRead">
+                    <button class="dropdown-item p-3" (click)="onNotificationClick(notification)">
+                      <div class="d-flex flex-column gap-1">
+                        <span class="small text-wrap">{{ notification.message }}</span>
+                        <span class="x-small text-muted">{{ notification.timestamp | date:'shortTime' }}</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+                <div *ngIf="!loadingNotifications() && !notifications().length" class="p-4 text-center text-muted small">
+                  <i class="bi bi-bell-slash d-block fs-4 mb-2 opacity-50"></i>
+                  No new updates
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Profile -->
+          <li class="nav-item dropdown ms-lg-2" ngbDropdown>
+            <button class="nav-link dropdown-toggle d-flex align-items-center gap-2 border-0 bg-transparent" id="profileDropdown" ngbDropdownToggle>
+              <div class="avatar-sm rounded-circle bg-accent text-white overflow-hidden">
+                <ng-container *ngIf="currentUser()?.profileImageUrl && currentUser()?.profileImageUrl !== 'null'; else profileFallback">
+                  <img 
+                    [src]="currentUser()?.profileImageUrl | resolveUrl" 
+                    class="w-100 h-100 object-fit-cover" 
+                    [alt]="currentUser()?.username"
+                    #profileImg
+                    (error)="profileImg.style.display = 'none'; profileFallbackElement.style.display = 'block'"
+                  >
+                  <span #profileFallbackElement style="display: none">
+                    {{ currentUser()?.username?.charAt(0)?.toUpperCase() }}
+                  </span>
+                </ng-container>
+                <ng-template #profileFallback>
+                  <span>{{ currentUser()?.username?.charAt(0)?.toUpperCase() }}</span>
+                </ng-template>
+              </div>
+              <span class="d-none d-xl-inline">{{ currentUser()?.username }}</span>
+            </button>
+            <ul ngbDropdownMenu aria-labelledby="profileDropdown" class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 py-3 px-2">
+              <li *ngIf="isAdmin()">
+                <a ngbDropdownItem routerLink="/admin" class="py-2 mb-1">
+                  <i class="bi bi-speedometer2 me-2" style="color: var(--golden-orange)"></i>
+                  <span>Admin Dashboard</span>
+                </a>
+              </li>
+              <li>
+                <a ngbDropdownItem routerLink="/profile" class="py-2 mb-1">
+                  <i class="bi bi-person-circle me-2" style="color: var(--deep-space-blue)"></i>
+                  <span>My Profile</span>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider my-2 opacity-10"></li>
+              <li>
+                <button ngbDropdownItem class="py-2 text-danger fw-bold" (click)="logout()">
+                  <i class="bi bi-box-arrow-right me-2"></i>
+                  <span>Sign Out</span>
+                </button>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
     </div>
   </div>
 </nav>

@@ -1,60 +1,84 @@
 .post-card {
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 14px 32px rgba(2, 4, 15, 0.08);
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, white, transparent 30%);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.post-time {
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px color-mix(in srgb, var(--ink-black), transparent 95%) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
+}
+
+.hover-bg-light:hover {
+  background-color: color-mix(in srgb, var(--ink-black), transparent 95%);
+}
+
+.engagement-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.engagement-btn:hover {
+  background-color: color-mix(in srgb, var(--deep-space-blue), transparent 95%);
+  color: var(--deep-space-blue);
+}
+
+.engagement-btn.active {
   color: var(--dark-amaranth);
+  background-color: color-mix(in srgb, var(--dark-amaranth), transparent 95%);
+}
+
+.hover-text-danger:hover {
+  color: #dc3545 !important;
+  background-color: color-mix(in srgb, #dc3545, transparent 95%);
 }
 
 .post-content {
   color: var(--ink-black);
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
-.post-actions {
+.media-container {
+  background: #f8f9fa;
+  min-height: 200px;
   display: flex;
-  gap: 0.35rem;
-}
-
-.post-action-button {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(7, 35, 57, 0.08);
 }
 
-.post-edit-input {
-  border-radius: 8px;
-  resize: vertical;
+.avatar-md {
+  flex-shrink: 0;
 }
 
-.post-edit-image img,
-.post-edit-image video {
-  max-height: 260px;
-  object-fit: cover;
+.bg-accent {
+  background-color: var(--golden-orange) !important;
 }
 
-.post-image-button {
-  border: 1px solid rgba(7, 35, 57, 0.08);
+.x-small {
+  font-size: 0.75rem;
 }
 
-.post-engagement-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  border: 1px solid rgba(7, 35, 57, 0.08);
-  background: white;
+.transition-all {
+  transition: all 0.2s ease-in-out;
 }
 
-.post-engagement-button.active {
-  color: var(--dark-amaranth);
+.rounded-pill-start {
+  border-top-left-radius: 50rem !important;
+  border-bottom-left-radius: 50rem !important;
 }
 
-.post-comment {
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.62);
-  padding: 0.65rem 0.75rem;
+.rounded-pill-end {
+  border-top-right-radius: 50rem !important;
+  border-bottom-right-radius: 50rem !important;
 }

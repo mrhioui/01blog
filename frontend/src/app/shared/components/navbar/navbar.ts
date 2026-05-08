@@ -8,10 +8,12 @@ import { PostCreationModal } from '../../../features/posts/components/post-creat
 import { User } from '../../../core/models/user.model';
 import { Subscription as RxSubscription } from 'rxjs';
 
+import { ResolveUrlPipe } from '../../pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, NgbCollapseModule, NgbDropdownModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NgbCollapseModule, NgbDropdownModule, ResolveUrlPipe],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

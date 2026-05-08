@@ -1,53 +1,48 @@
-<section class="py-2 py-lg-4">
-  <div class="row justify-content-center g-4">
+<section class="container">
+  <div class="row justify-content-center align-items-center min-vh-80 py-5">
     <div class="col-12 col-xl-10">
-      <div class="card border-0 shadow-lg auth-panel">
-        <div class="card-body p-0">
-          <div class="row g-0">
-            <div class="col-12 col-lg-6">
-              <div class="auth-copy h-100 p-4 p-md-5">
-                <span class="auth-eyebrow">Login</span>
-                <h1 class="display-6 fw-bold mb-3">Welcome back to the student blogging community.</h1>
-                <p class="mb-4 text-secondary">
-                  Sign in to publish your progress, follow other learners, and stay connected to
-                  the posts that matter to your journey.
-                </p>
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden auth-card">
+        <div class="row g-0">
+          <!-- Form Side -->
+          <div class="col-12 col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-center bg-white">
+            <div class="mb-4">
+              <h2 class="fw-bold display-6 auth-title">Welcome Back</h2>
+              <p class="text-muted">Sign in to continue your blogging journey</p>
+            </div>
 
-                <div class="info-tile p-3 rounded-4">
-                  <div class="small text-uppercase fw-semibold mb-2">Why 01Blog</div>
-                  <ul class="mb-0 ps-3">
-                    <li>Document projects, discoveries, and milestones</li>
-                    <li>Follow other students and engage with their work</li>
-                    <li>Build a public record of your learning journey</li>
-                  </ul>
-                </div>
-
-                <a routerLink="/register" class="btn btn-link px-0 mt-4 auth-link">
-                  Need a fresh account?
-                </a>
+            <form [formGroup]="form" (ngSubmit)="submit()">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control auth-input" id="usernameInput" formControlName="username"
+                  placeholder="john_doe" />
+                <label for="usernameInput">Username</label>
               </div>
-            </div>
 
-            <div class="col-12 col-lg-6">
-              <form class="p-4 p-md-5 h-100 d-flex flex-column justify-content-center" [formGroup]="form" (ngSubmit)="submit()">
-                <div class="mb-3">
-                  <label class="form-label fw-semibold">Username</label>
-                  <input class="form-control form-control-lg custom-input" type="text" formControlName="username" placeholder="john_doe" />
-                </div>
+              <div class="form-floating mb-4">
+                <input type="password" class="form-control auth-input" id="passwordInput" formControlName="password"
+                  placeholder="••••••••" />
+                <label for="passwordInput">Password</label>
+              </div>
 
-                <div class="mb-3">
-                  <label class="form-label fw-semibold">Password</label>
-                  <input class="form-control form-control-lg custom-input" type="password" formControlName="password" placeholder="••••••••" />
-                </div>
+              <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-3 py-2 small mb-3">
+                <i class="bi bi-exclamation-circle me-2"></i>{{ errorMessage() }}
+              </div>
 
-                <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-4">{{ errorMessage() }}</div>
-                <div *ngIf="successMessage()" class="alert alert-success border-0 rounded-4">{{ successMessage() }}</div>
+              <button class="btn btn-lg w-100 app-btn-primary mb-4" type="submit" [disabled]="submitting()">
+                {{ submitting() ? 'Signing in...' : 'Sign In' }}
+              </button>
 
-                <button class="btn btn-lg app-btn-primary w-100 mt-2" type="submit" [disabled]="submitting()">
-                  {{ submitting() ? 'Signing in...' : 'Sign In' }}
-                </button>
-              </form>
-            </div>
+              <div class="text-center">
+                <p class="small text-muted mb-0">
+                  Don't have an account?
+                  <a routerLink="/register" class="auth-link fw-bold">Register here</a>
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <!-- Image Side -->
+          <div class="col-12 col-lg-6 d-none d-lg-block auth-image-container h-100">
+            <img src="/auth-login.png" alt="Login Illustration" class="img-fluid h-100 w-100 object-fit-cover d-block" />
           </div>
         </div>
       </div>

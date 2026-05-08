@@ -6,14 +6,16 @@ import { AdminService } from '../../../../core/services/admin';
 import { Report } from '../../../../core/models/report.model';
 import { ReportService } from '../../../../core/services/reports';
 
+import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-admin-reports-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ResolveUrlPipe],
   templateUrl: './admin-reports-page.html',
   styleUrl: './admin-reports-page.css',
 })
-export class AdminReportsPage implements OnInit {
+export class AdminReportsPage {
   private readonly authService = inject(Auth);
   private readonly reportService = inject(ReportService);
   private readonly adminService = inject(AdminService);

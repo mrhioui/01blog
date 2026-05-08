@@ -3,7 +3,7 @@ import { Component, OnDestroy, computed, effect, inject, input, output, signal }
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { Post } from '../../../../core/models/post.model';
 import { Comment as PostComment } from '../../../../core/models/comment.model';
 import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
@@ -14,10 +14,12 @@ import { Likes } from '../../../../core/services/likes';
 import { Comments } from '../../../../core/services/comments';
 import { Subscription as RxSubscription } from 'rxjs';
 
+import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NgbDropdownModule, ResolveUrlPipe],
   templateUrl: './post-card.html',
   styleUrl: './post-card.css',
 })
@@ -67,13 +69,6 @@ export class PostCard implements OnDestroy {
     this.wsSubscriptions.forEach(sub => sub.unsubscribe());
   }
 
-
-  protected resolveImageUrl(imageUrl: string | null | undefined): string | null {
-    if (!imageUrl) return null;
-    if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
-    const backendBaseUrl = environment.apiUrl.replace(/\/api\/?$/, '');
-    return `${backendBaseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-  }
 
   protected isVideoUrl(mediaUrl: string | null | undefined): boolean {
     return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(mediaUrl ?? '');
@@ -254,7 +249,7 @@ export class PostCard implements OnDestroy {
     });
   }
 
-  private clearEditImage(): void {
+  protected clearEditImage(): void {
     const preview = this.editImagePreviewUrl();
     if (preview) {
       URL.revokeObjectURL(preview);

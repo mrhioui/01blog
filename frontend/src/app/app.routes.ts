@@ -13,9 +13,9 @@ import { ProfilePage } from './features/profile/pages/profile/profile';
 export const routes: Routes = [
   { path: '', component: Feed },
   { path: 'admin', component: AdminDashboardPage, canActivate: [adminGuard] },
-  { path: 'admin/users', component: AdminUsersPage, canActivate: [adminGuard] },
-  { path: 'admin/posts', component: AdminPostsPage, canActivate: [adminGuard] },
-  { path: 'admin/reports', component: AdminReportsPage, canActivate: [adminGuard] },
+  { path: 'admin/users', component: AdminDashboardPage, canActivate: [adminGuard] },
+  { path: 'admin/posts', component: AdminDashboardPage, canActivate: [adminGuard] },
+  { path: 'admin/reports', component: AdminDashboardPage, canActivate: [adminGuard] },
   { path: 'login', component: Login },
   { path: 'posts/:id', component: PostDetails, canActivate: [authGuard] },
   { path: 'profile', component: ProfilePage, canActivate: [authGuard] },

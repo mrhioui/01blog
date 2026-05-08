@@ -1,19 +1,27 @@
-<section class="row g-4 justify-content-center">
-
-  <div class="col-12 col-lg-9 col-xl-7">
-    <div class="card border-0 shadow-sm dashboard-card">
+<div class="row g-4">
+  <!-- Main Feed Area -->
+  <div class="col-12 col-lg-8">
+    <div class="card border-0 shadow-sm dashboard-card mb-4">
       <div class="card-body p-4">
-        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <div class="small text-uppercase fw-semibold section-kicker mb-1">Feed</div>
-            <h2 class="h3 mb-0">Latest learning posts</h2>
+            <div class="small text-uppercase fw-bold section-kicker mb-1">Learning Feed</div>
+            <h1 class="h3 mb-0 fw-bold">Recent Updates</h1>
           </div>
-          <span class="badge rounded-pill count-badge">{{ posts().length }} items</span>
+          <span class="badge rounded-pill count-badge px-3 py-2">{{ posts().length }} Posts</span>
         </div>
 
-        <div *ngIf="loadingPosts()" class="alert app-alert mb-0">Loading posts...</div>
+        <div *ngIf="loadingPosts()" class="py-5 text-center">
+          <div class="spinner-border text-primary mb-3" role="status"></div>
+          <p class="text-muted">Gathering latest insights...</p>
+        </div>
 
-        <div *ngIf="!loadingPosts() && posts().length" class="d-grid gap-3">
+        <div *ngIf="postErrorMessage()" class="alert app-alert d-flex align-items-center mb-4" role="alert">
+          <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+          <div>{{ postErrorMessage() }}</div>
+        </div>
+
+        <div *ngIf="!loadingPosts() && posts().length" class="vstack gap-4">
           <app-post-card
             *ngFor="let post of posts()"
             [post]="post"
@@ -22,17 +30,84 @@
           ></app-post-card>
         </div>
 
-        <div *ngIf="!isLastPage() && posts().length" class="mt-4 text-center">
-          <button (click)="loadMorePosts()" class="btn btn-outline-primary" [disabled]="loadingMore()">
+        <div *ngIf="!isLastPage() && posts().length" class="mt-5 text-center">
+          <button (click)="loadMorePosts()" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm" [disabled]="loadingMore()">
             <span *ngIf="loadingMore()" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            {{ loadingMore() ? 'Loading more...' : 'Load more posts' }}
+            {{ loadingMore() ? 'Loading more...' : 'Discover More' }}
           </button>
         </div>
 
-        <div *ngIf="!loadingPosts() && !posts().length" class="alert app-alert mb-0">
-          No posts are available yet. Once members start publishing, their updates will appear here.
+        <div *ngIf="!loadingPosts() && !posts().length" class="py-5 text-center bg-light rounded-4 border border-dashed">
+          <i class="bi bi-journal-text fs-1 text-muted opacity-25 mb-3 d-block"></i>
+          <h3 class="h5 mb-2">No posts yet</h3>
+          <p class="text-muted mb-0 mx-auto max-width-300">
+            Be the first one to share a learning milestone with the community!
+          </p>
         </div>
       </div>
     </div>
   </div>
-</section>
+
+  <!-- Sidebar -->
+  <div class="col-12 col-lg-4 d-none d-lg-block">
+    <!-- Community Members (Visible to Admin) -->
+    <div *ngIf="currentUser()?.role === 'ROLE_ADMIN'" class="card border-0 shadow-sm dashboard-card mb-4">
+      <div class="card-body p-4">
+        <h2 class="h5 fw-bold mb-4">Community Directory</h2>
+        <div *ngIf="loadingUsers()" class="text-center py-3">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+        <div *ngIf="!loadingUsers() && users().length" class="vstack gap-3">
+          <div *ngFor="let user of users().slice(0, 5)" class="d-flex align-items-center gap-3 p-2 rounded-3 hover-bg-light transition-all cursor-pointer" [routerLink]="['/profile', user.id]">
+            <div class="avatar-md rounded-circle bg-accent text-white d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden" style="width: 42px; height: 42px; flex-shrink: 0;">
+              <ng-container *ngIf="user.profileImageUrl && user.profileImageUrl !== 'null'; else feedUserFallback">
+                <img 
+                  [src]="user.profileImageUrl | resolveUrl" 
+                  class="w-100 h-100 object-fit-cover"
+                  #feedImg
+                  (error)="feedImg.style.display = 'none'; feedFallbackElement.style.display = 'block'"
+                >
+                <span #feedFallbackElement style="display: none">{{ user.username.charAt(0).toUpperCase() }}</span>
+              </ng-container>
+              <ng-template #feedUserFallback>
+                <span>{{ user.username.charAt(0).toUpperCase() }}</span>
+              </ng-template>
+            </div>
+            <div class="overflow-hidden">
+              <div class="fw-bold text-truncate small">{{ user.username }}</div>
+              <div class="text-muted x-small text-truncate">{{ user.email }}</div>
+            </div>
+          </div>
+          <a routerLink="/admin/users" class="btn btn-link btn-sm text-decoration-none fw-bold p-0 mt-2" style="color: var(--dark-amaranth)">View all members →</a>
+        </div>
+        <div *ngIf="!loadingUsers() && !users().length" class="text-center py-3">
+          <p class="text-muted small mb-0">{{ userErrorMessage() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats/Welcome Card -->
+    <div class="card border-0 shadow-sm hero-card overflow-hidden">
+      <div class="card-body p-4 position-relative">
+        <div class="z-1 position-relative">
+          <h2 class="h5 fw-bold mb-3 text-white">Welcome, {{ currentUser()?.username || 'Guest' }}!</h2>
+          <p class="small mb-4 opacity-75">Explore the latest insights from your fellow learners and share your own journey.</p>
+          <div class="vstack gap-2">
+            <div class="d-flex align-items-center gap-2 small">
+              <i class="bi bi-check2-circle text-accent"></i>
+              <span>Connect with peers</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 small">
+              <i class="bi bi-check2-circle text-accent"></i>
+              <span>Share milestones</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 small">
+              <i class="bi bi-check2-circle text-accent"></i>
+              <span>Get inspired</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

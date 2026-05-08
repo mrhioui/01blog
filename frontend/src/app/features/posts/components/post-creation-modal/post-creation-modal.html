@@ -1,31 +1,32 @@
 <div class="modal-header border-0 pb-0">
-  <h5 class="modal-title fw-bold text-deep-space">Create a new post</h5>
+  <h5 class="modal-title fw-bold text-deep-space">Create New Post</h5>
   <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()" [disabled]="loading()"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body p-4">
   <form [formGroup]="form" (ngSubmit)="submit()">
-    <div class="mb-3">
-      <label for="postContent" class="form-label small text-uppercase fw-bold text-muted">What's on your mind?</label>
+    <!-- Content Textarea -->
+    <div class="form-floating mb-3">
       <textarea
         id="postContent"
-        class="form-control custom-input"
-        rows="4"
+        class="form-control auth-input h-150"
         formControlName="content"
-        placeholder="Share your learning progress or updates..."
+        placeholder="Share your learning progress..."
         [class.is-invalid]="form.get('content')?.touched && form.get('content')?.invalid"
       ></textarea>
+      <label for="postContent">What's on your mind?</label>
       <div class="invalid-feedback">Content is required.</div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label small text-uppercase fw-bold text-muted">Post Media (optional)</label>
+    <!-- Media Upload -->
+    <div class="mb-4">
+      <label class="form-label x-small text-uppercase fw-bold text-muted mb-2 ls-1">Post Media (optional)</label>
       
-      <div *ngIf="previewUrl()" class="position-relative mb-2">
-        <img *ngIf="previewType() === 'image'" [src]="previewUrl()" class="img-fluid rounded-3 border" alt="Preview">
-        <video *ngIf="previewType() === 'video'" [src]="previewUrl()" class="img-fluid rounded-3 border" controls></video>
+      <div *ngIf="previewUrl()" class="position-relative mb-2 preview-container shadow-sm rounded-3">
+        <img *ngIf="previewType() === 'image'" [src]="previewUrl()" class="img-fluid rounded-3" alt="Preview">
+        <video *ngIf="previewType() === 'video'" [src]="previewUrl()" class="img-fluid rounded-3" controls></video>
         <button 
           type="button" 
-          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow-sm"
+          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow"
           (click)="removeMedia()"
           [disabled]="loading()"
         >
@@ -33,9 +34,10 @@
         </button>
       </div>
 
-      <div *ngIf="!previewUrl()" class="upload-placeholder d-flex flex-column align-items-center justify-content-center border border-dashed rounded-3 p-4 bg-light" (click)="fileInput.click()">
-        <i class="bi bi-images text-muted fs-2"></i>
-        <span class="text-muted small mt-2">Click to upload an image or video</span>
+      <div *ngIf="!previewUrl()" class="upload-area d-flex flex-column align-items-center justify-content-center rounded-3 p-4" (click)="fileInput.click()">
+        <i class="bi bi-cloud-arrow-up fs-2 mb-2"></i>
+        <span class="small fw-semibold">Click to upload image or video</span>
+        <span class="x-small text-muted mt-1">High-quality media supported</span>
       </div>
 
       <input
@@ -47,15 +49,15 @@
       />
     </div>
 
-    <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-3 py-2 small">
+    <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-3 py-2 small mb-4">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage() }}
     </div>
 
-    <div class="d-flex justify-content-end gap-2 mt-4">
-      <button type="button" class="btn btn-light rounded-pill px-4" (click)="dismiss()" [disabled]="loading()">Cancel</button>
-      <button type="submit" class="btn btn-dark-amaranth rounded-pill px-4" [disabled]="loading()">
+    <div class="d-flex justify-content-end gap-2 pt-2">
+      <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" (click)="dismiss()" [disabled]="loading()">Cancel</button>
+      <button type="submit" class="btn app-btn-primary rounded-pill px-5" [disabled]="loading() || form.invalid">
         <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-        Publish Post
+        Publish
       </button>
     </div>
   </form>

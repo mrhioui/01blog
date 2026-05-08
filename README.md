@@ -75,16 +75,16 @@ Implement business logic in backend services and manage frontend state.
 
 ## ✅ Backend Tasks
 - [x] Create UserService
-- [ ] Create PostService
-- [ ] Create CommentService
-- [ ] Create LikeService
-- [ ] Create SubscriptionService
-- [ ] Implement business logic
+- [x] Create PostService
+- [x] Create CommentService
+- [x] Create LikeService
+- [x] Create SubscriptionService
+- [x] Implement business logic
 
 ## ✅ Frontend Tasks
-- [ ] Set up state management (Context API / Redux / Vanilla JS store)
-- [ ] Connect frontend state with backend services
-- [ ] Test user registration, post creation, comments
+- [x] Set up state management (Context API / Redux / Vanilla JS store)
+- [x] Connect frontend state with backend services
+- [x] Test user registration, post creation, comments
 
 ## 🎯 Goal
 Business logic is applied and frontend can consume it with state management.
@@ -95,26 +95,26 @@ Create backend controllers and frontend pages for CRUD operations.
 
 ## ✅ Backend Tasks
 - [x] Create AuthController
-- [ ] Create UserController
-- [ ] Create PostController
-- [ ] Create CommentController
-- [ ] Implement endpoints:
+- [x] Create UserController
+- [x] Create PostController
+- [x] Create CommentController
+- [x] Implement endpoints:
 - [x] POST /auth/register
 - [x] POST /auth/login
 - [x] GET /users
 - [x] GET /users/{id}
-- [ ] POST /posts
-- [ ] GET /posts
-- [ ] DELETE /posts/{id}
-- [ ] POST /comments
+- [x] POST /posts
+- [x] GET /posts
+- [x] DELETE /posts/{id}
+- [x] POST /comments
 
 ## ✅ Frontend Tasks
 - [x] Create registration/login pages
-- [ ] Create user profile page
+- [x] Create user profile page
 - [x] Create post feed page
-- [ ] Create post creation page
-- [ ] Create comment component
-- [ ] Connect pages to backend endpoints
+- [x] Create post creation page
+- [x] Create comment component
+- [x] Connect pages to backend endpoints
 
 ## 🎯 Goal
 Frontend pages are functional with backend API.
@@ -124,17 +124,17 @@ Phase 6 - Authentication & Security #7
 Secure backend and integrate frontend authentication flows.
 
 ## ✅ Backend Tasks
-- [ ] Configure Spring Security
-- [ ] Implement JWT authentication
-- [ ] Add password hashing
-- [ ] Protect routes
-- [ ] Add roles (USER / ADMIN)
+- [x] Configure Spring Security
+- [x] Implement JWT authentication
+- [x] Add password hashing
+- [x] Protect routes
+- [x] Add roles (USER / ADMIN)
 
 ## ✅ Frontend Tasks
-- [ ] Store JWT token in localStorage / cookies
-- [ ] Protect frontend routes (redirect if not logged in)
-- [ ] Add login/logout functionality
-- [ ] Role-based access control
+- [x] Store JWT token in localStorage / cookies
+- [x] Protect frontend routes (redirect if not logged in)
+- [x] Add login/logout functionality
+- [x] Role-based access control
 
 ## 🎯 Goal
 Secure backend + frontend authentication is fully functional.
@@ -144,16 +144,16 @@ Phase 7 - Social Features #8
 Add social interactions: likes, comments, follow system, notifications.
 
 ## ✅ Backend Tasks
-- [ ] Implement follow system
-- [ ] Implement like system
-- [ ] Implement comment system
-- [ ] Add notifications logic
+- [x] Implement follow system
+- [x] Implement like system
+- [x] Implement comment system
+- [x] Add notifications logic
 
 ## ✅ Frontend Tasks
-- [ ] Display posts with likes/comments
-- [ ] Add follow/unfollow buttons
-- [ ] Add notification system UI
-- [ ] Test all interactions in UI
+- [x] Display posts with likes/comments
+- [x] Add follow/unfollow buttons
+- [x] Add notification system UI
+- [x] Test all interactions in UI
 
 ## 🎯 Goal
 Full social interaction features are working.
@@ -163,14 +163,14 @@ Phase 8 - Media Upload #9
 Enable media upload on backend and frontend.
 
 ## ✅ Backend Tasks
-- [ ] Implement file upload (image/video)
-- [ ] Store files locally
-- [ ] Create endpoint to serve media
+- [x] Implement file upload (image/video)
+- [x] Store files locally
+- [x] Create endpoint to serve media
 
 ## ✅ Frontend Tasks
-- [ ] Add file upload input on post creation
-- [ ] Display uploaded images/videos in feed
-- [ ] Test upload and retrieval
+- [x] Add file upload input on post creation
+- [x] Display uploaded images/videos in feed
+- [x] Test upload and retrieval
 
 ## 🎯 Goal
 Users can upload and view media files.
@@ -180,17 +180,17 @@ Phase 9 - Reports & Admin #10
 Enable reporting and admin moderation.
 
 ## ✅ Backend Tasks
-- [ ] Implement report system
-- [ ] Store report reason + timestamp
-- [ ] Create admin endpoints:
-    - [ ] View users
-    - [ ] Delete posts
-    - [ ] Ban users
+- [x] Implement report system
+- [x] Store report reason + timestamp
+- [x] Create admin endpoints:
+    - [x] View users
+    - [x] Delete posts
+    - [x] Ban users
 
 ## ✅ Frontend Tasks
-- [ ] Admin panel pages for user/post management
-- [ ] Display reports
-- [ ] Allow admin to delete/ban content
+- [x] Admin panel pages for user/post management
+- [x] Display reports
+- [x] Allow admin to delete/ban content
 
 ## 🎯 Goal
 Admin panel fully functional for moderation.
@@ -200,12 +200,12 @@ Phase 10 - Testing #11
 Write tests for backend and frontend to ensure reliability.
 
 ## ✅ Backend Tasks
-- [ ] Unit tests (services)
-- [ ] Integration tests (API)
+- [x] Unit tests (services)
+- [x] Integration tests (API)
 
 ## ✅ Frontend Tasks
-- [ ] Unit tests for components
-- [ ] Integration tests for pages and services
+- [x] Unit tests for components
+- [x] Integration tests for pages and services
 
 ## 🎯 Goal
 Both backend and frontend are tested and stable.
@@ -215,16 +215,16 @@ Phase 11 - Docker & Deployment #12
 Containerize and deploy the full application.
 
 ## ✅ Backend Tasks
-- [ ] Create Dockerfile
-- [ ] Configure docker-compose (backend + postgres)
-- [ ] Run full system
-- [ ] Fix environment variables
+- [x] Create Dockerfile
+- [x] Configure docker-compose (backend + postgres)
+- [x] Run full system
+- [x] Fix environment variables
 
 ## ✅ Frontend Tasks
-- [ ] Dockerize frontend
-- [ ] Add frontend to docker-compose
-- [ ] Ensure frontend can reach backend in Docker network
-- [ ] Test full stack deployment
+- [x] Dockerize frontend
+- [x] Add frontend to docker-compose
+- [x] Ensure frontend can reach backend in Docker network
+- [x] Test full stack deployment
 
 ## 🎯 Goal
 Full system runs in Docker containers with frontend + backend communication.

@@ -1,71 +1,258 @@
-<section class="card border-0 shadow-sm admin-page">
-  <div class="card-body p-4 p-lg-5">
-    <div class="small text-uppercase fw-semibold page-kicker mb-2">Admin Dashboard</div>
-    <h1 class="h2 mb-3">Administration</h1>
-
-    <ng-container *ngIf="isAdmin(); else restrictedState">
-      <p class="mb-4 text-secondary">
-        You are signed in as an administrator. Manage users, posts, and reports below.
-      </p>
-
-      <div class="row g-3">
-        <div class="col-12 col-md-4">
-          <div class="admin-stat">
-            <div class="stat-label">Total Users</div>
-            <div class="stat-value">{{ usersCount() }}</div>
+<section class="admin-dashboard-wrapper p-3 p-lg-5">
+  <div class="card border-0 shadow-lg admin-page-card overflow-hidden rounded-4">
+    <div class="card-body p-0">
+      
+      <!-- Dashboard Header -->
+      <div class="p-4 p-lg-5 bg-white border-bottom">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <div class="small text-uppercase fw-bold page-kicker mb-1">Central Command</div>
+            <h1 class="h2 mb-0 fw-bold text-deep-space">Administration Dashboard</h1>
+          </div>
+          <div class="d-none d-md-block text-end">
+            <div class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill shadow-sm">
+              <i class="bi bi-shield-check me-2"></i>Secure Mode
+            </div>
           </div>
         </div>
-        <div class="col-12 col-md-4">
-          <div class="admin-stat">
-            <div class="stat-label">Total Posts</div>
-            <div class="stat-value">{{ postsCount() }}</div>
+
+        <ng-container *ngIf="isAdmin(); else restrictedState">
+          
+          <!-- Quick Stats Strip -->
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <div class="mini-stat-card p-3 rounded-4 border bg-light bg-opacity-50 d-flex align-items-center gap-3 transition-all hover-shadow">
+                <div class="mini-stat-icon rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px;">
+                  <i class="bi bi-people-fill fs-4"></i>
+                </div>
+                <div>
+                  <div class="text-muted x-small fw-bold text-uppercase ls-1">Community</div>
+                  <div class="h4 mb-0 fw-bold text-deep-space">{{ usersCount() }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="mini-stat-card p-3 rounded-4 border bg-light bg-opacity-50 d-flex align-items-center gap-3 transition-all hover-shadow">
+                <div class="mini-stat-icon rounded-circle bg-warning-subtle text-warning d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px;">
+                  <i class="bi bi-journal-text fs-4"></i>
+                </div>
+                <div>
+                  <div class="text-muted x-small fw-bold text-uppercase ls-1">Publications</div>
+                  <div class="h4 mb-0 fw-bold text-deep-space">{{ postsCount() }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="mini-stat-card p-3 rounded-4 border bg-light bg-opacity-50 d-flex align-items-center gap-3 transition-all hover-shadow">
+                <div class="mini-stat-icon rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px;">
+                  <i class="bi bi-shield-exclamation fs-4"></i>
+                </div>
+                <div>
+                  <div class="text-muted x-small fw-bold text-uppercase ls-1">Incidents</div>
+                  <div class="h4 mb-0 fw-bold text-dark-amaranth">{{ reportsCount() }}</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="col-12 col-md-4">
-          <div class="admin-stat">
-            <div class="stat-label">Open Reports</div>
-            <div class="stat-value">{{ reportsCount() }}</div>
+
+          <!-- Master Navigation Menu (Tabs) -->
+          <div class="admin-nav-menu px-1 d-flex gap-4">
+            <button 
+              class="admin-nav-item py-3 px-1 border-0 bg-transparent fw-bold small text-uppercase ls-1 transition-all position-relative"
+              [class.active]="currentView() === 'users'"
+              (click)="setView('users')"
+            >
+              <i class="bi bi-people me-2"></i>Users
+            </button>
+            <button 
+              class="admin-nav-item py-3 px-1 border-0 bg-transparent fw-bold small text-uppercase ls-1 transition-all position-relative"
+              [class.active]="currentView() === 'posts'"
+              (click)="setView('posts')"
+            >
+              <i class="bi bi-file-earmark-post me-2"></i>Posts
+            </button>
+            <button 
+              class="admin-nav-item py-3 px-1 border-0 bg-transparent fw-bold small text-uppercase ls-1 transition-all position-relative"
+              [class.active]="currentView() === 'reports'"
+              (click)="setView('reports')"
+            >
+              <i class="bi bi-flag me-2"></i>Reports
+              <span class="badge rounded-pill bg-danger ms-1" *ngIf="reportsCount() > 0" style="font-size: 0.6rem;">{{ reportsCount() }}</span>
+            </button>
           </div>
+        </ng-container>
+      </div>
+
+      <!-- Table Area -->
+      <div class="bg-light bg-opacity-25 p-4 p-lg-5" *ngIf="isAdmin()">
+        <div class="table-view-container animate-fade-in">
+          
+          <!-- USERS TABLE -->
+          <div *ngIf="currentView() === 'users'" class="animate-slide-up">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="h5 fw-bold mb-0 text-deep-space">Community Member Management</h3>
+              <div class="small text-muted">{{ users().length }} records found</div>
+            </div>
+            <div class="table-container shadow-sm border rounded-4 bg-white overflow-hidden">
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead class="bg-light">
+                    <tr>
+                      <th class="ps-4">User</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th class="text-end pe-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let user of users()">
+                      <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="avatar-sm rounded-circle bg-accent text-white d-flex align-items-center justify-content-center fw-bold overflow-hidden shadow-sm" style="width: 38px; height: 38px;">
+                            <img *ngIf="user.profileImageUrl && user.profileImageUrl !== 'null'" [src]="user.profileImageUrl | resolveUrl" class="w-100 h-100 object-fit-cover">
+                            <span *ngIf="!user.profileImageUrl || user.profileImageUrl === 'null'">{{ user.username.charAt(0).toUpperCase() }}</span>
+                          </div>
+                          <div class="fw-bold text-deep-space small">{{ user.username }}</div>
+                        </div>
+                      </td>
+                      <td><div class="small text-muted">{{ user.email }}</div></td>
+                      <td>
+                        <span class="badge rounded-pill px-3 py-1 x-small" 
+                              [class.bg-primary]="user.role === 'ROLE_ADMIN'" 
+                              [class.bg-light]="user.role !== 'ROLE_ADMIN'"
+                              [class.text-dark]="user.role !== 'ROLE_ADMIN'">
+                          {{ user.role === 'ROLE_ADMIN' ? 'Admin' : 'User' }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge rounded-pill px-3 py-1 x-small" 
+                              [class.bg-success-subtle]="!user.banned" 
+                              [class.text-success]="!user.banned"
+                              [class.bg-danger-subtle]="user.banned"
+                              [class.text-danger]="user.banned">
+                          {{ user.banned ? 'Suspended' : 'Active' }}
+                        </span>
+                      </td>
+                      <td class="pe-4">
+                        <div class="d-flex justify-content-end gap-2">
+                          <ng-container *ngIf="user.id !== currentUser()?.id; else selfActions">
+                            <button *ngIf="!user.banned" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1" (click)="banUser(user.id)">Ban</button>
+                            <button *ngIf="user.banned" class="btn btn-xs btn-outline-success rounded-pill px-3 py-1" (click)="unbanUser(user.id)">Unban</button>
+                            <button class="btn btn-xs btn-dark-amaranth rounded-pill px-3 py-1" (click)="deleteUser(user.id)">Delete</button>
+                          </ng-container>
+                          <ng-template #selfActions>
+                            <span class="badge bg-info-subtle text-info px-3 py-1 rounded-pill x-small">Current Admin</span>
+                          </ng-template>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- POSTS TABLE -->
+          <div *ngIf="currentView() === 'posts'" class="animate-slide-up">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="h5 fw-bold mb-0 text-deep-space">Content Moderation Queue</h3>
+              <div class="small text-muted">{{ posts().length }} publications</div>
+            </div>
+            <div class="table-container shadow-sm border rounded-4 bg-white overflow-hidden">
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead class="bg-light">
+                    <tr>
+                      <th class="ps-4">Author</th>
+                      <th>Content</th>
+                      <th>Date</th>
+                      <th class="text-end pe-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let post of posts()">
+                      <td class="ps-4">
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="avatar-xs rounded-circle bg-light d-flex align-items-center justify-content-center fw-bold overflow-hidden" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                            <img *ngIf="post.author.profileImageUrl && post.author.profileImageUrl !== 'null'" [src]="post.author.profileImageUrl | resolveUrl" class="w-100 h-100 object-fit-cover">
+                            <span *ngIf="!post.author.profileImageUrl || post.author.profileImageUrl === 'null'">{{ post.author.username.charAt(0).toUpperCase() }}</span>
+                          </div>
+                          <span class="small fw-bold">{{ post.author.username }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="x-small text-dark text-truncate" style="max-width: 400px;">{{ post.content }}</div>
+                        <div *ngIf="post.mediaUrl" class="mt-1"><span class="badge bg-info-subtle text-info x-small">Has Media</span></div>
+                      </td>
+                      <td><div class="x-small text-muted">{{ post.timestamp | date: 'mediumDate' }}</div></td>
+                      <td class="pe-4">
+                        <div class="d-flex justify-content-end">
+                          <button class="btn btn-xs btn-dark-amaranth rounded-pill px-4 py-1" (click)="deletePost(post.id)">
+                            <i class="bi bi-trash-fill me-1"></i>Remove
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- REPORTS TABLE -->
+          <div *ngIf="currentView() === 'reports'" class="animate-slide-up">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="h5 fw-bold mb-0 text-deep-space">System Incident Reports</h3>
+              <div class="badge bg-danger text-white rounded-pill px-3">{{ reports().length }} Pending</div>
+            </div>
+            <div class="table-container shadow-sm border rounded-4 bg-white overflow-hidden">
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead class="bg-light">
+                    <tr>
+                      <th class="ps-4">Reporter</th>
+                      <th>Target</th>
+                      <th>Violation Reason</th>
+                      <th>Logged On</th>
+                      <th class="text-end pe-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let report of reports()">
+                      <td class="ps-4"><span class="small fw-bold">{{ report.reporter.username }}</span></td>
+                      <td>
+                        <div class="vstack gap-1">
+                          <span class="badge bg-danger-subtle text-danger x-small text-start px-2" *ngIf="report.reportedUser">User: {{ report.reportedUser.username }}</span>
+                          <span class="badge bg-warning-subtle text-warning x-small text-start px-2" *ngIf="report.reportedPost">Post ID: #{{ report.reportedPost.id }}</span>
+                        </div>
+                      </td>
+                      <td><div class="x-small fw-bold text-dark-amaranth">{{ report.reason }}</div></td>
+                      <td><div class="x-small text-muted">{{ report.timestamp | date: 'shortDate' }}</div></td>
+                      <td class="pe-4">
+                        <div class="d-flex justify-content-end gap-2">
+                          <button class="btn btn-xs btn-outline-secondary rounded-pill px-3 py-1" (click)="deleteReport(report.id)">Dismiss</button>
+                          <button *ngIf="report.reportedPost" class="btn btn-xs btn-dark-amaranth rounded-pill px-3 py-1" (click)="deletePost(report.reportedPost.id)">Take Down</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-
-      <div class="row g-3">
-        <div class="col-12 col-md-6 col-lg-4">
-          <a routerLink="/admin/users" class="admin-card-link">
-            <div class="admin-card">
-              <i class="bi bi-people-fill"></i>
-              <h3>User Management</h3>
-              <p>View and manage all users</p>
-            </div>
-          </a>
+      <ng-template #restrictedState>
+        <div class="text-center py-5">
+          <i class="bi bi-shield-lock display-1 text-danger mb-4 opacity-50"></i>
+          <h2 class="fw-bold text-deep-space">Access Restricted</h2>
+          <p class="text-muted mb-4 fs-5">Administrator privileges are required to access this panel.</p>
+          <a routerLink="/" class="btn btn-deep-space px-5 py-3 rounded-pill fw-bold shadow-sm">Return to Feed</a>
         </div>
-        <div class="col-12 col-md-6 col-lg-4">
-          <a routerLink="/admin/posts" class="admin-card-link">
-            <div class="admin-card">
-              <i class="bi bi-file-earmark-post-fill"></i>
-              <h3>Post Management</h3>
-              <p>View and remove posts</p>
-            </div>
-          </a>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4">
-          <a routerLink="/admin/reports" class="admin-card-link">
-            <div class="admin-card">
-              <i class="bi bi-flag-fill"></i>
-              <h3>Report Handling</h3>
-              <p>Review and act on user reports</p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </ng-container>
-
-    <ng-template #restrictedState>
-      <p class="mb-0 text-secondary">
-        This page is intended for admin accounts.
-        <a routerLink="/">Back to feed</a>
-      </p>
-    </ng-template>
+      </ng-template>
+    </div>
   </div>
 </section>

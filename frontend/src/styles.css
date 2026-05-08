@@ -60,3 +60,65 @@ button {
 .card {
   backdrop-filter: blur(10px);
 }
+
+/* Bootstrap Theme Overrides */
+.text-primary {
+  color: var(--deep-space-blue) !important;
+}
+
+.bg-primary {
+  background-color: var(--deep-space-blue) !important;
+}
+
+.btn-primary {
+  background-color: var(--dark-amaranth);
+  border-color: var(--dark-amaranth);
+  color: white;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  background-color: var(--deep-space-blue);
+  border-color: var(--deep-space-blue);
+  color: white;
+}
+
+.btn-primary:disabled {
+  background-color: var(--ink-soft);
+  border-color: var(--ink-soft);
+  opacity: 0.65;
+}
+
+.btn-outline-primary {
+  color: var(--dark-amaranth);
+  border-color: var(--dark-amaranth);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--dark-amaranth);
+  border-color: var(--dark-amaranth);
+  color: white;
+}
+
+.spinner-border.text-primary {
+  color: var(--dark-amaranth) !important;
+}
+
+.alert-primary {
+  background-color: rgba(0, 38, 66, 0.1);
+  border-color: rgba(0, 38, 66, 0.2);
+  color: var(--deep-space-blue);
+}
+
+.badge.bg-primary {
+  background-color: var(--deep-space-blue) !important;
+}
+
+a {
+  color: var(--dark-amaranth);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--deep-space-blue);
+}

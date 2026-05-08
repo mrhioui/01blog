@@ -1,55 +1,80 @@
-<section class="py-2 py-lg-4">
-  <div class="row justify-content-center g-4">
+<section class="container">
+  <div class="row justify-content-center align-items-center min-vh-80 py-4">
     <div class="col-12 col-xl-10">
-      <div class="card border-0 shadow-lg auth-panel">
-        <div class="card-body p-0">
-          <div class="row g-0">
-            <div class="col-12 col-lg-6 order-2 order-lg-1">
-              <form class="p-4 p-md-5 h-100 d-flex flex-column justify-content-center" [formGroup]="form" (ngSubmit)="submit()">
-                <div class="mb-3">
-                  <label class="form-label fw-semibold">Username</label>
-                  <input class="form-control form-control-lg custom-input" type="text" formControlName="username" placeholder="new_user" />
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label fw-semibold">Email</label>
-                  <input class="form-control form-control-lg custom-input" type="email" formControlName="email" placeholder="user@example.com" />
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label fw-semibold">Password</label>
-                  <input class="form-control form-control-lg custom-input" type="password" formControlName="password" placeholder="At least 6 characters" />
-                </div>
-
-                <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-4">{{ errorMessage() }}</div>
-                <div *ngIf="successMessage()" class="alert alert-success border-0 rounded-4">{{ successMessage() }}</div>
-
-                <button class="btn btn-lg app-btn-primary w-100 mt-2" type="submit" [disabled]="submitting()">
-                  {{ submitting() ? 'Creating account...' : 'Create Account' }}
-                </button>
-              </form>
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden auth-card">
+        <div class="row g-0">
+          <!-- Form Side -->
+          <div class="col-12 col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-center bg-white order-2 order-lg-1">
+            <div class="mb-4">
+              <h2 class="fw-bold display-6 auth-title">Create Account</h2>
+              <p class="text-muted">Join the 01Blog student community</p>
             </div>
 
-            <div class="col-12 col-lg-6 order-1 order-lg-2">
-              <div class="auth-copy h-100 p-4 p-md-5">
-                <span class="auth-eyebrow">Register</span>
-                <h1 class="display-6 fw-bold mb-3">Create your profile and start sharing your journey.</h1>
-                <p class="mb-4 text-secondary-soft">
-                  Join 01Blog to publish learning updates, connect with other students, and build a
-                  strong portfolio of consistent progress.
-                </p>
-
-                <div *ngIf="createdUser() as user" class="response-card p-3 rounded-4 mb-4">
-                  <div class="small text-uppercase fw-semibold mb-2">Profile created</div>
-                  <p class="mb-1"><strong>ID:</strong> {{ user.id }}</p>
-                  <p class="mb-1"><strong>Username:</strong> {{ user.username }}</p>
-                  <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
-                  <p class="mb-0"><strong>Role:</strong> {{ user.role }}</p>
-                </div>
-
-                <a routerLink="/login" class="btn btn-link px-0 auth-link">Already have an account?</a>
+            <form [formGroup]="form" (ngSubmit)="submit()">
+              <div class="form-floating mb-3">
+                <input 
+                  type="text" 
+                  class="form-control auth-input" 
+                  id="usernameRegister" 
+                  formControlName="username" 
+                  placeholder="john_doe"
+                />
+                <label for="usernameRegister">Username</label>
               </div>
-            </div>
+
+              <div class="form-floating mb-3">
+                <input 
+                  type="email" 
+                  class="form-control auth-input" 
+                  id="emailRegister" 
+                  formControlName="email" 
+                  placeholder="name@example.com"
+                />
+                <label for="emailRegister">Email address</label>
+              </div>
+
+              <div class="form-floating mb-4">
+                <input 
+                  type="password" 
+                  class="form-control auth-input" 
+                  id="passwordRegister" 
+                  formControlName="password" 
+                  placeholder="••••••••"
+                />
+                <label for="passwordRegister">Password (min 6 characters)</label>
+              </div>
+
+              <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-3 py-2 small mb-3">
+                <i class="bi bi-exclamation-circle me-2"></i>{{ errorMessage() }}
+              </div>
+              
+              <div *ngIf="createdUser() as user" class="alert alert-success border-0 rounded-4 p-3 mb-4 small shadow-sm">
+                <div class="fw-bold mb-2 text-uppercase" style="color: var(--dark-amaranth)">Account Created!</div>
+                <div class="opacity-75">
+                  <p class="mb-1"><strong>Username:</strong> {{ user.username }}</p>
+                  <p class="mb-0"><strong>Email:</strong> {{ user.email }}</p>
+                </div>
+                <div class="mt-3">
+                  <a routerLink="/login" class="btn btn-sm app-btn-primary rounded-pill px-3">Login Now</a>
+                </div>
+              </div>
+
+              <button class="btn btn-lg w-100 app-btn-primary mb-4" type="submit" [disabled]="submitting()">
+                {{ submitting() ? 'Creating account...' : 'Create Account' }}
+              </button>
+
+              <div class="text-center">
+                <p class="small text-muted mb-0">
+                  Already have an account? 
+                  <a routerLink="/login" class="auth-link fw-bold">Login here</a>
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <!-- Image Side -->
+          <div class="col-12 col-lg-6 d-none d-lg-block auth-image-container h-100 order-1 order-lg-2">
+            <img src="/auth-register.png" alt="Register Illustration" class="img-fluid h-100 w-100 object-fit-cover d-block" />
           </div>
         </div>
       </div>

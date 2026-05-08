@@ -1,15 +1,18 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Posts } from '../../services/posts';
 import { Post } from '../../../../core/models/post.model';
 import { PostCard } from '../../components/post-card/post-card';
 import { Auth } from '../../../auth/services/auth';
 import { User } from '../../../../core/models/user.model';
 
+import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, PostCard],
+  imports: [CommonModule, PostCard, RouterLink, ResolveUrlPipe],
   templateUrl: './feed.html',
   styleUrl: './feed.css',
 })

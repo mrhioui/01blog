@@ -4,38 +4,80 @@
     <h1 class="h2 mb-3">Report Handling</h1>
 
     <ng-container *ngIf="isAdmin(); else restrictedState">
-      <div *ngIf="!reports() || reports().length === 0" class="alert alert-info mb-4">No reports found.</div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="mb-0 text-muted">Review and act on user-submitted reports for policy violations.</p>
+        <span class="badge bg-deep-space text-white px-3 py-2 rounded-pill">{{ reports().length }} Pending Reports</span>
+      </div>
 
-      <div *ngIf="reports() && reports().length > 0" class="table-responsive">
-        <table class="table table-striped table-hover admin-table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Reported By</th>
-              <th scope="col">Reported User</th>
-              <th scope="col">Reported Post</th>
-              <th scope="col">Reason</th>
-              <th scope="col">Timestamp</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let report of reports(); let i = index">
-              <th scope="row">{{ i + 1 }}</th>
-              <td>{{ report.reporter.username }}</td>
-              <td>{{ report.reportedUser ? report.reportedUser.username : '-' }}</td>
-              <td>{{ report.reportedPost ? (report.reportedPost.content | slice:0:30) + (report.reportedPost.content.length > 30 ? '...' : '') : '-' }}</td>
-              <td>{{ report.reason }}</td>
-              <td>{{ report.timestamp | date: 'medium' }}</td>
-              <td>
-                <button class="btn btn-sm btn-danger me-1" (click)="deleteReport(report.id)">Delete Report</button>
-                <!-- Placeholder buttons for actions on user/post -->
-                <button *ngIf="report.reportedUser && report.reportedUser.id !== currentUser()?.id" class="btn btn-sm btn-warning me-1" (click)="banUser(report.reportedUser.id)">Ban User</button>
-                <button *ngIf="report.reportedPost" class="btn btn-sm btn-danger" (click)="deletePost(report.reportedPost.id)">Delete Post</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div *ngIf="!reports() || reports().length === 0" class="alert alert-info mb-4 border-0 shadow-sm rounded-4">
+        <i class="bi bi-check2-circle me-2"></i>Inbox is clean! No reports found.
+      </div>
+
+      <div *ngIf="reports() && reports().length > 0" class="table-container shadow-sm">
+        <div class="table-responsive">
+          <table class="table admin-table mb-0">
+            <thead>
+              <tr>
+                <th scope="col">Reporter</th>
+                <th scope="col">Reported Target</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Date</th>
+                <th scope="col" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let report of reports()">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-xs rounded-circle bg-light text-deep-space d-flex align-items-center justify-content-center fw-bold overflow-hidden" style="width: 28px; height: 28px; font-size: 0.7rem;">
+                      <img *ngIf="report.reporter.profileImageUrl && report.reporter.profileImageUrl !== 'null'" [src]="report.reporter.profileImageUrl | resolveUrl" class="w-100 h-100 object-fit-cover">
+                      <span *ngIf="!report.reporter.profileImageUrl || report.reporter.profileImageUrl === 'null'">{{ report.reporter.username.charAt(0).toUpperCase() }}</span>
+                    </div>
+                    <span class="small fw-bold">{{ report.reporter.username }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div *ngIf="report.reportedUser" class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-danger-subtle text-danger x-small">User</span>
+                    <span class="small fw-semibold">{{ report.reportedUser.username }}</span>
+                  </div>
+                  <div *ngIf="report.reportedPost" class="d-flex flex-column gap-1">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-warning-subtle text-warning x-small">Post</span>
+                      <span class="x-small text-muted">ID: #{{ report.reportedPost.id }}</span>
+                    </div>
+                    <div class="x-small text-dark text-truncate opacity-75" style="max-width: 200px;">
+                      "{{ report.reportedPost.content }}"
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="small fw-bold text-deep-space">{{ report.reason }}</div>
+                </td>
+                <td>
+                  <div class="x-small text-muted">{{ report.timestamp | date: 'shortDate' }}</div>
+                  <div class="x-small text-muted opacity-50">{{ report.timestamp | date: 'shortTime' }}</div>
+                </td>
+                <td>
+                  <div class="d-flex justify-content-end gap-1">
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 x-small fw-bold" (click)="deleteReport(report.id)" title="Dismiss Report">
+                      Dismiss
+                    </button>
+                    
+                    <button *ngIf="report.reportedPost" class="btn btn-sm btn-dark-amaranth rounded-pill px-3 py-1 x-small fw-bold" (click)="deletePost(report.reportedPost.id)" title="Delete Reported Content">
+                      Delete Post
+                    </button>
+                    
+                    <button *ngIf="report.reportedUser && report.reportedUser.id !== currentUser()?.id && !report.reportedUser.banned" 
+                            class="btn btn-sm btn-danger rounded-pill px-3 py-1 x-small fw-bold" (click)="banUser(report.reportedUser.id)" title="Suspend User">
+                      Ban User
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </ng-container>
 

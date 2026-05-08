@@ -1,88 +1,55 @@
+.dashboard-card {
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--dust-grey), transparent 8%);
+  backdrop-filter: blur(10px);
+}
+
 .hero-card {
-  border-radius: 1.75rem;
+  border-radius: 1.5rem;
   background: linear-gradient(135deg, var(--deep-space-blue), var(--dark-amaranth));
   color: var(--dust-grey);
+  border: none;
 }
 
-.hero-side-card {
-  border-radius: 1.25rem;
-  background: rgba(229, 218, 218, 0.08);
-  color: var(--dust-grey);
-}
-
-.hero-side-kicker {
-  color: var(--golden-orange);
-  letter-spacing: 0.14em;
-}
-
-.dashboard-eyebrow,
 .section-kicker {
   color: var(--golden-orange);
   letter-spacing: 0.16em;
 }
 
-.dashboard-card {
-  border-radius: 1.5rem;
-  background: rgba(229, 218, 218, 0.92);
-}
-
-.app-btn-light {
-  border-radius: 999px;
-  background: var(--golden-orange);
-  border-color: var(--golden-orange);
-  color: var(--ink-black);
-  font-weight: 700;
-}
-
-.app-btn-outline {
-  border-radius: 999px;
-  border: 1px solid rgba(229, 218, 218, 0.35);
-  color: var(--dust-grey);
-  font-weight: 700;
-}
-
-.app-btn-outline:hover {
-  background: rgba(229, 218, 218, 0.12);
-  color: var(--dust-grey);
-}
-
 .count-badge {
-  background: rgba(132, 0, 50, 0.1);
+  background: color-mix(in srgb, var(--dark-amaranth), transparent 90%);
   color: var(--dark-amaranth);
-  border: 1px solid rgba(132, 0, 50, 0.16);
+  border: 1px solid color-mix(in srgb, var(--dark-amaranth), transparent 84%);
+  font-weight: 600;
 }
 
 .app-alert {
-  background: rgba(0, 38, 66, 0.06);
-  border: 1px solid rgba(0, 38, 66, 0.1);
+  background: color-mix(in srgb, var(--deep-space-blue), transparent 94%);
+  border: 1px solid color-mix(in srgb, var(--deep-space-blue), transparent 90%);
   color: var(--deep-space-blue);
   border-radius: 1rem;
 }
 
-.user-chip {
-  padding: 1rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(0, 38, 66, 0.08);
+.hover-bg-light:hover {
+  background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
-.user-role {
-  color: var(--dark-amaranth);
-  font-weight: 700;
+.transition-all {
+  transition: all 0.2s ease-in-out;
 }
 
-.session-preview {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 0.88rem;
-  padding: 1rem;
-  border-radius: 1rem;
-  background: rgba(2, 4, 15, 0.04);
+.text-accent {
+  color: var(--golden-orange) !important;
 }
 
-.profile-summary {
-  padding: 1rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.42);
-  border: 1px solid rgba(0, 38, 66, 0.08);
+.bg-accent {
+  background-color: var(--golden-orange) !important;
+}
+
+.max-width-300 {
+  max-width: 300px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

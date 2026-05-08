@@ -5,14 +5,16 @@ import { Auth } from '../../../../features/auth/services/auth';
 import { AdminService } from '../../../../core/services/admin';
 import { Post } from '../../../../core/models/post.model';
 
+import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-admin-posts-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ResolveUrlPipe],
   templateUrl: './admin-posts-page.html',
   styleUrl: './admin-posts-page.css',
 })
-export class AdminPostsPage implements OnInit {
+export class AdminPostsPage {
   private readonly authService = inject(Auth);
   private readonly adminService = inject(AdminService);
 

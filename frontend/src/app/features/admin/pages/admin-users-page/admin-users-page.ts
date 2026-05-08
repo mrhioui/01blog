@@ -6,10 +6,12 @@ import { Auth } from '../../../../features/auth/services/auth';
 import { User } from '../../../../core/models/user.model';
 import { AdminService } from '../../../../core/services/admin';
 
+import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
+
 @Component({
   selector: 'app-admin-users-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ResolveUrlPipe],
   templateUrl: './admin-users-page.html',
   styleUrl: './admin-users-page.css',
 })
