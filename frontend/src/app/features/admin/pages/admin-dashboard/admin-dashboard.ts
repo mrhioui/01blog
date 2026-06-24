@@ -10,6 +10,7 @@ import { Post } from '../../../../core/models/post.model';
 import { Report } from '../../../../core/models/report.model';
 import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 type AdminView = 'users' | 'posts' | 'reports';
 
@@ -25,6 +26,7 @@ export class AdminDashboardPage implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly reportService = inject(ReportService);
   private readonly route = inject(ActivatedRoute);
+  private readonly confirmService = inject(ConfirmService);
 
   readonly currentView = signal<AdminView>('users');
   readonly currentUser = computed(() => this.authService.currentUser());
@@ -55,47 +57,112 @@ export class AdminDashboardPage implements OnInit {
 
   // Action methods (copied from individual pages for consolidation)
   banUser(id: number): void {
-    if (confirm('Are you sure you want to ban this user?')) {
+    this.confirmService.confirm({
+      title: 'Ban User',
+      message: 'Are you sure you want to ban this user? This will suspend their account activity.',
+      confirmText: 'Ban User',
+      type: 'warning'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
       this.adminService.banUser(id).subscribe({
-        next: () => alert('User banned successfully'),
+        next: () => {
+          this.confirmService.alert({
+            title: 'User Banned',
+            message: 'User banned successfully.',
+            type: 'success'
+          }).subscribe();
+        },
         error: (err: HttpErrorResponse) => console.error('Failed to ban user', err)
       });
-    }
+    });
   }
 
   unbanUser(id: number): void {
-    if (confirm('Are you sure you want to unban this user?')) {
+    this.confirmService.confirm({
+      title: 'Unban User',
+      message: 'Are you sure you want to unban this user? This will restore their account access.',
+      confirmText: 'Unban User',
+      type: 'primary'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
       this.adminService.unbanUser(id).subscribe({
-        next: () => alert('User unbanned successfully'),
+        next: () => {
+          this.confirmService.alert({
+            title: 'User Unbanned',
+            message: 'User unbanned successfully.',
+            type: 'success'
+          }).subscribe();
+        },
         error: (err: HttpErrorResponse) => console.error('Failed to unban user', err)
       });
-    }
+    });
   }
 
   deleteUser(id: number): void {
-    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    this.confirmService.confirm({
+      title: 'Delete User',
+      message: 'Are you sure you want to delete this user? This action cannot be undone.',
+      confirmText: 'Delete',
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
       this.adminService.deleteUser(id).subscribe({
-        next: () => alert('User deleted successfully'),
+        next: () => {
+          this.confirmService.alert({
+            title: 'User Deleted',
+            message: 'User deleted successfully.',
+            type: 'success'
+          }).subscribe();
+        },
         error: (err: HttpErrorResponse) => console.error('Failed to delete user', err)
       });
-    }
+    });
   }
 
   deletePost(id: number): void {
-    if (confirm('Are you sure you want to delete this post?')) {
+    this.confirmService.confirm({
+      title: 'Delete Post',
+      message: 'Are you sure you want to delete this post? This action cannot be undone.',
+      confirmText: 'Delete',
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
       this.adminService.deletePost(id).subscribe({
-        next: () => alert('Post deleted successfully'),
+        next: () => {
+          this.confirmService.alert({
+            title: 'Post Deleted',
+            message: 'Post deleted successfully.',
+            type: 'success'
+          }).subscribe();
+        },
         error: (err: HttpErrorResponse) => console.error('Failed to delete post', err)
       });
-    }
+    });
   }
 
   deleteReport(id: number): void {
-    if (confirm('Are you sure you want to delete this report?')) {
+    this.confirmService.confirm({
+      title: 'Delete Report',
+      message: 'Are you sure you want to delete this report? This will remove it from the list.',
+      confirmText: 'Delete',
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
       this.reportService.delete(id).subscribe({
-        next: () => alert('Report deleted successfully'),
+        next: () => {
+          this.confirmService.alert({
+            title: 'Report Deleted',
+            message: 'Report deleted successfully.',
+            type: 'success'
+          }).subscribe();
+        },
         error: (err: HttpErrorResponse) => console.error('Failed to delete report', err)
       });
-    }
+    });
   }
 }

@@ -7,6 +7,7 @@ import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { Post } from '../../../../core/models/post.model';
 import { Comment as PostComment } from '../../../../core/models/comment.model';
 import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 import { environment } from '../../../../../environments/environment';
 import { Auth } from '../../../auth/services/auth';
 import { Posts } from '../../services/posts';
@@ -29,6 +30,7 @@ export class PostCard implements OnDestroy {
   private readonly likesService = inject(Likes);
   private readonly commentsService = inject(Comments);
   private readonly modalService = inject(NgbModal);
+  private readonly confirmService = inject(ConfirmService);
 
   post = input.required<Post>();
   postUpdated = output<Post>();
@@ -143,22 +145,31 @@ export class PostCard implements OnDestroy {
   }
 
   deletePost(): void {
-    if (this.deleting() || !confirm('Delete this post?')) {
+    if (this.deleting()) {
       return;
     }
 
-    this.deleting.set(true);
-    this.errorMessage.set('');
+    this.confirmService.confirm({
+      title: 'Delete Post',
+      message: 'Are you sure you want to delete this post? This action cannot be undone.',
+      confirmText: 'Delete',
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
 
-    this.postsService.delete(this.post().id).subscribe({
-      next: () => {
-        this.postDeleted.emit(this.post().id);
-        this.deleting.set(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.errorMessage.set(error.error?.message ?? 'Failed to delete post.');
-        this.deleting.set(false);
-      },
+      this.deleting.set(true);
+      this.errorMessage.set('');
+
+      this.postsService.delete(this.post().id).subscribe({
+        next: () => {
+          this.postDeleted.emit(this.post().id);
+          this.deleting.set(false);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.errorMessage.set(error.error?.message ?? 'Failed to delete post.');
+          this.deleting.set(false);
+        },
+      });
     });
   }
 
@@ -226,7 +237,11 @@ export class PostCard implements OnDestroy {
     modalRef.result.then(
       (result) => {
         if (result) {
-          alert('Report submitted successfully. Thank you for helping keep our community safe.');
+          this.confirmService.alert({
+            title: 'Report Submitted',
+            message: 'Report submitted successfully. Thank you for helping keep our community safe.',
+            type: 'success'
+          }).subscribe();
         }
       },
       () => {}

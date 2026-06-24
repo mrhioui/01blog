@@ -8,6 +8,7 @@ import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public class UserService {
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
+    private final PostService postService;
+    private final NotificationRepository notificationRepository;
     private final com.example.demo.repository.ReportRepository reportRepository;
 
     public long getUserCount() {
@@ -168,6 +171,10 @@ public class UserService {
             throw new RuntimeException("You cannot ban yourself");
         }
 
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            throw new RuntimeException("You cannot ban an admin user");
+        }
+
         user.setBanned(true);
         userRepository.save(user);
     }
@@ -180,6 +187,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(Long id, String requesterUsername) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found");
@@ -192,9 +200,18 @@ public class UserService {
             throw new RuntimeException("You cannot delete your own account");
         }
 
-        // Clean up reports related to this user
+        userRepository.findById(id).ifPresent(user -> {
+            postRepository.findByAuthorIdOrderByTimestampDesc(user.getId())
+                    .forEach(post -> postService.deletePost(post.getId(), requesterUsername));
+        });
+
+        subscriptionRepository.deleteBySubscriberId(id);
+        subscriptionRepository.deleteByTargetId(id);
+        commentRepository.deleteByAuthorId(id);
+        postLikeRepository.deleteByUserId(id);
+        notificationRepository.deleteByUserId(id);
         reportRepository.deleteByReportedUserId(id);
-        
+        reportRepository.deleteByReporterId(id);
         userRepository.deleteById(id);
     }
 

@@ -122,3 +122,11 @@ a {
 a:hover {
   color: var(--deep-space-blue);
 }
+
+/* Custom Confirm Modal Override */
+.confirm-modal-window .modal-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+

@@ -68,10 +68,13 @@
                       Delete Post
                     </button>
                     
-                    <button *ngIf="report.reportedUser && report.reportedUser.id !== currentUser()?.id && !report.reportedUser.banned" 
+                    <button *ngIf="report.reportedUser && report.reportedUser.id !== currentUser()?.id && !report.reportedUser.banned && report.reportedUser.role !== 'ROLE_ADMIN'" 
                             class="btn btn-sm btn-danger rounded-pill px-3 py-1 x-small fw-bold" (click)="banUser(report.reportedUser.id)" title="Suspend User">
                       Ban User
                     </button>
+                    <span *ngIf="report.reportedUser && report.reportedUser.role === 'ROLE_ADMIN'" class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill x-small fw-bold align-self-center">
+                      Protected Admin
+                    </span>
                   </div>
                 </td>
               </tr>

@@ -60,12 +60,15 @@
                 <td>
                   <div class="d-flex justify-content-end gap-2">
                     <ng-container *ngIf="user.id !== currentUser()?.id; else selfActions">
-                      <button *ngIf="!user.banned" class="btn btn-sm btn-outline-danger rounded-pill px-3" (click)="banUser(user.id)">
+                      <button *ngIf="!user.banned && user.role !== 'ROLE_ADMIN'" class="btn btn-sm btn-outline-danger rounded-pill px-3" (click)="banUser(user.id)">
                         <i class="bi bi-person-x me-1"></i>Ban
                       </button>
                       <button *ngIf="user.banned" class="btn btn-sm btn-outline-success rounded-pill px-3" (click)="unbanUser(user.id)">
                         <i class="bi bi-person-check me-1"></i>Unban
                       </button>
+                      <span *ngIf="!user.banned && user.role === 'ROLE_ADMIN'" class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill align-self-center">
+                        Protected Admin
+                      </span>
                       <button class="btn btn-sm btn-dark-amaranth rounded-pill px-3" (click)="deleteUser(user.id)">
                         <i class="bi bi-trash me-1"></i>Delete
                       </button>

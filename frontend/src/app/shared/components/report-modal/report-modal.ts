@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ReportService } from '../../../core/services/reports';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-report-modal',
@@ -66,6 +67,7 @@ export class ReportModal {
 
   private readonly fb = inject(FormBuilder);
   private readonly reportService = inject(ReportService);
+  private readonly confirmService = inject(ConfirmService);
   readonly activeModal = inject(NgbActiveModal);
 
   reportForm = this.fb.group({
@@ -78,28 +80,33 @@ export class ReportModal {
   submit() {
     if (this.reportForm.invalid || this.submitting()) return;
 
-    if (!confirm('Are you sure you want to submit this report? This action will be reviewed by administrators.')) {
-      return;
-    }
+    this.confirmService.confirm({
+      title: 'Submit Report',
+      message: 'Are you sure you want to submit this report? This action will be reviewed by administrators.',
+      confirmText: 'Submit Report',
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
 
-    this.submitting.set(true);
-    this.errorMessage.set('');
+      this.submitting.set(true);
+      this.errorMessage.set('');
 
-    const payload = {
-      reportedUserId: this.reportedUserId,
-      reportedPostId: this.reportedPostId,
-      reason: this.reportForm.value.reason!
-    };
+      const payload = {
+        reportedUserId: this.reportedUserId,
+        reportedPostId: this.reportedPostId,
+        reason: this.reportForm.value.reason!
+      };
 
-    this.reportService.create(payload).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.activeModal.close(true);
-      },
-      error: (err) => {
-        this.submitting.set(false);
-        this.errorMessage.set(err.error?.message || 'Failed to submit report. Please try again.');
-      }
+      this.reportService.create(payload).subscribe({
+        next: () => {
+          this.submitting.set(false);
+          this.activeModal.close(true);
+        },
+        error: (err) => {
+          this.submitting.set(false);
+          this.errorMessage.set(err.error?.message || 'Failed to submit report. Please try again.');
+        }
+      });
     });
   }
 }

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Auth } from '../../../../features/auth/services/auth';
 import { AdminService } from '../../../../core/services/admin';
 import { Post } from '../../../../core/models/post.model';
+import { ConfirmService } from '../../../../core/services/confirm.service';
 
 import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
 
@@ -17,6 +18,7 @@ import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
 export class AdminPostsPage {
   private readonly authService = inject(Auth);
   private readonly adminService = inject(AdminService);
+  private readonly confirmService = inject(ConfirmService);
 
   readonly currentUser = computed(() => this.authService.currentUser());
   readonly isAdmin = computed(() => this.currentUser()?.role === 'ROLE_ADMIN');
@@ -35,16 +37,27 @@ export class AdminPostsPage {
   }
 
   deletePost(id: number): void {
-    if (confirm('Are you sure you want to delete this post?')) {
+    this.confirmService.confirm({
+      title: 'Delete Post',
+      message: 'Are you sure you want to delete this post? This action cannot be undone.',
+      confirmText: 'Delete',
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
       this.adminService.deletePost(id).subscribe({
         next: () => {
           this.loadPosts();
         },
         error: (err) => {
           console.error('Failed to delete post:', err);
-          alert('Failed to delete post.');
+          this.confirmService.alert({
+            title: 'Error',
+            message: 'Failed to delete post.',
+            type: 'danger'
+          }).subscribe();
         }
       });
-    }
+    });
   }
 }
