@@ -26,7 +26,7 @@ public class NotificationService {
                 .isRead(false) // Changed from read(false) to isRead(false)
                 .timestamp(LocalDateTime.now())
                 .build();
-        Notification saved = notificationRepository.save(notification);
+        notificationRepository.save(notification);
     }
 
     public List<Notification> getUserNotifications(Long userId) {
@@ -37,11 +37,11 @@ public class NotificationService {
         return notificationRepository.countByUserIdAndIsReadFalse(userId); // Corrected repository method name to match Java field 'isRead'
     }
 
-    public void markAsRead(Long notificationId) {
-        notificationRepository.findById(notificationId).ifPresent(n -> {
-            n.setRead(true); // Changed from setIsRead(true) to setRead(true) - Lombok might generate setRead for 'isRead' field
-            notificationRepository.save(n);
-        });
+    public void markAsRead(Long notificationId, Long userId) {
+        Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        notification.setRead(true);
+        notificationRepository.save(notification);
     }
 
     public void markAllAsRead(Long userId) {
@@ -55,5 +55,9 @@ public class NotificationService {
 
     public void deleteNotificationsByRelatedId(Long relatedId, String type) {
         notificationRepository.deleteByRelatedIdAndType(relatedId, type);
+    }
+
+    public void deleteNotificationsByRelatedIdAndTypes(Long relatedId, List<String> types) {
+        types.forEach(type -> notificationRepository.deleteByRelatedIdAndType(relatedId, type));
     }
 }

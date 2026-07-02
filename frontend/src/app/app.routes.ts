@@ -6,6 +6,8 @@ import { AdminPostsPage } from './features/admin/pages/admin-posts-page/admin-po
 import { AdminReportsPage } from './features/admin/pages/admin-reports-page/admin-reports-page';
 import { Login } from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
+import { CommunityDirectoryPage } from './features/community/pages/community-directory/community-directory';
+import { NotificationsCenterPage } from './features/notifications/pages/notifications-center/notifications-center';
 import { Feed } from './features/posts/pages/feed/feed';
 import { PostDetails } from './features/posts/pages/post-details/post-details';
 import { ProfilePage } from './features/profile/pages/profile/profile';
@@ -17,6 +19,8 @@ export const routes: Routes = [
   { path: 'admin/posts', component: AdminDashboardPage, canActivate: [adminGuard] },
   { path: 'admin/reports', component: AdminDashboardPage, canActivate: [adminGuard] },
   { path: 'login', component: Login },
+  { path: 'community', component: CommunityDirectoryPage, canActivate: [authGuard] },
+  { path: 'notifications', component: NotificationsCenterPage, canActivate: [authGuard] },
   { path: 'posts/:id', component: PostDetails, canActivate: [authGuard] },
   { path: 'profile', component: ProfilePage, canActivate: [authGuard] },
   { path: 'profile/:id', component: ProfilePage, canActivate: [authGuard] },

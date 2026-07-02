@@ -6,6 +6,7 @@ import com.example.demo.model.Post;
 import com.example.demo.model.User;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class LikeController {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @GetMapping
     public ResponseEntity<List<PostLike>> getAllLikes() {
@@ -47,7 +49,10 @@ public class LikeController {
                 .post(post)
                 .build();
 
-        return ResponseEntity.ok(postLikeRepository.save(like));
+        PostLike savedLike = postLikeRepository.save(like);
+        notifyPostAuthorAboutLike(user, post);
+
+        return ResponseEntity.ok(savedLike);
     }
 
     @GetMapping("/post/{postId}/status")
@@ -69,8 +74,11 @@ public class LikeController {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         postLikeRepository.findByPostIdAndUserId(postId, user.getId()).ifPresentOrElse(
-                postLikeRepository::delete,
-                () -> postLikeRepository.save(PostLike.builder().user(user).post(post).build())
+                existingLike -> postLikeRepository.delete(existingLike),
+                () -> {
+                    postLikeRepository.save(PostLike.builder().user(user).post(post).build());
+                    notifyPostAuthorAboutLike(user, post);
+                }
         );
 
         LikeStatusResponse status = buildStatus(postId, authentication);
@@ -87,6 +95,19 @@ public class LikeController {
                 postId,
                 user != null && postLikeRepository.existsByPostIdAndUserId(postId, user.getId()),
                 postLikeRepository.countByPostId(postId)
+        );
+    }
+
+    private void notifyPostAuthorAboutLike(User actor, Post post) {
+        if (post.getAuthor().getId().equals(actor.getId())) {
+            return;
+        }
+
+        notificationService.createNotification(
+                post.getAuthor(),
+                actor.getUsername() + " liked your post",
+                "POST_LIKE",
+                post.getId()
         );
     }
 

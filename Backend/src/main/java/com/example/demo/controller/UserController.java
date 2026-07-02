@@ -29,6 +29,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/community")
+    public ResponseEntity<List<UserDTO>> getCommunityUsers(Authentication authentication) {
+        final String requesterUsername = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(userService.getCommunityUsers(requesterUsername));
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<UserDTO>> searchUsers(
             @RequestParam("q") String query,

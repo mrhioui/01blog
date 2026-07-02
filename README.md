@@ -1,230 +1,192 @@
-Phase 1 - Project Setup (Backend + Frontend) #2
+# 01Blog
 
-## 📌 Description
-Set up the backend Spring Boot project and frontend project skeleton (React/Next.js or plain JS).
+01Blog is a full-stack blog platform built with:
 
-## ✅ Backend Tasks
-- [x] Initialize Spring Boot project
-- [x] Add dependencies (Web, JPA, PostgreSQL, Security, Lombok)
-- [x] Configure application.properties
-- [x] Connect to PostgreSQL (Docker)
-- [x] Run backend successfully
+- **Backend:** Spring Boot 3, Spring Security, Spring Data JPA, JWT, PostgreSQL
+- **Frontend:** Angular 21, Bootstrap, Ng Bootstrap
+- **Containerization:** Docker and Docker Compose
 
-## ✅ Frontend Tasks
-- [x] Initialize frontend project (Angular)
-- [x] Create folder structure: components, pages, services, styles
-- [x] Configure HTTP client to connect backend API
-- [x] Run frontend successfully
+The project includes authentication, posts, comments, likes, subscriptions, notifications, reports, and an admin area.
 
-## 🎯 Goal
-Backend and frontend are running and able to connect with each other.
+## Project Overview
 
-Phase 2 - Database Design + Frontend Models #3
-## 📌 Description
-Design database tables and prepare frontend models for API consumption.
+The application is split into three parts:
 
-## ✅ Backend Tasks
-- [x] Create User entity
-- [x] Create Post entity
-- [x] Create Comment entity
-- [x] Create Like entity
-- [x] Create Subscription entity
-- [x] Create Report entity
-- [x] Add relationships (OneToMany, ManyToOne, etc.)
-- [x] Verify tables in database
+- **PostgreSQL** stores the application data
+- **Spring Boot backend** exposes the REST API and handles business logic
+- **Angular frontend** provides the user interface and consumes the API
 
-## ✅ Frontend Tasks
-- [x] Create User model
-- [x] Create Post model
-- [x] Create Comment model
-- [x] Create Like model
-- [x] Create Subscription model
-- [x] Create Report model
-- [x] Set up dummy data to test API connection
+The default Docker setup runs all three services together.
 
-## 🎯 Goal
-Backend tables and frontend models are ready and aligned for API calls.
+## Architecture
 
-Phase 3 - Repository Layer + Frontend Services #4
-## 📌 Description
-Implement backend repositories and frontend service layer for API calls.
+### 1. Frontend
 
-## ✅ Backend Tasks
-- [x] Create UserRepository
-- [x] Create PostRepository
-- [x] Create CommentRepository
-- [x] Create LikeRepository
-- [x] Create SubscriptionRepository
-- [x] Create ReportRepository
+The frontend lives in [`frontend/`](./frontend).
 
-## ✅ Frontend Tasks
-- [x] Create API service for User (auth)
-- [x] Create API service for Post
-- [x] Create API service for Comment
-- [x] Create API service for Like
-- [x] Create API service for Subscription
-- [x] Create API service for Report
-- [x] Test fetching data from backend
+It is an Angular single-page application built with a component-based structure:
 
-## 🎯 Goal
-Repositories and frontend services are connected and functional.
+- `src/app/features/` contains feature modules such as:
+  - `auth` for login and registration
+  - `posts` for feed, post details, and post creation
+  - `profile` for user profile pages
+  - `admin` for dashboard, users, posts, and reports management
+- `src/app/core/` contains shared infrastructure:
+  - API service wrappers
+  - HTTP interceptors
+  - route guards
+  - shared models and utility services
+- `src/app/shared/` contains reusable UI pieces such as:
+  - navbar
+  - loader
+  - modals
+  - custom pipes
+- `src/app/layouts/` contains the main application layout
 
-Phase 4 - Service Layer + Frontend State/Store #5
-## 📌 Description   
-Implement business logic in backend services and manage frontend state.
+How it works:
 
-## ✅ Backend Tasks
-- [x] Create UserService
-- [x] Create PostService
-- [x] Create CommentService
-- [x] Create LikeService
-- [x] Create SubscriptionService
-- [x] Implement business logic
+- Angular boots from [`src/main.ts`](./frontend/src/main.ts)
+- [`app.config.ts`](./frontend/src/app/app.config.ts) wires routing, HTTP interceptors, animations, and error handling
+- [`app.routes.ts`](./frontend/src/app/app.routes.ts) defines the public and protected routes
+- Environment files switch the API base URL:
+  - [`environment.ts`](./frontend/src/environments/environment.ts) for local development
+  - [`environment.prod.ts`](./frontend/src/environments/environment.prod.ts) for production/Docker
 
-## ✅ Frontend Tasks
-- [x] Set up state management (Context API / Redux / Vanilla JS store)
-- [x] Connect frontend state with backend services
-- [x] Test user registration, post creation, comments
+Frontend request flow:
 
-## 🎯 Goal
-Business logic is applied and frontend can consume it with state management.
+- components and pages call shared API services
+- those services use `environment.apiUrl`
+- auth tokens are attached through the HTTP interceptor
+- route guards protect authenticated and admin-only pages
 
-Phase 5 - Controllers (API) + Frontend Pages #6
-## 📌 Description
-Create backend controllers and frontend pages for CRUD operations.
+### 2. Backend
 
-## ✅ Backend Tasks
-- [x] Create AuthController
-- [x] Create UserController
-- [x] Create PostController
-- [x] Create CommentController
-- [x] Implement endpoints:
-- [x] POST /auth/register
-- [x] POST /auth/login
-- [x] GET /users
-- [x] GET /users/{id}
-- [x] POST /posts
-- [x] GET /posts
-- [x] DELETE /posts/{id}
-- [x] POST /comments
+The backend lives in [`Backend/`](./Backend).
 
-## ✅ Frontend Tasks
-- [x] Create registration/login pages
-- [x] Create user profile page
-- [x] Create post feed page
-- [x] Create post creation page
-- [x] Create comment component
-- [x] Connect pages to backend endpoints
+It is a Spring Boot application organized by responsibility:
 
-## 🎯 Goal
-Frontend pages are functional with backend API.
+- `controller/` exposes REST endpoints
+- `service/` contains business logic
+- `repository/` provides Spring Data JPA access to PostgreSQL
+- `model/` contains the JPA entities
+- `dto/` contains request and response objects
+- `security/` contains JWT and user details logic
+- `config/` contains security, CORS, initialization, and web config
 
-Phase 6 - Authentication & Security #7
-## 📌 Description
-Secure backend and integrate frontend authentication flows.
+Main backend responsibilities:
 
-## ✅ Backend Tasks
-- [x] Configure Spring Security
-- [x] Implement JWT authentication
-- [x] Add password hashing
-- [x] Protect routes
-- [x] Add roles (USER / ADMIN)
+- user registration and authentication
+- JWT-based security
+- CRUD operations for posts and comments
+- likes and subscriptions
+- notifications and reports
+- admin-oriented endpoints such as counts and management pages
+- file uploads for media content
 
-## ✅ Frontend Tasks
-- [x] Store JWT token in localStorage / cookies
-- [x] Protect frontend routes (redirect if not logged in)
-- [x] Add login/logout functionality
-- [x] Role-based access control
+Important backend files:
 
-## 🎯 Goal
-Secure backend + frontend authentication is fully functional.
+- [`DemoApplication.java`](./Backend/src/main/java/com/example/demo/DemoApplication.java) starts the Spring Boot app
+- [`SecurityConfig.java`](./Backend/src/main/java/com/example/demo/config/SecurityConfig.java) configures JWT security, CORS, and stateless sessions
+- [`WebConfig.java`](./Backend/src/main/java/com/example/demo/config/WebConfig.java) exposes uploaded files under `/uploads/**`
+- [`DataInitializer.java`](./Backend/src/main/java/com/example/demo/config/DataInitializer.java) seeds default users when the database is empty
 
-Phase 7 - Social Features #8
-## 📌 Description
-Add social interactions: likes, comments, follow system, notifications.
+### 3. Database
 
-## ✅ Backend Tasks
-- [x] Implement follow system
-- [x] Implement like system
-- [x] Implement comment system
-- [x] Add notifications logic
+The project uses PostgreSQL.
 
-## ✅ Frontend Tasks
-- [x] Display posts with likes/comments
-- [x] Add follow/unfollow buttons
-- [x] Add notification system UI
-- [x] Test all interactions in UI
+With Docker Compose, the database is persisted in the local [`postgres_data`](./postgres_data) directory so data survives container restarts.
 
-## 🎯 Goal
-Full social interaction features are working.
+## Docker Compose
 
-Phase 8 - Media Upload #9
-## 📌 Description
-Enable media upload on backend and frontend.
+The root [`docker-compose.yml`](./docker-compose.yml) starts:
 
-## ✅ Backend Tasks
-- [x] Implement file upload (image/video)
-- [x] Store files locally
-- [x] Create endpoint to serve media
+- `postgres-db` on port `5433`
+- `backend` on port `8080`
+- `frontend` on port `4200`
 
-## ✅ Frontend Tasks
-- [x] Add file upload input on post creation
-- [x] Display uploaded images/videos in feed
-- [x] Test upload and retrieval
+Service behavior:
 
-## 🎯 Goal
-Users can upload and view media files.
+- `postgres-db` runs `postgres:15`
+- `backend` is built from [`Backend/Dockerfile`](./Backend/Dockerfile)
+- `frontend` is built from [`frontend/Dockerfile`](./frontend/Dockerfile)
+- the frontend is served by Nginx inside the container
+- the backend connects to PostgreSQL through the Docker network using the service name `postgres-db`
 
-Phase 9 - Reports & Admin #10
-## 📌 Description
-Enable reporting and admin moderation.
+## Running With Docker
 
-## ✅ Backend Tasks
-- [x] Implement report system
-- [x] Store report reason + timestamp
-- [x] Create admin endpoints:
-    - [x] View users
-    - [x] Delete posts
-    - [x] Ban users
+### Start the full stack
 
-## ✅ Frontend Tasks
-- [x] Admin panel pages for user/post management
-- [x] Display reports
-- [x] Allow admin to delete/ban content
+```bash
+docker compose up -d --build
+```
 
-## 🎯 Goal
-Admin panel fully functional for moderation.
+### Stop the stack
 
-Phase 10 - Testing #11
-## 📌 Description
-Write tests for backend and frontend to ensure reliability.
+```bash
+docker compose down
+```
 
-## ✅ Backend Tasks
-- [x] Unit tests (services)
-- [x] Integration tests (API)
+### Remove database data too
 
-## ✅ Frontend Tasks
-- [x] Unit tests for components
-- [x] Integration tests for pages and services
+If you want a clean reset, remove the persisted database directory after stopping the containers:
 
-## 🎯 Goal
-Both backend and frontend are tested and stable.
+```bash
+rm -rf postgres_data
+```
 
-Phase 11 - Docker & Deployment #12
-## 📌 Description
-Containerize and deploy the full application.
+## Running Locally Without Docker
 
-## ✅ Backend Tasks
-- [x] Create Dockerfile
-- [x] Configure docker-compose (backend + postgres)
-- [x] Run full system
-- [x] Fix environment variables
+### Backend
 
-## ✅ Frontend Tasks
-- [x] Dockerize frontend
-- [x] Add frontend to docker-compose
-- [x] Ensure frontend can reach backend in Docker network
-- [x] Test full stack deployment
+From the [`Backend/`](./Backend) directory:
 
-## 🎯 Goal
-Full system runs in Docker containers with frontend + backend communication.
+```bash
+mvn spring-boot:run
+```
+
+The backend expects PostgreSQL on:
+
+- `jdbc:postgresql://localhost:5433/01Blog_db`
+
+Make sure your local PostgreSQL instance matches the credentials in [`application.properties`](./Backend/src/main/resources/application.properties).
+
+### Frontend
+
+From the [`frontend/`](./frontend) directory:
+
+```bash
+npm install
+npm start
+```
+
+The frontend runs on:
+
+- `http://localhost:4200`
+
+In local development it calls the backend at:
+
+- `http://localhost:8080/api`
+
+## Default Credentials
+
+When the backend starts with an empty database, it seeds two users:
+
+- `admin / admin123`
+- `user / user123`
+
+These are created by [`DataInitializer.java`](./Backend/src/main/java/com/example/demo/config/DataInitializer.java).
+
+## Main URLs
+
+After the stack is running:
+
+- Frontend: `http://localhost:4200`
+- Backend API: `http://localhost:8080`
+- PostgreSQL: `localhost:5433`
+
+## Notes
+
+- The backend uses JWT and stateless authentication.
+- CORS is configured for `http://localhost:4200` and `http://127.0.0.1:4200`.
+- Uploaded files are served from `/uploads/**`.
+- The frontend production build uses a relative API base path (`/api`). If you serve the app through Nginx in Docker, you may also need a reverse proxy rule for `/api` so browser requests reach the backend container.

@@ -4,6 +4,7 @@ import com.example.demo.model.Subscription;
 import com.example.demo.model.User;
 import com.example.demo.repository.SubscriptionRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.NotificationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class SubscriptionController {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @GetMapping
     public ResponseEntity<List<Subscription>> getAllSubscriptions() {
@@ -47,7 +49,9 @@ public class SubscriptionController {
                             .target(target)
                             .createdAt(LocalDateTime.now())
                             .build();
-                    return ResponseEntity.ok(subscriptionRepository.save(subscription));
+                    Subscription savedSubscription = subscriptionRepository.save(subscription);
+                    notifyTargetAboutFollower(subscriber, target);
+                    return ResponseEntity.ok(savedSubscription);
                 });
     }
 
@@ -67,5 +71,14 @@ public class SubscriptionController {
     @AllArgsConstructor
     public static class SubscriptionRequest {
         private Long targetId;
+    }
+
+    private void notifyTargetAboutFollower(User subscriber, User target) {
+        notificationService.createNotification(
+                target,
+                subscriber.getUsername() + " subscribed to you",
+                "FOLLOW",
+                subscriber.getId()
+        );
     }
 }

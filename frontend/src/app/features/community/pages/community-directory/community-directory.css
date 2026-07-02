@@ -1,0 +1,93 @@
+.page-kicker {
+  color: var(--dark-amaranth);
+  letter-spacing: 0.1em;
+}
+
+.community-hero {
+  background:
+    radial-gradient(circle at top right, rgba(229, 149, 0, 0.14), transparent 24%),
+    linear-gradient(135deg, #ffffff 0%, #fef8f1 100%);
+}
+
+.directory-stat {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.directory-stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--deep-space-blue);
+}
+
+.directory-stat-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.community-card {
+  border-radius: 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.community-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 1rem 2rem rgba(0, 38, 66, 0.08);
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border: 2px solid rgba(229, 218, 218, 0.8);
+}
+
+.avatar-letter {
+  font-weight: 800;
+  font-size: 1.75rem;
+  color: var(--deep-space-blue);
+}
+
+.community-bio {
+  min-height: 3rem;
+}
+
+.btn-golden-orange {
+  background-color: var(--golden-orange);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-golden-orange:hover {
+  background-color: #c98400;
+  color: white;
+}
+
+.btn-outline-golden-orange {
+  color: var(--golden-orange);
+  border: 2px solid var(--golden-orange);
+  background: transparent;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-golden-orange:hover {
+  background-color: var(--golden-orange);
+  color: white;
+}
+
+.avatar-link {
+  display: inline-flex;
+}
+
+@media (max-width: 576px) {
+  .directory-stat {
+    align-items: flex-start;
+  }
+}

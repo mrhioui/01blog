@@ -40,6 +40,18 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserDTO> getCommunityUsers(String requesterUsername) {
+        User requester = requesterUsername != null
+                ? userRepository.findByUsername(requesterUsername).orElse(null)
+                : null;
+
+        return userRepository.findAll().stream()
+                .filter(user -> !Boolean.TRUE.equals(user.getBanned()))
+                .filter(user -> requester == null || !Objects.equals(user.getId(), requester.getId()))
+                .map(user -> convertToDTO(user, requester))
+                .collect(Collectors.toList());
+    }
+
     public List<UserDTO> searchUsers(String query, String requesterUsername) {
         String normalizedQuery = query == null ? "" : query.trim();
         if (normalizedQuery.length() < 2) {

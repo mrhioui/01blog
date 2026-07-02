@@ -14,34 +14,46 @@
               <div class="form-floating mb-3">
                 <input 
                   type="text" 
-                  class="form-control auth-input" 
+                  class="form-control auth-input"
+                  [class.is-invalid]="isInvalid('username')"
                   id="usernameRegister" 
                   formControlName="username" 
                   placeholder="john_doe"
                 />
                 <label for="usernameRegister">Username</label>
+                <div *ngIf="isInvalid('username')" class="invalid-feedback">
+                  {{ controlError('username') }}
+                </div>
               </div>
 
               <div class="form-floating mb-3">
                 <input 
                   type="email" 
-                  class="form-control auth-input" 
+                  class="form-control auth-input"
+                  [class.is-invalid]="isInvalid('email')"
                   id="emailRegister" 
                   formControlName="email" 
                   placeholder="name@example.com"
                 />
                 <label for="emailRegister">Email address</label>
+                <div *ngIf="isInvalid('email')" class="invalid-feedback">
+                  {{ controlError('email') }}
+                </div>
               </div>
 
               <div class="form-floating mb-4">
                 <input 
                   type="password" 
-                  class="form-control auth-input" 
+                  class="form-control auth-input"
+                  [class.is-invalid]="isInvalid('password')"
                   id="passwordRegister" 
                   formControlName="password" 
                   placeholder="••••••••"
                 />
                 <label for="passwordRegister">Password (min 6 characters)</label>
+                <div *ngIf="isInvalid('password')" class="invalid-feedback">
+                  {{ controlError('password') }}
+                </div>
               </div>
 
               <div *ngIf="errorMessage()" class="alert alert-danger border-0 rounded-3 py-2 small mb-3">

@@ -6,6 +6,7 @@ import { Auth } from '../../../features/auth/services/auth';
 import { Notifications } from '../../../core/services/notifications';
 import { PostCreationModal } from '../../../features/posts/components/post-creation-modal/post-creation-modal';
 import { User } from '../../../core/models/user.model';
+import { Notification, NotificationType } from '../../../core/models/notification.model';
 import { Subscription as RxSubscription } from 'rxjs';
 
 import { ResolveUrlPipe } from '../../pipes/resolve-url.pipe';
@@ -29,7 +30,7 @@ export class Navbar implements OnInit, OnDestroy {
   protected searchLoading = signal(false);
   protected searchOpen = signal(false);
   protected notificationCount = signal(0);
-  protected notifications = signal<any[]>([]);
+  protected notifications = signal<Notification[]>([]);
   protected loadingNotifications = signal(false);
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private wsSubscription: RxSubscription | null = null;
@@ -67,7 +68,7 @@ export class Navbar implements OnInit, OnDestroy {
     });
   }
 
-  markAsRead(notification: any): void {
+  markAsRead(notification: Notification): void {
     if (notification.isRead) return;
     this.notificationService.markAsRead(notification.id).subscribe({
       next: () => {
@@ -86,12 +87,36 @@ export class Navbar implements OnInit, OnDestroy {
     });
   }
 
-  onNotificationClick(notification: any): void {
+  onNotificationClick(notification: Notification): void {
     this.markAsRead(notification);
-    if (notification.type === 'NEW_POST') {
-      void this.router.navigate(['/posts', notification.relatedId]);
-    }
+    void this.router.navigate(this.getNotificationLink(notification));
     this.isMenuCollapsed.set(true);
+  }
+
+  getNotificationLink(notification: Notification): string[] {
+    switch (notification.type) {
+      case 'FOLLOW':
+        return ['/profile', String(notification.relatedId)];
+      case 'NEW_POST':
+      case 'POST_LIKE':
+      case 'POST_COMMENT':
+        return ['/posts', String(notification.relatedId)];
+      default:
+        return ['/notifications'];
+    }
+  }
+
+  getNotificationTypeLabel(type: NotificationType): string {
+    switch (type) {
+      case 'NEW_POST':
+        return 'Post';
+      case 'POST_LIKE':
+        return 'Like';
+      case 'POST_COMMENT':
+        return 'Comment';
+      case 'FOLLOW':
+        return 'Subscribe';
+    }
   }
 
   openCreatePostModal(): void {

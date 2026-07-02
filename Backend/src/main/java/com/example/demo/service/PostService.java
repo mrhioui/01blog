@@ -185,7 +185,7 @@ public class PostService {
         }
 
         // Clean up notifications related to this post
-        notificationService.deleteNotificationsByRelatedId(id, "NEW_POST");
+        notificationService.deleteNotificationsByRelatedIdAndTypes(id, List.of("NEW_POST", "POST_LIKE", "POST_COMMENT"));
 
         // Clean up reports related to this post
         reportRepository.deleteByReportedPostId(id);

@@ -8,6 +8,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.NotificationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class CommentController {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @GetMapping
     public ResponseEntity<List<Comment>> getAllComments() {
@@ -65,6 +67,7 @@ public class CommentController {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+        notifyPostAuthorAboutComment(user, post);
         CommentDTO commentDTO = convertToDTO(savedComment);
         
         return ResponseEntity.ok(commentDTO);
@@ -90,6 +93,19 @@ public class CommentController {
                         .profilePublic(!Boolean.FALSE.equals(author.getProfilePublic()))
                         .build())
                 .build();
+    }
+
+    private void notifyPostAuthorAboutComment(User actor, Post post) {
+        if (post.getAuthor().getId().equals(actor.getId())) {
+            return;
+        }
+
+        notificationService.createNotification(
+                post.getAuthor(),
+                actor.getUsername() + " commented on your post",
+                "POST_COMMENT",
+                post.getId()
+        );
     }
 
     @Data

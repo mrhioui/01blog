@@ -34,8 +34,10 @@ public class NotificationController {
     }
 
     @PostMapping("/{id}/mark-as-read")
-    public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
-        notificationService.markAsRead(id);
+    public ResponseEntity<Void> markAsRead(@PathVariable Long id, Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        notificationService.markAsRead(id, user.getId());
         return ResponseEntity.ok().build();
     }
 

@@ -53,3 +53,15 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.feed-shell {
+  max-width: 1560px;
+  width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .feed-shell {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}

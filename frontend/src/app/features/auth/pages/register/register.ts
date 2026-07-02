@@ -39,6 +39,9 @@ export class Register implements OnInit {
   submit(): void {
     if (this.form.invalid || this.submitting()) {
       this.form.markAllAsTouched();
+      if (this.form.invalid) {
+        this.errorMessage.set('Please fix the highlighted fields before creating the account.');
+      }
       return;
     }
 
@@ -63,9 +66,84 @@ export class Register implements OnInit {
         void this.router.navigateByUrl('/');
       },
       error: (error: HttpErrorResponse) => {
-        this.errorMessage.set(error.error?.message ?? 'Registration failed. Check backend logs and payload.');
+        this.errorMessage.set(this.getErrorMessage(error));
         this.submitting.set(false);
       },
     });
+  }
+
+  isInvalid(controlName: keyof typeof this.form.controls): boolean {
+    const control = this.form.controls[controlName];
+    return control.invalid && (control.touched || control.dirty);
+  }
+
+  controlError(controlName: keyof typeof this.form.controls): string {
+    const control = this.form.controls[controlName];
+
+    if (control.hasError('required')) {
+      return `${this.prettyLabel(controlName)} is required.`;
+    }
+
+    if (controlName === 'email' && control.hasError('email')) {
+      return 'Enter a valid email address.';
+    }
+
+    if (controlName === 'password' && control.hasError('minlength')) {
+      return 'Password must be at least 6 characters long.';
+    }
+
+    return 'This field is invalid.';
+  }
+
+  private getErrorMessage(error: HttpErrorResponse): string {
+    const backendMessage = this.extractBackendMessage(error.error);
+
+    if (backendMessage) {
+      return backendMessage;
+    }
+
+    if (error.status === 0) {
+      return 'Unable to reach the server. Check your connection and try again.';
+    }
+
+    if (error.status === 409) {
+      return 'Username or email already exists.';
+    }
+
+    if (error.status === 400) {
+      return 'Please check the submitted data and try again.';
+    }
+
+    return 'Registration failed. Please try again.';
+  }
+
+  private extractBackendMessage(payload: unknown): string | null {
+    if (!payload) {
+      return null;
+    }
+
+    if (typeof payload === 'string') {
+      return payload.trim() || null;
+    }
+
+    if (typeof payload === 'object' && payload !== null && 'message' in payload) {
+      const message = (payload as { message?: unknown }).message;
+      return typeof message === 'string' && message.trim() ? message : null;
+    }
+
+    return null;
+  }
+
+  private prettyLabel(controlName: keyof typeof this.form.controls): string {
+    switch (controlName) {
+      case 'username':
+        return 'Username';
+      case 'email':
+        return 'Email';
+      case 'password':
+        return 'Password';
+      default:
+        return controlName;
+    }
   }
 }
