@@ -29,8 +29,7 @@ public class PostController {
     public ResponseEntity<Page<PostDTO>> getPaginatedPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         return ResponseEntity.ok(postService.getPaginatedPosts(page, size, username(authentication)));
     }
 
@@ -39,37 +38,29 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(id, username(authentication)));
     }
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data"})
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8",
+            "multipart/form-data;charset=utf-8", "multipart/form-data" })
     public ResponseEntity<PostDTO> createPost(
-            @RequestParam(value = "content") String content,//TODO : change it to createPostDTO
-            @RequestParam(value = "mediaUrl", required = false) String mediaUrl,
-            @RequestParam(value = "image", required = false) MultipartFile image,
-            Authentication authentication
-    ) {
-        CreatePostDTO createPostDTO = new CreatePostDTO(content, mediaUrl);
-        return ResponseEntity.ok(postService.createPost(authentication.getName(), createPostDTO, image));
-    }
-
-    @PutMapping(value = "/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data"})
-    public ResponseEntity<PostDTO> updatePost(
-            @PathVariable("id") Long id,
             @RequestParam(value = "content") String content,
             @RequestParam(value = "mediaUrl", required = false) String mediaUrl,
             @RequestParam(value = "image", required = false) MultipartFile image,
-            Authentication authentication
-    ) {
-        CreatePostDTO updatePostDTO = new CreatePostDTO(content, mediaUrl);
-        return ResponseEntity.ok(postService.updatePost(id, authentication.getName(), updatePostDTO, image));
+            Authentication authentication) {
+        CreatePostDTO createPostDTO = new CreatePostDTO(content, mediaUrl);
+        if (mediaUrl != null && !mediaUrl.trim().isEmpty()) {
+            // When a media URL is provided, ignore any uploaded image (DTO wins)
+            image = null;
+        }
+        return ResponseEntity.ok(postService.createPost(authentication.getName(), createPostDTO, image));
     }
 
-    @PostMapping(value = "/{id}/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data"})
+    @PostMapping(value = "/{id}/update", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,
+            "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data" })
     public ResponseEntity<PostDTO> updatePostWithForm(
             @PathVariable("id") Long id,
             @RequestParam(value = "content") String content,
             @RequestParam(value = "mediaUrl", required = false) String mediaUrl,
             @RequestParam(value = "image", required = false) MultipartFile image,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         CreatePostDTO updatePostDTO = new CreatePostDTO(content, mediaUrl);
         return ResponseEntity.ok(postService.updatePost(id, authentication.getName(), updatePostDTO, image));
     }

@@ -96,10 +96,6 @@ public class PostService {
     }
 
     public List<PostDTO> getPostsByAuthorId(Long authorId, String requesterUsername) {
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // TEMPORARY BYPASS FOR DIAGNOSIS
         return postRepository.findByAuthorIdOrderByTimestampDesc(authorId).stream()
                 .map(post -> convertToDTO(post, requesterUsername))
                 .collect(Collectors.toList());
@@ -135,7 +131,6 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        // Notify subscribers
         subscriptionRepository.findByTargetId(user.getId()).forEach(sub -> {
             notificationService.createNotification(
                     sub.getSubscriber(),
@@ -184,10 +179,8 @@ public class PostService {
             throw new AccessDeniedException("You cannot delete this post");
         }
 
-        // Clean up notifications related to this post
         notificationService.deleteNotificationsByRelatedIdAndTypes(id, List.of("NEW_POST", "POST_LIKE", "POST_COMMENT"));
 
-        // Clean up reports related to this post
         reportRepository.deleteByReportedPostId(id);
 
         postRepository.delete(post);

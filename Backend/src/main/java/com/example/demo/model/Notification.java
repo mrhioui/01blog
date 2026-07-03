@@ -18,14 +18,14 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // The recipient of the notification
+    private User user;
 
     private String message;
-    
-    private String type; // e.g., "NEW_POST"
-    
-    private Long relatedId; // e.g., postId
-    
+
+    private String type;
+
+    private Long relatedId;
+
     @JsonProperty("isRead")
     private boolean isRead;
 

@@ -1,9 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard, authGuard } from './core/guards/auth-guard';
 import { AdminDashboardPage } from './features/admin/pages/admin-dashboard/admin-dashboard';
-import { AdminUsersPage } from './features/admin/pages/admin-users-page/admin-users-page';
-import { AdminPostsPage } from './features/admin/pages/admin-posts-page/admin-posts-page';
-import { AdminReportsPage } from './features/admin/pages/admin-reports-page/admin-reports-page';
 import { Login } from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
 import { CommunityDirectoryPage } from './features/community/pages/community-directory/community-directory';

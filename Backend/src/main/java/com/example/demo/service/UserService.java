@@ -168,7 +168,6 @@ public class UserService {
                 ? userRepository.findByUsername(requesterUsername).orElse(null)
                 : null;
 
-        // TEMPORARY BYPASS FOR DIAGNOSIS
         return convertToDTO(user, requester);
     }
 

@@ -23,7 +23,7 @@ public class NotificationService {
                 .message(message)
                 .type(type)
                 .relatedId(relatedId)
-                .isRead(false) // Changed from read(false) to isRead(false)
+                .isRead(false)
                 .timestamp(LocalDateTime.now())
                 .build();
         notificationRepository.save(notification);
@@ -34,7 +34,7 @@ public class NotificationService {
     }
 
     public long getUnreadCount(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadFalse(userId); // Corrected repository method name to match Java field 'isRead'
+        return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
     public void markAsRead(Long notificationId, Long userId) {
@@ -46,9 +46,9 @@ public class NotificationService {
 
     public void markAllAsRead(Long userId) {
         List<Notification> unread = notificationRepository.findByUserIdOrderByTimestampDesc(userId).stream()
-                .filter(n -> !n.isRead()) // This should be correct for the getter
+                .filter(n -> !n.isRead())
                 .toList();
-        unread.forEach(n -> n.setRead(true)); // Changed from setIsRead(true) to setRead(true) - Lombok might generate setRead for 'isRead' field
+        unread.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(unread);
     }
 
