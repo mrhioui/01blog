@@ -9,10 +9,6 @@ import { Api } from './api';
 export class Comments {
   private readonly api = inject(Api);
 
-  getAll(): Observable<Comment[]> {
-    return this.api.get<Comment[]>('/comments');
-  }
-
   getByPostId(postId: number): Observable<Comment[]> {
     return this.api.get<Comment[]>(`/comments/post/${postId}`);
   }

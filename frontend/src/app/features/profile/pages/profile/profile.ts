@@ -12,7 +12,6 @@ import { Post } from '../../../../core/models/post.model';
 import { PostCard } from '../../../../features/posts/components/post-card/post-card';
 import { PostCreationModal } from '../../../../features/posts/components/post-creation-modal/post-creation-modal';
 import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
-import { environment } from '../../../../../environments/environment';
 
 import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
 

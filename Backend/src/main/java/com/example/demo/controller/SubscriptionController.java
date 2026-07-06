@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/subscriptions")
@@ -24,11 +23,6 @@ public class SubscriptionController {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-
-    @GetMapping
-    public ResponseEntity<List<Subscription>> getAllSubscriptions() {
-        return ResponseEntity.ok(subscriptionRepository.findAll());
-    }
 
     @PostMapping
     public ResponseEntity<Subscription> createSubscription(@RequestBody SubscriptionRequest request, Authentication authentication) {

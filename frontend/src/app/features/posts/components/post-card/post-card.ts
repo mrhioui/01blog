@@ -8,7 +8,6 @@ import { Post } from '../../../../core/models/post.model';
 import { Comment as PostComment } from '../../../../core/models/comment.model';
 import { ReportModal } from '../../../../shared/components/report-modal/report-modal';
 import { ConfirmService } from '../../../../core/services/confirm.service';
-import { environment } from '../../../../../environments/environment';
 import { Auth } from '../../../auth/services/auth';
 import { Posts } from '../../services/posts';
 import { Likes } from '../../../../core/services/likes';
@@ -59,12 +58,14 @@ export class PostCard implements OnDestroy {
   currentUser = computed(() => this.authService.currentUser());
   isOwnPost = computed(() => this.currentUser()?.id === this.post().author.id);
 
-  private readonly syncPostState = effect(() => {
-    const post = this.post();
-    this.likeCount.set(post.likeCount ?? 0);
-    this.commentCount.set(post.commentCount ?? 0);
-    this.likedByCurrentUser.set(Boolean(post.likedByCurrentUser));
-  });
+  constructor() {
+    effect(() => {
+      const post = this.post();
+      this.likeCount.set(post.likeCount ?? 0);
+      this.commentCount.set(post.commentCount ?? 0);
+      this.likedByCurrentUser.set(Boolean(post.likedByCurrentUser));
+    });
+  }
 
   ngOnDestroy(): void {
     this.clearEditImage();

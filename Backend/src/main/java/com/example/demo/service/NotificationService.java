@@ -52,11 +52,6 @@ public class NotificationService {
         notificationRepository.saveAll(unread);
     }
 
-
-    public void deleteNotificationsByRelatedId(Long relatedId, String type) {
-        notificationRepository.deleteByRelatedIdAndType(relatedId, type);
-    }
-
     public void deleteNotificationsByRelatedIdAndTypes(Long relatedId, List<String> types) {
         types.forEach(type -> notificationRepository.deleteByRelatedIdAndType(relatedId, type));
     }

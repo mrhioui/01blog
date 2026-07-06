@@ -35,10 +35,6 @@ export class Auth {
     return this.api.get<User>('/users/me');
   }
 
-  getUserById(id: number): Observable<User> {
-    return this.api.get<User>(`/users/${id}`);
-  }
-
   getUserProfile(id: number): Observable<User> {
     return this.api.get<User>(`/users/${id}/profile`);
   }

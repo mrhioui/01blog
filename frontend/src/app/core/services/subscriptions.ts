@@ -9,10 +9,6 @@ import { Api } from './api';
 export class Subscriptions {
   private readonly api = inject(Api);
 
-  getAll(): Observable<Subscription[]> {
-    return this.api.get<Subscription[]>('/subscriptions');
-  }
-
   create(payload: CreateSubscriptionPayload): Observable<Subscription> {
     return this.api.post<Subscription, CreateSubscriptionPayload>('/subscriptions', payload);
   }

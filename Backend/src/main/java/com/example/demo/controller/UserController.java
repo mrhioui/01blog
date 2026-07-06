@@ -87,12 +87,6 @@ public class UserController {
         return ResponseEntity.ok(postService.getPostsByAuthorId(id, requesterUsername));
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
     @PostMapping("/{id}/ban")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> banUser(@PathVariable("id") Long id, Authentication authentication) {

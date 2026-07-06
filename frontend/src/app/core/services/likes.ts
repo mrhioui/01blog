@@ -9,10 +9,6 @@ import { Api } from './api';
 export class Likes {
   private readonly api = inject(Api);
 
-  getAll(): Observable<PostLike[]> {
-    return this.api.get<PostLike[]>('/likes');
-  }
-
   create(payload: CreateLikePayload): Observable<PostLike> {
     return this.api.post<PostLike, CreateLikePayload>('/likes', payload);
   }

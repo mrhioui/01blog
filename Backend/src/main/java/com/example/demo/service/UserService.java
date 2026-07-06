@@ -89,12 +89,6 @@ public class UserService {
         return convertToDTO(savedUser, null);
     }
 
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDTO(user, null);
-    }
-
     public UserDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));

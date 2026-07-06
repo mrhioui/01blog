@@ -30,11 +30,6 @@ public class CommentController {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
-    @GetMapping
-    public ResponseEntity<List<Comment>> getAllComments() {
-        return ResponseEntity.ok(commentRepository.findAll());
-    }
-
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<CommentDTO>> getCommentsByPost(@PathVariable("postId") Long postId) {
         return ResponseEntity.ok(commentRepository.findByPostIdOrderByTimestampAsc(postId).stream()

@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/likes")
 @RequiredArgsConstructor
@@ -26,11 +24,6 @@ public class LikeController {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-
-    @GetMapping
-    public ResponseEntity<List<PostLike>> getAllLikes() {
-        return ResponseEntity.ok(postLikeRepository.findAll());
-    }
 
     @PostMapping
     public ResponseEntity<PostLike> createLike(@RequestBody LikeRequest request, Authentication authentication) {

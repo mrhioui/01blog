@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Auth } from '../../features/auth/services/auth';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const authService = inject(Auth);
   const router = inject(Router);
 
@@ -15,7 +15,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   });
 };
 
-export const adminGuard: CanActivateFn = (route, state): boolean | UrlTree => {
+export const adminGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
   const authService = inject(Auth);
   const router = inject(Router);
   const currentUser = authService.currentUser();
