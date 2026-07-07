@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -15,9 +16,14 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
-    // Ideally, this should be in application.properties and be more secure
-    private final SecretKey key = Keys.hmacShaKeyFor("a-very-secret-and-long-key-that-is-at-least-32-characters-long".getBytes());
-    private final long JWT_EXPIRATION = 86400000; // 24 hours
+    private final SecretKey key;
+    private final long jwtExpiration;
+
+    public JwtUtils(@Value("${jwt.secret}") String jwtSecret,
+                    @Value("${jwt.expiration}") long jwtExpiration) {
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        this.jwtExpiration = jwtExpiration;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -46,7 +52,7 @@ public class JwtUtils {
                 .claims(claims)
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(key)
                 .compact();
     }

@@ -53,8 +53,6 @@ export class PostCard implements OnDestroy {
   comments = signal<PostComment[]>([]);
   commentContent = signal('');
 
-  private wsSubscriptions: RxSubscription[] = [];
-
   currentUser = computed(() => this.authService.currentUser());
   isOwnPost = computed(() => this.currentUser()?.id === this.post().author.id);
 
@@ -69,7 +67,6 @@ export class PostCard implements OnDestroy {
 
   ngOnDestroy(): void {
     this.clearEditImage();
-    this.wsSubscriptions.forEach(sub => sub.unsubscribe());
   }
 
 

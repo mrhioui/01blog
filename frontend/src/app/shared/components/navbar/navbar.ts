@@ -33,7 +33,6 @@ export class Navbar implements OnInit, OnDestroy {
   protected notifications = signal<Notification[]>([]);
   protected loadingNotifications = signal(false);
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
-  private wsSubscription: RxSubscription | null = null;
 
   readonly currentUser = computed(() => this.authService.currentUser());
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
@@ -46,7 +45,6 @@ export class Navbar implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.wsSubscription?.unsubscribe();
   }
 
 

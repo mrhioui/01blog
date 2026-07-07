@@ -44,8 +44,8 @@ public class PostService {
 
     public Page<PostDTO> getPaginatedPosts(int page, int size, String requesterUsername) {
         log.info("Fetching paginated posts: page={}, size={}, requester={}", page, size, requesterUsername);
-        
-        User requester = requesterUsername != null 
+
+        User requester = requesterUsername != null
                 ? userRepository.findByUsername(requesterUsername).orElse(null)
                 : null;
 
@@ -53,7 +53,7 @@ public class PostService {
         if (requester != null) {
             List<Long> followedIds = new java.util.ArrayList<>();
             followedIds.add(requester.getId());
-            
+
             subscriptionRepository.findBySubscriberId(requester.getId())
                     .forEach(sub -> followedIds.add(sub.getTarget().getId()));
 
@@ -67,7 +67,7 @@ public class PostService {
     }
 
     public List<PostDTO> getAllPosts(String requesterUsername) {
-        User requester = requesterUsername != null 
+        User requester = requesterUsername != null
                 ? userRepository.findByUsername(requesterUsername).orElse(null)
                 : null;
 
@@ -75,11 +75,13 @@ public class PostService {
         if (requester != null) {
             List<Long> followedIds = new java.util.ArrayList<>();
             followedIds.add(requester.getId());
-            
+
             subscriptionRepository.findBySubscriberId(requester.getId())
                     .forEach(sub -> followedIds.add(sub.getTarget().getId()));
 
-            posts = postRepository.findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(0, Integer.MAX_VALUE)).getContent();
+            posts = postRepository
+                    .findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(0, Integer.MAX_VALUE))
+                    .getContent();
         } else {
             posts = postRepository.findAllByOrderByTimestampDesc();
         }
@@ -110,14 +112,15 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public PostDTO createPost(String username, CreatePostDTO createPostDTO, org.springframework.web.multipart.MultipartFile image) {
+    public PostDTO createPost(String username, CreatePostDTO createPostDTO,
+            org.springframework.web.multipart.MultipartFile image) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         String mediaUrl = createPostDTO.getMediaUrl();
-        System.out.println("---------->mediaUrl: " + mediaUrl);
+        log.debug("---------->mediaUrl: " + mediaUrl);
         if (image != null && !image.isEmpty()) {
-            System.out.println("----------->enter in this case----------------------");
+            log.debug("----------->enter in this case----------------------");
 
             mediaUrl = fileStorageService.storeFile(image);
         }
@@ -136,14 +139,14 @@ public class PostService {
                     sub.getSubscriber(),
                     user.getUsername() + " published a new post",
                     "NEW_POST",
-                    savedPost.getId()
-            );
+                    savedPost.getId());
         });
 
         return convertToDTO(savedPost, username);
     }
 
-    public PostDTO updatePost(Long id, String username, CreatePostDTO updatePostDTO, org.springframework.web.multipart.MultipartFile image) {
+    public PostDTO updatePost(Long id, String username, CreatePostDTO updatePostDTO,
+            org.springframework.web.multipart.MultipartFile image) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         User requester = userRepository.findByUsername(username)
@@ -179,7 +182,8 @@ public class PostService {
             throw new AccessDeniedException("You cannot delete this post");
         }
 
-        notificationService.deleteNotificationsByRelatedIdAndTypes(id, List.of("NEW_POST", "POST_LIKE", "POST_COMMENT"));
+        notificationService.deleteNotificationsByRelatedIdAndTypes(id,
+                List.of("NEW_POST", "POST_LIKE", "POST_COMMENT"));
 
         reportRepository.deleteByReportedPostId(id);
 
@@ -211,7 +215,8 @@ public class PostService {
                         .build())
                 .likeCount(postLikeRepository.countByPostId(post.getId()))
                 .commentCount(commentRepository.countByPostId(post.getId()))
-                .likedByCurrentUser(requester != null && postLikeRepository.existsByPostIdAndUserId(post.getId(), requester.getId()))
+                .likedByCurrentUser(requester != null
+                        && postLikeRepository.existsByPostIdAndUserId(post.getId(), requester.getId()))
                 .build();
     }
 }

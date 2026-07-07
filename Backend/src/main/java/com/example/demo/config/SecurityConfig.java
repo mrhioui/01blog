@@ -63,9 +63,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/users/*/profile/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/users/*/posts/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/notifications/**").permitAll() // Temporarily permit for diagnosis
+                .requestMatchers(HttpMethod.GET, "/api/notifications/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )

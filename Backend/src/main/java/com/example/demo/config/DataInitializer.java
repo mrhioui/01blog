@@ -24,7 +24,6 @@ public class DataInitializer implements CommandLineRunner {
         
         if (count == 0) {
             log.info("Creating default users...");
-            // Create Admin
             User admin = User.builder()
                     .username("admin")
                     .email("admin@blog.com")
@@ -34,7 +33,6 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(admin);
 
-            // Create Regular User
             User user = User.builder()
                     .username("user")
                     .email("user@blog.com")
