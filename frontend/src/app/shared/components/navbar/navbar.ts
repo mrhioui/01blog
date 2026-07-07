@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgbCollapseModule, NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Auth } from '../../../features/auth/services/auth';
@@ -7,7 +7,6 @@ import { Notifications } from '../../../core/services/notifications';
 import { PostCreationModal } from '../../../features/posts/components/post-creation-modal/post-creation-modal';
 import { User } from '../../../core/models/user.model';
 import { Notification, NotificationType } from '../../../core/models/notification.model';
-import { Subscription as RxSubscription } from 'rxjs';
 
 import { ResolveUrlPipe } from '../../pipes/resolve-url.pipe';
 
@@ -18,7 +17,7 @@ import { ResolveUrlPipe } from '../../pipes/resolve-url.pipe';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar implements OnInit, OnDestroy {
+export class Navbar implements OnInit {
   private readonly authService = inject(Auth);
   private readonly notificationService = inject(Notifications);
   private readonly router = inject(Router);
@@ -43,10 +42,6 @@ export class Navbar implements OnInit, OnDestroy {
       this.fetchNotificationCount();
     }
   }
-
-  ngOnDestroy(): void {
-  }
-
 
   private fetchNotificationCount(): void {
     this.notificationService.getUnreadCount().subscribe({

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
+import { expand, map, reduce } from 'rxjs/operators';
 import { Api } from './api';
 import { User } from '../models/user.model';
 import { Post } from '../models/post.model';
@@ -31,7 +32,18 @@ export class AdminService {
   }
 
   getAllPosts(): Observable<Post[]> {
-    return this.api.get<Post[]>('/posts');
+    const pageSize = 100;
+    return this.getPostsPage(0, pageSize).pipe(
+      expand((response) => {
+        if (response.last) {
+          return EMPTY;
+        }
+
+        return this.getPostsPage(response.number + 1, pageSize);
+      }),
+      map((response) => response.content),
+      reduce((allPosts, posts) => [...allPosts, ...posts], [] as Post[])
+    );
   }
 
   getPostsCount(): Observable<number> {
@@ -41,4 +53,20 @@ export class AdminService {
   deletePost(id: number): Observable<void> {
     return this.api.delete<void>(`/posts/${id}`);
   }
+
+  private getPostsPage(page: number, size: number): Observable<PaginatedResponse<Post>> {
+    return this.api.get<PaginatedResponse<Post>>(`/posts/paginated?page=${page}&size=${size}`);
+  }
+}
+
+interface PaginatedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
 }

@@ -11,19 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
-
-    @GetMapping
-    public ResponseEntity<List<PostDTO>> getAllPosts(Authentication authentication) {
-        return ResponseEntity.ok(postService.getAllPosts(username(authentication)));
-    }
 
     @GetMapping("/paginated")
     public ResponseEntity<Page<PostDTO>> getPaginatedPosts(

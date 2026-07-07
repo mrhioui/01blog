@@ -12,7 +12,6 @@ import { Auth } from '../../../auth/services/auth';
 import { Posts } from '../../services/posts';
 import { Likes } from '../../../../core/services/likes';
 import { Comments } from '../../../../core/services/comments';
-import { Subscription as RxSubscription } from 'rxjs';
 
 import { ResolveUrlPipe } from '../../../../shared/pipes/resolve-url.pipe';
 

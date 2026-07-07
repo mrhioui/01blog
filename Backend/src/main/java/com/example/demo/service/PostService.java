@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,46 +50,10 @@ public class PostService {
                 ? userRepository.findByUsername(requesterUsername).orElse(null)
                 : null;
 
-        Page<Post> postsPage;
-        if (requester != null) {
-            List<Long> followedIds = new java.util.ArrayList<>();
-            followedIds.add(requester.getId());
-
-            subscriptionRepository.findBySubscriberId(requester.getId())
-                    .forEach(sub -> followedIds.add(sub.getTarget().getId()));
-
-            postsPage = postRepository.findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(page, size));
-        } else {
-            postsPage = postRepository.findAllByOrderByTimestampDesc(PageRequest.of(page, size));
-        }
+        Page<Post> postsPage = findPostsPage(requester, page, size);
 
         log.info("Found {} posts in DB for this page", postsPage.getNumberOfElements());
         return postsPage.map(post -> convertToDTO(post, requesterUsername));
-    }
-
-    public List<PostDTO> getAllPosts(String requesterUsername) {
-        User requester = requesterUsername != null
-                ? userRepository.findByUsername(requesterUsername).orElse(null)
-                : null;
-
-        List<Post> posts;
-        if (requester != null) {
-            List<Long> followedIds = new java.util.ArrayList<>();
-            followedIds.add(requester.getId());
-
-            subscriptionRepository.findBySubscriberId(requester.getId())
-                    .forEach(sub -> followedIds.add(sub.getTarget().getId()));
-
-            posts = postRepository
-                    .findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(0, Integer.MAX_VALUE))
-                    .getContent();
-        } else {
-            posts = postRepository.findAllByOrderByTimestampDesc();
-        }
-
-        return posts.stream()
-                .map(post -> convertToDTO(post, requesterUsername))
-                .collect(Collectors.toList());
     }
 
     public PostDTO getPostById(Long id, String requesterUsername) {
@@ -118,10 +83,7 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         String mediaUrl = createPostDTO.getMediaUrl();
-        log.debug("---------->mediaUrl: " + mediaUrl);
         if (image != null && !image.isEmpty()) {
-            log.debug("----------->enter in this case----------------------");
-
             mediaUrl = fileStorageService.storeFile(image);
         }
 
@@ -218,5 +180,19 @@ public class PostService {
                 .likedByCurrentUser(requester != null
                         && postLikeRepository.existsByPostIdAndUserId(post.getId(), requester.getId()))
                 .build();
+    }
+
+    private Page<Post> findPostsPage(User requester, int page, int size) {
+        if (requester != null) {
+            List<Long> followedIds = new ArrayList<>();
+            followedIds.add(requester.getId());
+
+            subscriptionRepository.findBySubscriberId(requester.getId())
+                    .forEach(sub -> followedIds.add(sub.getTarget().getId()));
+
+            return postRepository.findByAuthorIdInOrderByTimestampDesc(followedIds, PageRequest.of(page, size));
+        }
+
+        return postRepository.findAllByOrderByTimestampDesc(PageRequest.of(page, size));
     }
 }
