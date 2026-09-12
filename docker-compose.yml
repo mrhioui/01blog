@@ -3,8 +3,8 @@ services:
     image: postgres:15
     container_name: postgres-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: sosabaknos
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       POSTGRES_DB: 01Blog_db
     ports:
       - "5433:5432"
@@ -19,8 +19,12 @@ services:
     container_name: backend-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/01Blog_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: sosabaknos
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      APP_DEFAULT_ADMIN_PASSWORD: ${APP_DEFAULT_ADMIN_PASSWORD:-admin123}
+      APP_DEFAULT_USER_PASSWORD: ${APP_DEFAULT_USER_PASSWORD:-user123}
     depends_on:
       - postgres-db
     ports:

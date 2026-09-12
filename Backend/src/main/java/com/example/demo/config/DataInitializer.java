@@ -17,6 +17,12 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @org.springframework.beans.factory.annotation.Value("${app.default-admin-password:admin123}")
+    private String adminPassword;
+
+    @org.springframework.beans.factory.annotation.Value("${app.default-user-password:user123}")
+    private String userPassword;
+
     @Override
     public void run(String... args) throws Exception {
         long count = userRepository.count();
@@ -27,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
             User admin = User.builder()
                     .username("admin")
                     .email("admin@blog.com")
-                    .password(passwordEncoder.encode("admin123"))
+                    .password(passwordEncoder.encode(adminPassword))
                     .role(Role.ROLE_ADMIN)
                     .profilePublic(true)
                     .build();
@@ -36,13 +42,13 @@ public class DataInitializer implements CommandLineRunner {
             User user = User.builder()
                     .username("user")
                     .email("user@blog.com")
-                    .password(passwordEncoder.encode("user123"))
+                    .password(passwordEncoder.encode(userPassword))
                     .role(Role.ROLE_USER)
                     .profilePublic(true)
                     .build();
             userRepository.save(user);
 
-            log.info("Default users created: admin/admin123 and user/user123");
+            log.info("Default users created.");
         } else {
             log.info("Users already exist in database, skipping initialization.");
         }

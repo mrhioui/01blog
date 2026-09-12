@@ -11,8 +11,6 @@ target/
 
 # Environment files
 .env
-.env.local
-.env.*.local
 
 # Logs
 npm-debug.log*
@@ -46,7 +44,8 @@ coverage/
 # Misc
 .cache/
 public/build/
-/.angular/cache
+.angular/cache
+Backend/uploads/
 .sass-cache/
 connect.lock
 libpeerconnection.log

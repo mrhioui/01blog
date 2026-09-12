@@ -11,12 +11,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import java.util.Set;
+
 @Service
 @Slf4j
 public class FileStorageService {
 
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
+
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avif", ".webp");
 
     public String storeFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -29,15 +33,24 @@ public class FileStorageService {
         }
 
         final String originalName = file.getOriginalFilename();
-        final String suffix = originalName != null && originalName.contains(".")
-                ? originalName.substring(originalName.lastIndexOf('.'))
-                : "";
+        final String suffix = getSafeSuffix(originalName);
+        
+        if (!ALLOWED_EXTENSIONS.contains(suffix.toLowerCase())) {
+            throw new RuntimeException("Invalid file extension: " + suffix);
+        }
+
         final String filename = UUID.randomUUID() + suffix;
 
         try {
             Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(uploadPath);
             Path destination = uploadPath.resolve(filename);
+            
+            // Final path traversal check
+            if (!destination.startsWith(uploadPath)) {
+                throw new RuntimeException("Invalid file destination path");
+            }
+
             Files.copy(file.getInputStream(), destination);
             log.info("Stored file {} to {}", filename, destination);
         } catch (IOException e) {
@@ -46,5 +59,14 @@ public class FileStorageService {
         }
 
         return "/uploads/" + filename;
+    }
+
+    private String getSafeSuffix(String originalName) {
+        if (originalName == null || !originalName.contains(".")) {
+            return "";
+        }
+        String suffix = originalName.substring(originalName.lastIndexOf('.'));
+        // Basic sanitization to remove any non-alphanumeric characters from extension except the dot
+        return suffix.replaceAll("[^.a-zA-Z0-9]", "");
     }
 }
