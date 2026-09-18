@@ -182,7 +182,7 @@ After the stack is running:
 
 - Frontend: `http://localhost:4200`
 - Backend API: `http://localhost:8080`
-- PostgreSQL: `localhost:5433`
+- PostgreSQL: `localhost:5432`
 
 ## Notes
 

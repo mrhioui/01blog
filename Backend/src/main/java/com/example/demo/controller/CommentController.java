@@ -2,6 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.CommentDTO;
 import com.example.demo.service.CommentService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +29,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentDTO> createComment(@RequestBody CommentRequest request, Authentication authentication) {
+    public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentRequest request, Authentication authentication) {
         return ResponseEntity.ok(commentService.createComment(
                 authentication.getName(),
                 request.getPostId(),
@@ -37,7 +41,11 @@ public class CommentController {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CommentRequest {
+        @NotBlank
+        @Size(max = 2000)
         private String content;
+
+        @NotNull
         private Long postId;
     }
 }

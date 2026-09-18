@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.CreateReportDTO;
 import com.example.demo.dto.ReportDTO;
 import com.example.demo.service.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping
-    public ResponseEntity<ReportDTO> createReport(@RequestBody CreateReportDTO createReportDTO, Authentication authentication) {
+    public ResponseEntity<ReportDTO> createReport(@Valid @RequestBody CreateReportDTO createReportDTO, Authentication authentication) {
         return ResponseEntity.ok(reportService.createReport(authentication.getName(), createReportDTO));
     }
 

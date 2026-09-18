@@ -11,16 +11,21 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
     networks:
       - net_bridge_b
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d 01Blog_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: always
 
   backend:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-      network: host
+      # network: host
     container_name: backend-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/01Blog_db
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
@@ -28,7 +33,8 @@ services:
       APP_DEFAULT_ADMIN_PASSWORD: ${APP_DEFAULT_ADMIN_PASSWORD}
       APP_DEFAULT_USER_PASSWORD: ${APP_DEFAULT_USER_PASSWORD}
     depends_on:
-      - postgres-db
+      postgres-db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     volumes:
@@ -45,7 +51,7 @@ services:
       # network: host
     container_name: blog_frontend
     ports:
-      - "4200:8010"
+      - "4200:80"
     depends_on:
       - backend
     networks:

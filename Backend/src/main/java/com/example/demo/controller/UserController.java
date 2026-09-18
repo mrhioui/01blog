@@ -5,6 +5,7 @@ import com.example.demo.dto.PostDTO;
 import com.example.demo.dto.UpdateProfileDTO;
 import com.example.demo.service.PostService;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -52,7 +53,7 @@ public class UserController {
     @PutMapping(value = "/me")
     public ResponseEntity<UserDTO> updateCurrentUser(
             Authentication authentication,
-            @ModelAttribute UpdateProfileDTO updateDTO,
+            @Valid @ModelAttribute UpdateProfileDTO updateDTO,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestParam(value = "bannerImage", required = false) MultipartFile bannerImage
     ) {

@@ -17,10 +17,10 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @org.springframework.beans.factory.annotation.Value("${app.default-admin-password:admin123}")
+    @org.springframework.beans.factory.annotation.Value("${app.default-admin-password}")
     private String adminPassword;
 
-    @org.springframework.beans.factory.annotation.Value("${app.default-user-password:user123}")
+    @org.springframework.beans.factory.annotation.Value("${app.default-user-password}")
     private String userPassword;
 
     @Override
@@ -29,6 +29,13 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Current user count in database: {}", count);
         
         if (count == 0) {
+            if (adminPassword == null || adminPassword.isBlank()
+                    || userPassword == null || userPassword.isBlank()) {
+                log.warn("Default user passwords are not configured (app.default-admin-password / "
+                        + "app.default-user-password). Skipping default user creation.");
+                return;
+            }
+
             log.info("Creating default users...");
             User admin = User.builder()
                     .username("admin")
