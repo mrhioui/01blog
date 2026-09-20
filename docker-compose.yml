@@ -22,7 +22,7 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-      # network: host
+      network: host
     container_name: backend-app
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
@@ -48,7 +48,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      # network: host
+      network: host
     container_name: blog_frontend
     ports:
       - "4200:80"

@@ -1,7 +1,7 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Auth } from '../../../../features/auth/services/auth';
 import { AdminService } from '../../../../core/services/admin';
 import { ReportService } from '../../../../core/services/reports';
@@ -27,6 +27,7 @@ export class AdminDashboardPage implements OnInit {
   private readonly reportService = inject(ReportService);
   private readonly route = inject(ActivatedRoute);
   private readonly confirmService = inject(ConfirmService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly currentView = signal<AdminView>('users');
   readonly currentUser = computed(() => this.authService.currentUser());
@@ -43,7 +44,7 @@ export class AdminDashboardPage implements OnInit {
   readonly reports = toSignal(this.reportService.getAllReports(), { initialValue: [] as Report[] });
 
   ngOnInit(): void {
-    this.route.url.subscribe(segments => {
+    this.route.url.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(segments => {
       const path = segments.map(s => s.path).join('/');
       if (path.includes('users')) this.currentView.set('users');
       else if (path.includes('posts')) this.currentView.set('posts');

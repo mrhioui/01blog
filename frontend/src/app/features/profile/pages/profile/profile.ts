@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -32,6 +33,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly modalService = inject(NgbModal);
   private readonly resolveUrlPipe = inject(ResolveUrlPipe);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly form = this.formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
@@ -71,7 +73,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   showEditForm = signal(false);
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const id = params['id'];
       if (id) {
         this.loadOtherUserProfile(+id);
