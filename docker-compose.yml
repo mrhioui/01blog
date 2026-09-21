@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       POSTGRES_DB: 01Blog_db
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - net_bridge_b
     healthcheck:
@@ -66,3 +66,6 @@ networks:
   net_bridge_b:
     driver: bridge
     internal: true
+
+volumes:
+  postgres_data:
