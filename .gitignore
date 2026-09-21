@@ -52,4 +52,3 @@ libpeerconnection.log
 testem.log
 typings/
 __screenshots__/
-postgres_data/
