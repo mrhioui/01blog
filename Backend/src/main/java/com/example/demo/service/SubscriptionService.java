@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Subscription;
 import com.example.demo.model.User;
 import com.example.demo.repository.SubscriptionRepository;
@@ -24,7 +26,7 @@ public class SubscriptionService {
         User target = getTarget(targetId);
 
         if (subscriber.getId().equals(target.getId())) {
-            throw new RuntimeException("You cannot subscribe to yourself");
+            throw new BadRequestException("You cannot subscribe to yourself");
         }
 
         return subscriptionRepository.findBySubscriberIdAndTargetId(subscriber.getId(), target.getId())
@@ -49,12 +51,12 @@ public class SubscriptionService {
 
     private User getUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private User getTarget(Long targetId) {
         return userRepository.findById(targetId)
-                .orElseThrow(() -> new RuntimeException("Target user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
     }
 
     private void notifyTargetAboutFollower(User subscriber, User target) {

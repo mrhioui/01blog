@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,20 +31,20 @@ public class FileStorageService {
 
         String contentType = file.getContentType();
         if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
-            throw new RuntimeException("File must be an image or video");
+            throw new BadRequestException("File must be an image or video");
         }
 
         final String originalName = file.getOriginalFilename();
         final String suffix = getSafeSuffix(originalName);
 
         if (!ALLOWED_EXTENSIONS.contains(suffix.toLowerCase())) {
-            throw new RuntimeException("Invalid file extension: " + suffix);
+            throw new BadRequestException("Invalid file extension: " + suffix);
         }
 
         // Verify the actual bytes, not just the client-supplied Content-Type / extension,
         // both of which are spoofable. Reject anything that isn't a known image/video signature.
         if (!hasAllowedSignature(file)) {
-            throw new RuntimeException("File content does not match an allowed image or video type");
+            throw new BadRequestException("File content does not match an allowed image or video type");
         }
 
         final String filename = UUID.randomUUID() + suffix;
@@ -55,7 +56,7 @@ public class FileStorageService {
             
             // Final path traversal check
             if (!destination.startsWith(uploadPath)) {
-                throw new RuntimeException("Invalid file destination path");
+                throw new BadRequestException("Invalid file destination path");
             }
 
             Files.copy(file.getInputStream(), destination);

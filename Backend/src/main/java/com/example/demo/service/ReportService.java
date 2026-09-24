@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.dto.CreateReportDTO;
 import com.example.demo.dto.ReportDTO;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Post;
 import com.example.demo.model.Report;
 import com.example.demo.model.User;
@@ -33,22 +35,22 @@ public class ReportService {
 
     public ReportDTO createReport(String reporterUsername, CreateReportDTO createReportDTO) {
         User reporter = userRepository.findByUsername(reporterUsername)
-                .orElseThrow(() -> new RuntimeException("Reporter not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Reporter not found"));
 
         User reportedUser = null;
         if (createReportDTO.getReportedUserId() != null) {
             reportedUser = userRepository.findById(createReportDTO.getReportedUserId())
-                    .orElseThrow(() -> new RuntimeException("Reported user not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Reported user not found"));
         }
 
         Post reportedPost = null;
         if (createReportDTO.getReportedPostId() != null) {
             reportedPost = postRepository.findById(createReportDTO.getReportedPostId())
-                    .orElseThrow(() -> new RuntimeException("Reported post not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Reported post not found"));
         }
 
         if (reportedUser == null && reportedPost == null) {
-            throw new RuntimeException("Must report either a user or a post");
+            throw new BadRequestException("Must report either a user or a post");
         }
 
         Report report = Report.builder()
@@ -70,7 +72,7 @@ public class ReportService {
 
     public void deleteReport(Long id) {
         if (!reportRepository.existsById(id)) {
-            throw new RuntimeException("Report not found");
+            throw new ResourceNotFoundException("Report not found");
         }
         reportRepository.deleteById(id);
     }

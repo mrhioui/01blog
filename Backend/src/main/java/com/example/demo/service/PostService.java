@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.dto.CreatePostDTO;
 import com.example.demo.dto.PostDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Post;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
@@ -58,7 +60,7 @@ public class PostService {
 
     public PostDTO getPostById(Long id, String requesterUsername) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         return convertToDTO(post, requesterUsername);
     }
 
@@ -70,7 +72,7 @@ public class PostService {
 
     public List<PostDTO> getCurrentUserPosts(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return postRepository.findByAuthorIdOrderByTimestampDesc(user.getId()).stream()
                 .map(post -> convertToDTO(post, username))
@@ -80,7 +82,7 @@ public class PostService {
     public PostDTO createPost(String username, CreatePostDTO createPostDTO,
             org.springframework.web.multipart.MultipartFile image) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         String mediaUrl = createPostDTO.getMediaUrl();
         if (image != null && !image.isEmpty()) {
@@ -110,9 +112,9 @@ public class PostService {
     public PostDTO updatePost(Long id, String username, CreatePostDTO updatePostDTO,
             org.springframework.web.multipart.MultipartFile image) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         User requester = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!Objects.equals(post.getAuthor().getId(), requester.getId()) && requester.getRole() != Role.ROLE_ADMIN) {
             throw new AccessDeniedException("You cannot edit this post");
@@ -120,7 +122,7 @@ public class PostService {
 
         String updatedContent = updatePostDTO.getContent() != null ? updatePostDTO.getContent().trim() : "";
         if (updatedContent.isEmpty()) {
-            throw new RuntimeException("Post content is required");
+            throw new BadRequestException("Post content is required");
         }
 
         post.setContent(updatedContent);
@@ -136,9 +138,9 @@ public class PostService {
 
     public void deletePost(Long id, String username) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         User requester = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!Objects.equals(post.getAuthor().getId(), requester.getId()) && requester.getRole() != Role.ROLE_ADMIN) {
             throw new AccessDeniedException("You cannot delete this post");

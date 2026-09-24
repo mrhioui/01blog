@@ -2,6 +2,10 @@ package com.example.demo.service;
 
 import com.example.demo.dto.RegistrationDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ConflictException;
+import com.example.demo.exception.ForbiddenException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.*;
@@ -69,11 +73,11 @@ public class UserService {
 
     public UserDTO registerUser(RegistrationDTO registrationDTO) {
         if (userRepository.findByUsername(registrationDTO.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new ConflictException("Username already exists");
         }
 
         if (userRepository.findByEmail(registrationDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new ConflictException("Email already exists");
         }
 
         User user = User.builder()
@@ -91,13 +95,13 @@ public class UserService {
 
     public UserDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return convertToDTO(user, null);
     }
 
     public UserDTO getCurrentUser(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return convertToDTO(user, user);
     }
 
@@ -108,7 +112,7 @@ public class UserService {
             MultipartFile bannerImage
     ) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         final String normalizedUsername = updateDTO.getUsername() != null ? updateDTO.getUsername().trim() : user.getUsername();
         final String normalizedEmail = updateDTO.getEmail() != null ? updateDTO.getEmail().trim() : user.getEmail();
@@ -120,23 +124,23 @@ public class UserService {
                 : user.getBannerImageUrl();
 
         if (normalizedUsername.isEmpty()) {
-            throw new RuntimeException("Username is required");
+            throw new BadRequestException("Username is required");
         }
 
         if (normalizedEmail.isEmpty()) {
-            throw new RuntimeException("Email is required");
+            throw new BadRequestException("Email is required");
         }
 
         userRepository.findByUsername(normalizedUsername)
                 .filter(existing -> !Objects.equals(existing.getId(), user.getId()))
                 .ifPresent(existing -> {
-                    throw new RuntimeException("Username already exists");
+                    throw new ConflictException("Username already exists");
                 });
 
         userRepository.findByEmail(normalizedEmail)
                 .filter(existing -> !Objects.equals(existing.getId(), user.getId()))
                 .ifPresent(existing -> {
-                    throw new RuntimeException("Email already exists");
+                    throw new ConflictException("Email already exists");
                 });
 
         user.setUsername(normalizedUsername);
@@ -156,7 +160,7 @@ public class UserService {
 
     public UserDTO getProfileById(Long id, String requesterUsername) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         User requester = requesterUsername != null 
                 ? userRepository.findByUsername(requesterUsername).orElse(null)
@@ -167,17 +171,17 @@ public class UserService {
 
     public void banUser(Long id, String requesterUsername) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new RuntimeException("Requester not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Requester not found"));
 
         if (Objects.equals(user.getId(), requester.getId())) {
-            throw new RuntimeException("You cannot ban yourself");
+            throw new ForbiddenException("You cannot ban yourself");
         }
 
         if (user.getRole() == Role.ROLE_ADMIN) {
-            throw new RuntimeException("You cannot ban an admin user");
+            throw new ForbiddenException("You cannot ban an admin user");
         }
 
         user.setBanned(true);
@@ -186,7 +190,7 @@ public class UserService {
 
     public void unbanUser(Long id, String requesterUsername) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         user.setBanned(false);
         userRepository.save(user);
@@ -195,14 +199,14 @@ public class UserService {
     @Transactional
     public void deleteUser(Long id, String requesterUsername) {
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new RuntimeException("Requester not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Requester not found"));
 
         if (Objects.equals(id, requester.getId())) {
-            throw new RuntimeException("You cannot delete your own account");
+            throw new ForbiddenException("You cannot delete your own account");
         }
 
         userRepository.findById(id).ifPresent(user -> {

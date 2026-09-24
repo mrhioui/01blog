@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,6 +70,14 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) ->
+                        JsonErrorWriter.write(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                "Authentication is required to access this resource.", "Unauthorized"))
+                .accessDeniedHandler((request, response, accessDeniedException) ->
+                        JsonErrorWriter.write(response, HttpServletResponse.SC_FORBIDDEN,
+                                "You do not have permission to access this resource.", "Forbidden"))
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

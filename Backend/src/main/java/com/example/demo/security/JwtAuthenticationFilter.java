@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.config.JsonErrorWriter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,9 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                     
                     if (!userDetails.isEnabled()) {
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setContentType("text/plain");
-                        response.getWriter().write("User is banned");
+                        JsonErrorWriter.write(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                "Your account has been banned. Please contact support if you think this is a mistake.",
+                                "Unauthorized");
                         return;
                     }
 
@@ -61,16 +62,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 } catch (UsernameNotFoundException e) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("text/plain");
-                    response.getWriter().write("User not found");
+                    JsonErrorWriter.write(response, HttpServletResponse.SC_UNAUTHORIZED,
+                            "Your session is no longer valid. Please sign in again.", "Unauthorized");
                     return;
                 }
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("text/plain");
-            response.getWriter().write("Invalid or expired token");
+            JsonErrorWriter.write(response, HttpServletResponse.SC_UNAUTHORIZED,
+                    "Your session has expired. Please sign in again.", "Unauthorized");
             return;
         }
         

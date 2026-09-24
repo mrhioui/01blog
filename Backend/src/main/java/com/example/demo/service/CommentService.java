@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.dto.CommentDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
@@ -35,10 +37,10 @@ public class CommentService {
     public CommentDTO createComment(String username, Long postId, String content) {
         String normalizedContent = content == null ? "" : content.trim();
         if (normalizedContent.isEmpty()) {
-            throw new RuntimeException("Comment is required");
+            throw new BadRequestException("Comment is required");
         }
         if (postId == null) {
-            throw new RuntimeException("Post ID is required");
+            throw new BadRequestException("Post ID is required");
         }
 
         User user = getUser(username);
@@ -80,12 +82,12 @@ public class CommentService {
 
     private User getUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private Post getPost(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
 
     private void notifyPostAuthorAboutComment(User actor, Post post) {
