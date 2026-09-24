@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CreatePostDTO {
+    @Size(max = 150)
+    private String title;
+
     @NotBlank
     @Size(max = 5000)
     private String content;

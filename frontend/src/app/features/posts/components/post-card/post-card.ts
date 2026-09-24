@@ -38,6 +38,7 @@ export class PostCard implements OnDestroy {
   saving = signal(false);
   deleting = signal(false);
   errorMessage = signal('');
+  editTitle = signal('');
   editContent = signal('');
   editImageFile = signal<File | null>(null);
   editImagePreviewUrl = signal<string | null>(null);
@@ -82,6 +83,7 @@ export class PostCard implements OnDestroy {
   }
 
   startEdit(): void {
+    this.editTitle.set(this.post().title ?? '');
     this.editContent.set(this.post().content);
     this.errorMessage.set('');
     this.clearEditImage();
@@ -91,6 +93,7 @@ export class PostCard implements OnDestroy {
   cancelEdit(): void {
     this.editing.set(false);
     this.errorMessage.set('');
+    this.editTitle.set('');
     this.editContent.set('');
     this.clearEditImage();
   }
@@ -125,6 +128,7 @@ export class PostCard implements OnDestroy {
     this.errorMessage.set('');
 
     this.postsService.update(this.post().id, {
+      title: this.editTitle().trim(),
       content,
       mediaUrl: this.post().mediaUrl,
     }, this.editImageFile() ?? undefined).subscribe({

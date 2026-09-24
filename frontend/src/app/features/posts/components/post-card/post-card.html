@@ -36,6 +36,14 @@
     <!-- Edit Mode -->
     <ng-container *ngIf="editing(); else postContent">
       <div class="bg-light p-3 rounded-4 mb-3">
+        <input
+          type="text"
+          class="form-control border-0 bg-transparent p-0 shadow-none mb-2 fw-bold fs-5"
+          placeholder="Title (optional)"
+          maxlength="150"
+          [ngModel]="editTitle()"
+          (ngModelChange)="editTitle.set($event)"
+        />
         <textarea
           class="form-control border-0 bg-transparent p-0 shadow-none mb-3"
           rows="4"
@@ -87,6 +95,7 @@
 
     <!-- View Mode -->
     <ng-template #postContent>
+      <h3 *ngIf="post().title" class="h4 fw-bold text-dark mb-2">{{ post().title }}</h3>
       <p class="post-content mb-3 lead-sm" style="font-size: 1.05rem; line-height: 1.6;">{{ post().content }}</p>
       
       <ng-container *ngIf="(post().mediaUrl | resolveUrl) as mediaSrc">

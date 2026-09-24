@@ -242,7 +242,13 @@
                 ></app-post-card>
               </div>
 
-              <div *ngIf="!loadingPosts() && !posts().length" class="text-center py-5 bg-light rounded-4 border border-dashed border-2">
+              <div *ngIf="!loadingPosts() && !posts().length && !isOwnProfile() && !user.profilePublic" class="text-center py-5 bg-light rounded-4 border border-dashed border-2">
+                <i class="bi bi-lock fs-1 text-dust-grey opacity-50"></i>
+                <p class="text-muted mt-2 fw-semibold mb-0">This profile is private.</p>
+                <p class="text-muted x-small mb-0">{{ user.username }} keeps their activity hidden.</p>
+              </div>
+
+              <div *ngIf="!loadingPosts() && !posts().length && (isOwnProfile() || user.profilePublic)" class="text-center py-5 bg-light rounded-4 border border-dashed border-2">
                 <i class="bi bi-journal-text fs-1 text-dust-grey opacity-50"></i>
                 <p class="text-muted mt-2 fw-semibold">No publications yet.</p>
                 <button *ngIf="isOwnProfile()" (click)="openCreatePostModal()" class="btn btn-outline-deep-space rounded-pill mt-3 px-4">

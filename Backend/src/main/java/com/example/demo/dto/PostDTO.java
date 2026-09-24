@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PostDTO {
     private Long id;
+    private String title;
     private String content;
     private String mediaUrl;
     private LocalDateTime timestamp;

@@ -31,6 +31,9 @@ export class Posts {
 
   create(payload: CreatePostPayload, image?: File): Observable<Post> {
     const formData = new FormData();
+    if (payload.title) {
+      formData.append('title', payload.title);
+    }
     formData.append('content', payload.content);
     if (payload.mediaUrl) {
       formData.append('mediaUrl', payload.mediaUrl);
@@ -43,6 +46,9 @@ export class Posts {
 
   update(id: number, payload: UpdatePostPayload, image?: File): Observable<Post> {
     const formData = new FormData();
+    if (payload.title) {
+      formData.append('title', payload.title);
+    }
     formData.append('content', payload.content);
     if (payload.mediaUrl) {
       formData.append('mediaUrl', payload.mediaUrl);
@@ -50,7 +56,7 @@ export class Posts {
     if (image) {
       formData.append('image', image);
     }
-    return this.api.post<Post, FormData>(`/posts/${id}/update`, formData);
+    return this.api.put<Post, FormData>(`/posts/${id}`, formData);
   }
 
   delete(id: number): Observable<void> {
@@ -59,11 +65,13 @@ export class Posts {
 }
 
 export interface CreatePostPayload {
+  title?: string;
   content: string;
   mediaUrl?: string;
 }
 
 export interface UpdatePostPayload {
+  title?: string;
   content: string;
   mediaUrl?: string;
 }

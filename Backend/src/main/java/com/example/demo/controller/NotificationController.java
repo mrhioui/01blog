@@ -42,6 +42,14 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{id}/mark-as-unread")
+    public ResponseEntity<Void> markAsUnread(@PathVariable Long id, Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        notificationService.markAsUnread(id, user.getId());
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/mark-all-as-read")
     public ResponseEntity<Void> markAllAsRead(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())

@@ -4,6 +4,21 @@
 </div>
 <div class="modal-body p-4">
   <form [formGroup]="form" (ngSubmit)="submit()">
+    <!-- Title Input -->
+    <div class="form-floating mb-3">
+      <input
+        id="postTitle"
+        type="text"
+        class="form-control auth-input"
+        formControlName="title"
+        placeholder="Give your post a title (optional)"
+        maxlength="150"
+        [class.is-invalid]="form.get('title')?.touched && form.get('title')?.invalid"
+      />
+      <label for="postTitle">Title (optional)</label>
+      <div class="invalid-feedback">Title must be 150 characters or fewer.</div>
+    </div>
+
     <!-- Content Textarea -->
     <div class="form-floating mb-3">
       <textarea

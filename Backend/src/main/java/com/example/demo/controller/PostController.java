@@ -38,26 +38,36 @@ public class PostController {
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, "multipart/form-data;charset=UTF-8",
             "multipart/form-data;charset=utf-8", "multipart/form-data" })
     public ResponseEntity<PostDTO> createPost(
+            @RequestParam(value = "title", required = false) @Size(max = 150) String title,
             @RequestParam(value = "content") @NotBlank @Size(max = 5000) String content,
             @RequestParam(value = "mediaUrl", required = false) @Size(max = 2048) String mediaUrl,
             @RequestParam(value = "image", required = false) MultipartFile image,
             Authentication authentication) {
-        CreatePostDTO createPostDTO = new CreatePostDTO(content, mediaUrl);
+        CreatePostDTO createPostDTO = CreatePostDTO.builder()
+                .title(title)
+                .content(content)
+                .mediaUrl(mediaUrl)
+                .build();
         if (mediaUrl != null && !mediaUrl.trim().isEmpty()) {
             image = null;
         }
         return ResponseEntity.ok(postService.createPost(authentication.getName(), createPostDTO, image));
     }
 
-    @PostMapping(value = "/{id}/update", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,
             "multipart/form-data;charset=UTF-8", "multipart/form-data;charset=utf-8", "multipart/form-data" })
     public ResponseEntity<PostDTO> updatePostWithForm(
             @PathVariable("id") Long id,
+            @RequestParam(value = "title", required = false) @Size(max = 150) String title,
             @RequestParam(value = "content") @NotBlank @Size(max = 5000) String content,
             @RequestParam(value = "mediaUrl", required = false) @Size(max = 2048) String mediaUrl,
             @RequestParam(value = "image", required = false) MultipartFile image,
             Authentication authentication) {
-        CreatePostDTO updatePostDTO = new CreatePostDTO(content, mediaUrl);
+        CreatePostDTO updatePostDTO = CreatePostDTO.builder()
+                .title(title)
+                .content(content)
+                .mediaUrl(mediaUrl)
+                .build();
         return ResponseEntity.ok(postService.updatePost(id, authentication.getName(), updatePostDTO, image));
     }
 

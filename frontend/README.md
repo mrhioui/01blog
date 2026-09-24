@@ -134,9 +134,11 @@ The app will be available at: `http://localhost:4200`
 
 ## Nginx Configuration
 
-The `nginx.conf` is configured for Angular SPA routing:
+The `nginx.conf` is configured for Angular SPA routing and API proxying:
 
 - **`try_files $uri $uri/ /index.html`** — Redirects all unknown paths back to `index.html` so Angular's client-side router can handle them. Without this, refreshing any page (e.g. `/profile/5`) would return a 404.
+- **API & media proxy** — `/api/` and `/uploads/` are reverse-proxied to the backend container (`http://backend:8080`), so the browser can use the relative `/api` base path with no CORS setup.
+- **Upload size** — `client_max_body_size 100M` allows large image/video uploads through the proxy.
 - **Static asset caching** — CSS, JS, images, fonts, and videos are cached for **6 months** in the browser for performance.
 - **Error pages** — 5xx server errors are handled gracefully.
 
@@ -149,4 +151,4 @@ The `nginx.conf` is configured for Angular SPA routing:
 | `admin` | `admin123` | Admin |
 | `user` | `user123` | Regular User |
 
-These are seeded by the backend on first startup with an empty database.
+These are seeded by the backend on first startup with an empty database, using the passwords configured in the backend environment (`APP_DEFAULT_ADMIN_PASSWORD` / `APP_DEFAULT_USER_PASSWORD`). The values above match the sample `.env`; if those variables are unset, no default users are created.

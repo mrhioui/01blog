@@ -17,10 +17,10 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @org.springframework.beans.factory.annotation.Value("${app.default-admin-password}")
+    @org.springframework.beans.factory.annotation.Value("${app.default-admin-password:}")
     private String adminPassword;
 
-    @org.springframework.beans.factory.annotation.Value("${app.default-user-password}")
+    @org.springframework.beans.factory.annotation.Value("${app.default-user-password:}")
     private String userPassword;
 
     @Override

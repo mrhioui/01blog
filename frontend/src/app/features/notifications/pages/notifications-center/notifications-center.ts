@@ -47,6 +47,26 @@ export class NotificationsCenterPage implements OnInit {
     });
   }
 
+  markAsUnread(notification: Notification): void {
+    if (!notification.isRead || this.actionInProgress() === notification.id) {
+      return;
+    }
+
+    this.actionInProgress.set(notification.id);
+    this.notificationsService.markAsUnread(notification.id).subscribe({
+      next: () => {
+        this.notifications.update(list =>
+          list.map(item => item.id === notification.id ? { ...item, isRead: false } : item)
+        );
+        this.actionInProgress.set(null);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage.set(this.extractErrorMessage(error));
+        this.actionInProgress.set(null);
+      },
+    });
+  }
+
   trackById(_: number, notification: Notification): number {
     return notification.id;
   }

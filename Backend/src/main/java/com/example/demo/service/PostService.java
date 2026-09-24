@@ -65,6 +65,20 @@ public class PostService {
     }
 
     public List<PostDTO> getPostsByAuthorId(Long authorId, String requesterUsername) {
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        User requester = requesterUsername != null
+                ? userRepository.findByUsername(requesterUsername).orElse(null)
+                : null;
+
+        boolean isOwner = requester != null && Objects.equals(requester.getId(), author.getId());
+        boolean isAdmin = requester != null && requester.getRole() == Role.ROLE_ADMIN;
+
+        if (Boolean.FALSE.equals(author.getProfilePublic()) && !isOwner && !isAdmin) {
+            return List.of();
+        }
+
         return postRepository.findByAuthorIdOrderByTimestampDesc(authorId).stream()
                 .map(post -> convertToDTO(post, requesterUsername))
                 .collect(Collectors.toList());
@@ -90,6 +104,7 @@ public class PostService {
         }
 
         Post post = Post.builder()
+                .title(createPostDTO.getTitle())
                 .content(createPostDTO.getContent())
                 .mediaUrl(mediaUrl)
                 .timestamp(LocalDateTime.now())
@@ -127,6 +142,9 @@ public class PostService {
 
         post.setContent(updatedContent);
 
+        String updatedTitle = updatePostDTO.getTitle() != null ? updatePostDTO.getTitle().trim() : "";
+        post.setTitle(updatedTitle.isEmpty() ? null : updatedTitle);
+
         if (image != null && !image.isEmpty()) {
             post.setMediaUrl(fileStorageService.storeFile(image));
         } else if (updatePostDTO.getMediaUrl() != null) {
@@ -162,6 +180,7 @@ public class PostService {
 
         return PostDTO.builder()
                 .id(post.getId())
+                .title(post.getTitle())
                 .content(post.getContent())
                 .mediaUrl(post.getMediaUrl())
                 .timestamp(post.getTimestamp())

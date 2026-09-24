@@ -45,6 +45,13 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    public void markAsUnread(Long notificationId, Long userId) {
+        Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+        notification.setRead(false);
+        notificationRepository.save(notification);
+    }
+
     public void markAllAsRead(Long userId) {
         List<Notification> unread = notificationRepository.findByUserIdOrderByTimestampDesc(userId).stream()
                 .filter(n -> !n.isRead())

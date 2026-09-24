@@ -17,6 +17,7 @@ export class PostCreationModal {
   private readonly postsService = inject(Posts);
 
   protected readonly form = this.formBuilder.nonNullable.group({
+    title: ['', [Validators.maxLength(150)]],
     content: ['', [Validators.required, Validators.minLength(1)]],
     mediaUrl: [''],
   });

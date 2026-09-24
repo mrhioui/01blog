@@ -67,6 +67,15 @@
             <span *ngIf="actionInProgress() === notification.id" class="spinner-border spinner-border-sm me-2"></span>
             Mark as read
           </button>
+          <button
+            *ngIf="notification.isRead"
+            class="btn btn-outline-secondary rounded-pill"
+            [disabled]="actionInProgress() === notification.id"
+            (click)="markAsUnread(notification)"
+          >
+            <span *ngIf="actionInProgress() === notification.id" class="spinner-border spinner-border-sm me-2"></span>
+            Mark as unread
+          </button>
         </div>
       </div>
     </article>

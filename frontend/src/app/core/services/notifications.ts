@@ -21,6 +21,10 @@ export class Notifications {
     return this.api.post<void, null>(`/notifications/${id}/mark-as-read`, null);
   }
 
+  markAsUnread(id: number): Observable<void> {
+    return this.api.post<void, null>(`/notifications/${id}/mark-as-unread`, null);
+  }
+
   markAllAsRead(): Observable<void> {
     return this.api.post<void, null>('/notifications/mark-all-as-read', null);
   }
